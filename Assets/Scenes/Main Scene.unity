@@ -591,9 +591,13 @@ MonoBehaviour:
   wayPoint1: {fileID: 1170784283}
   wayPoint2: {fileID: 1717180110}
   speed: 1
+  arrowSpeed: 10
+  shotDelay: 1
   chaseDistance: 4
   explodeDistance: 1
+  shootDistance: 2
   lostDistance: 5
+  isCreeper: 0
 --- !u!65 &1207500129
 BoxCollider:
   m_ObjectHideFlags: 0

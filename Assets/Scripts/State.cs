@@ -20,6 +20,8 @@ public sealed class ChaseState : State
         float speed = Convert.ToSingle(parameters[2]);
         float explodeDistance = Convert.ToSingle(parameters[3]);
         float lostDistance = Convert.ToSingle(parameters[4]);
+        bool isCreeper = Convert.ToBoolean(parameters[5]);
+        float shootDistance = Convert.ToSingle(parameters[6]);
 
         List<Action> behaviours = new List<Action>();
 
@@ -27,14 +29,23 @@ public sealed class ChaseState : State
 
         behaviours.Add(() =>
         {
-            OwnerTransform.position += (TargetTransform.position - OwnerTransform.position).normalized * (speed * Time.deltaTime);
+            OwnerTransform.position += (TargetTransform.position - OwnerTransform.position).normalized *
+                                       (speed * Time.deltaTime);
         });
 
         behaviours.Add(() =>
         {
-            if (Vector3.Distance(TargetTransform.position, OwnerTransform.position) < explodeDistance)
+            if (Vector3.Distance(TargetTransform.position, OwnerTransform.position) < explodeDistance && isCreeper)
             {
                 OnFlag?.Invoke((int)FLags.OnTargetReach);
+            }
+        }); 
+        
+        behaviours.Add(() =>
+        {
+            if (Vector3.Distance(TargetTransform.position, OwnerTransform.position) < shootDistance && !isCreeper)
+            {
+                OnFlag?.Invoke((int)FLags.OnTargetShotDistance);
             }
         });
 
@@ -83,7 +94,8 @@ public sealed class PatrolState : State
             }
 
             ownerTransform.position +=
-                (direction ? wayPoint1.position : wayPoint2.position - ownerTransform.position).normalized * (speed * Time.deltaTime);
+                (direction ? wayPoint1.position : wayPoint2.position - ownerTransform.position).normalized *
+                (speed * Time.deltaTime);
         });
 
         behaviours.Add(() =>
@@ -114,14 +126,11 @@ public sealed class ExplodeState : State
     {
         List<Action> behaviours = new List<Action>();
         behaviours.Add(() => { Debug.Log("F"); });
-        
+
         GameObject ownerObject = parameters[0] as GameObject;
-        
-        behaviours.Add(() =>
-        {
-            ownerObject.SetActive( false);
-        });
-        
+
+        behaviours.Add(() => { ownerObject.SetActive(false); });
+
         return behaviours;
     }
 
@@ -129,9 +138,62 @@ public sealed class ExplodeState : State
     {
         List<Action> behaviours = new List<Action>();
         behaviours.Add(() => { Debug.Log("Explode!"); });
-        
-        
+
+
         return behaviours;
+    }
+
+    public override List<Action> GetOnExitBehaviour(params object[] parameters)
+    {
+        return new List<Action>();
+    }
+}
+
+public sealed class ShootState : State
+{
+    float shootDelay;
+    float time;
+    public override List<Action> GetTickBehaviour(params object[] parameters)
+    {
+        List<Action> behaviours = new List<Action>();
+        //behaviours.Add(() => { Debug.Log("Shooting!"); });
+
+        Transform ownerTransform = parameters[0] as Transform;
+        Transform targetTransform = parameters[1] as Transform;
+        float arrowSpeed = Convert.ToSingle(parameters[2]);
+        shootDelay = Convert.ToSingle(parameters[3]);
+        float shootDistance = Convert.ToSingle(parameters[4]);
+        
+        behaviours.Add(() =>
+        {
+            time -= Time.deltaTime;
+
+            if (time <= 0)
+            {
+                Debug.Log("Shot!");
+                time = shootDelay;
+            }
+        });
+        
+
+        behaviours.Add(() =>
+        {
+            if (Vector3.Distance(targetTransform.position, ownerTransform.position) > shootDistance)
+            {
+                OnFlag?.Invoke((int)FLags.OnTargetLost);
+            }
+        });
+
+        return behaviours;
+    }
+
+    public override List<Action> GetOnEnterBehaviour(params object[] parameters)
+    {
+        List<Action> behaviours = new List<Action>();
+
+        behaviours.Add(() => { time = shootDelay; });
+
+         return behaviours;
     }
 
     public override List<Action> GetOnExitBehaviour(params object[] parameters)
