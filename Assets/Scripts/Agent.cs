@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
 namespace DefaultNamespace
@@ -11,7 +12,7 @@ namespace DefaultNamespace
         OnTargetShotDistance,
     }
 
-    public enum Directions
+    public enum Behaviours
     {
         Chase,
         Patrol,
@@ -32,55 +33,57 @@ namespace DefaultNamespace
         [SerializeField] private float shootDistance;
         [SerializeField] private float lostDistance;
         [SerializeField] private bool isCreeper = false;
-        private FSM _fsm;
-        
+        private FSM<Behaviours, FLags> fsm;
+
         private void Start()
         {
-            _fsm = new FSM(Enum.GetValues(typeof(Directions)).Length, Enum.GetValues(typeof(FLags)).Length);
-            
-            
-            
-            _fsm.AddBehaviour<PatrolState>((int)Directions.Patrol, PatrolTickParameters);
-            _fsm.AddBehaviour<ChaseState>((int)Directions.Chase, ChaseTickParameters);
-            _fsm.AddBehaviour<ExplodeState>((int)Directions.Explode, ExplodeTickParameters);
-            _fsm.AddBehaviour<ShootState>((int)Directions.Shoot, ShootTickParameters);
-            
-            
-            
+            fsm = new FSM<Behaviours, FLags>();
 
-            _fsm.SetTransition((int)Directions.Patrol, (int)FLags.OnTargetNear, (int)Directions.Chase);
-            _fsm.SetTransition((int)Directions.Chase, (int)FLags.OnTargetReach, (int)Directions.Explode);
-            _fsm.SetTransition((int)Directions.Chase, (int)FLags.OnTargetLost, (int)Directions.Patrol);
-            _fsm.SetTransition((int)Directions.Chase, (int)FLags.OnTargetShotDistance, (int)Directions.Shoot);
-            _fsm.SetTransition((int)Directions.Shoot, (int)FLags.OnTargetLost, (int)Directions.Chase);
-            
+
+            fsm.AddBehaviour<PatrolState>(Behaviours.Patrol, PatrolTickParameters);
+            fsm.AddBehaviour<ChaseState>(Behaviours.Chase, ChaseTickParameters);
+            fsm.AddBehaviour<ExplodeState>(Behaviours.Explode, ExplodeTickParameters);
+            fsm.AddBehaviour<ShootState>(Behaviours.Shoot, ShootTickParameters);
+
+
+            fsm.SetTransition(Behaviours.Patrol, FLags.OnTargetNear, Behaviours.Chase, () => {Debug.Log("Te vi!");});
+            fsm.SetTransition(Behaviours.Chase, FLags.OnTargetReach, Behaviours.Explode);
+            fsm.SetTransition(Behaviours.Chase, FLags.OnTargetLost, Behaviours.Patrol);
+            fsm.SetTransition(Behaviours.Chase, FLags.OnTargetShotDistance, Behaviours.Shoot);
+            fsm.SetTransition(Behaviours.Shoot, FLags.OnTargetLost, Behaviours.Chase);
         }
 
         private object[] ChaseTickParameters()
         {
-            object[] objects = {transform, targetTransform, speed, this.explodeDistance, this.lostDistance, isCreeper, shootDistance};
+            object[] objects =
+            {
+                transform, targetTransform, speed, this.explodeDistance, this.lostDistance, isCreeper, shootDistance
+            };
             return objects;
         }
-            
+
         private object[] PatrolTickParameters()
         {
-            object[] objects = {transform, wayPoint1, wayPoint2, this.targetTransform, this.speed, this.chaseDistance, isCreeper};
+            object[] objects =
+                { transform, wayPoint1, wayPoint2, this.targetTransform, this.speed, this.chaseDistance, isCreeper };
             return objects;
         }
-        
+
         private object[] ExplodeTickParameters()
         {
-            object[] objects = {this.gameObject};
+            object[] objects = { this.gameObject };
             return objects;
         }
+
         private object[] ShootTickParameters()
         {
-            object[] objects = {transform, targetTransform, this.arrowSpeed, shotDelay, shootDistance };
+            object[] objects = { transform, targetTransform, this.arrowSpeed, shotDelay, shootDistance };
             return objects;
         }
+
         private void Update()
         {
-            _fsm.Tick();
+            fsm.Tick();
         }
     }
 }

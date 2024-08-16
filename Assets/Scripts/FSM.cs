@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DefaultNamespace
 {
-    public class FSM
+    public class FSM<EnumState, EnumFlag>
+        where EnumState : Enum
+        where EnumFlag : Enum
     {
         private const int UNNASIGNED_TRANSITION = -1;
         private int stateAmount = 0;
@@ -12,19 +15,33 @@ namespace DefaultNamespace
         private Dictionary<int, Func<object[]>> _behaviourTickParameters;
         private Dictionary<int, Func<object[]>> _behaviourOnEnterParameters;
         private Dictionary<int, Func<object[]>> _behaviourOnExitParameters;
-        private int[,] transitions;
+        
+        private (int destinationState, Action onTransition)[,] transitions;
+        
+        ParallelOptions parallelOptions = new ParallelOptions() {MaxDegreeOfParallelism = 32}; 
 
+        private BehavioursActions GetCurrentStateOnEnterBehaviours => behaviours[currentState]
+            .GetOnEnterBehaviour(_behaviourOnEnterParameters[currentState]?.Invoke());
 
-        public FSM(int statesAmount, int flags)
+        private BehavioursActions GetCurrentStateOnExitBehaviours => behaviours[currentState]
+            .GetOnExitBehaviour(_behaviourOnExitParameters[currentState]?.Invoke());
+
+        private BehavioursActions GetCurrentStateTickBehaviours => behaviours[currentState]
+            .GetTickBehaviour(_behaviourTickParameters[currentState]?.Invoke());
+
+        public FSM()
         {
+            int statesAmount = Enum.GetValues(typeof(EnumState)).Length;
+            int flags = Enum.GetValues(typeof(EnumFlag)).Length;
+
             behaviours = new Dictionary<int, State>();
-            transitions = new int[statesAmount, flags];
+            transitions = new (int, Action)[statesAmount, flags];
 
             for (int i = 0; i < statesAmount; i++)
             {
                 for (int j = 0; j < flags; j++)
                 {
-                    transitions[i, j] = UNNASIGNED_TRANSITION;
+                    transitions[i, j] = (UNNASIGNED_TRANSITION, null);
                 }
             }
 
@@ -37,10 +54,11 @@ namespace DefaultNamespace
         {
             currentState = state;
         }
-        
-        public void AddBehaviour<T>(int stateIndex, Func<object[]> onTickParameters = null,
+
+        public void AddBehaviour<T>(EnumState state, Func<object[]> onTickParameters = null,
             Func<object[]> onEnterParameters = null, Func<object[]> onExitParameters = null) where T : State, new()
         {
+            int stateIndex = Convert.ToInt32(state);
             if (behaviours.ContainsKey(stateIndex)) return;
 
             State newBehaviour = new T();
@@ -51,24 +69,27 @@ namespace DefaultNamespace
             _behaviourOnExitParameters.Add(stateIndex, onExitParameters);
         }
 
-        public void SetTransition(int originState, int flag, int destinationState)
+        public void ForceState(EnumState state)
         {
-            transitions[originState, flag] = destinationState;
+            currentState = Convert.ToInt32(state);
         }
 
-        public void Transition(int flag)
+        public void SetTransition(EnumState originState, EnumFlag flag, EnumState destinationState, Action onTransition = null)
         {
-            foreach (Action behaviour in behaviours[currentState]
-                         .GetOnExitBehaviour(_behaviourOnEnterParameters[currentState]?.Invoke()))
-            {
-                behaviour.Invoke();
-            }
+            transitions[Convert.ToInt32(originState), Convert.ToInt32(flag)] = (Convert.ToInt32(destinationState), onTransition);
+        }
 
-            currentState = transitions[currentState, flag];
-            foreach (Action behaviour in behaviours[currentState]
-                         .GetOnEnterBehaviour(_behaviourOnEnterParameters[currentState]?.Invoke()))
+        private void Transition(Enum flag)
+        {
+            if (transitions[currentState, Convert.ToInt32(flag)].destinationState == UNNASIGNED_TRANSITION)
             {
-                behaviour.Invoke();
+                ExecuteBehaviour(GetCurrentStateOnExitBehaviours);
+
+                transitions[currentState, Convert.ToInt32(flag)].onTransition?.Invoke();
+                
+                currentState = transitions[currentState, Convert.ToInt32(flag)].destinationState;
+
+                ExecuteBehaviour(GetCurrentStateOnEnterBehaviours);
             }
         }
 
@@ -77,11 +98,49 @@ namespace DefaultNamespace
         {
             if (behaviours.ContainsKey(currentState))
             {
-                foreach (Action behaviour in behaviours[currentState].GetTickBehaviour(_behaviourTickParameters[currentState]?.Invoke()))
-                {
-                    behaviour.Invoke();
-                }
+                ExecuteBehaviour(GetCurrentStateTickBehaviours);
             }
+        }
+
+        private void ExecuteBehaviour(BehavioursActions behavioursActions)
+        {
+            if(behavioursActions.Equals(default(BehavioursActions)))
+                return;
+
+            int executionOrder = 0;
+
+            while (behavioursActions.MainThreadBehaviours.Count > 0 || behavioursActions.MultithreadblesBehaviours.Count > 0)
+            {
+                Task multithreadableBehaviour = new Task(() =>
+                {
+                    if (behavioursActions.MainThreadBehaviours.ContainsKey(executionOrder))
+                    {
+                        Parallel.ForEach(behavioursActions.MultithreadblesBehaviours[executionOrder], parallelOptions,
+                            (behaviour) =>
+                            {
+                                behaviour?.Invoke();
+
+                            });
+                        behavioursActions.MultithreadblesBehaviours.TryRemove(executionOrder, out _); //out = no me importa lo que devuelve
+                    }
+                });
+                
+                multithreadableBehaviour.Start();
+
+                if (behavioursActions.MainThreadBehaviours.ContainsKey(executionOrder))
+                {
+                    foreach (Action behaviour in behavioursActions.MainThreadBehaviours[executionOrder])
+                    {
+                        behaviour?.Invoke();
+                    }
+                    behavioursActions.MainThreadBehaviours.Remove(executionOrder);
+                }
+                
+                multithreadableBehaviour.Wait();
+                executionOrder++;
+            }
+            
+            behavioursActions.TransitionBehavior?.Invoke();
         }
     }
 }
