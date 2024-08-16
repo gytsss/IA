@@ -18,18 +18,18 @@ public struct BehavioursActions
 
         if (!mainThreadBehaviours.ContainsKey(executionOrder))
             mainThreadBehaviours.Add(executionOrder, new List<Action>());
-        
+
         mainThreadBehaviours[executionOrder].Add(behaviour);
     }
 
     public void AddMultithreadbleBehaviours(int executionOrder, Action behaviour)
     {
-        if(multithreadablesBehaviours == null)
+        if (multithreadablesBehaviours == null)
             multithreadablesBehaviours = new ConcurrentDictionary<int, ConcurrentBag<Action>>();
-        
-        if(!multithreadablesBehaviours.ContainsKey(executionOrder))
+
+        if (!multithreadablesBehaviours.ContainsKey(executionOrder))
             multithreadablesBehaviours.TryAdd(executionOrder, new ConcurrentBag<Action>());
-        
+
         multithreadablesBehaviours[executionOrder].Add(behaviour);
     }
 
@@ -37,11 +37,12 @@ public struct BehavioursActions
     {
         transitionBehavior = behaviour;
     }
-    
+
     public Dictionary<int, List<Action>> MainThreadBehaviours => mainThreadBehaviours;
     public ConcurrentDictionary<int, ConcurrentBag<Action>> MultithreadblesBehaviours => multithreadablesBehaviours;
     public Action TransitionBehavior => transitionBehavior;
 }
+
 public abstract class State
 {
     public Action<Enum> OnFlag;
@@ -62,40 +63,36 @@ public sealed class ChaseState : State
         bool isCreeper = Convert.ToBoolean(parameters[5]);
         float shootDistance = Convert.ToSingle(parameters[6]);
 
-        
+
         BehavioursActions behaviour = new BehavioursActions();
 
         behaviour.AddMultithreadbleBehaviours(0, () => { Debug.Log("Whistle!"); });
 
-        behaviour.AddMainThreadBehaviour(0,() =>
+        behaviour.AddMainThreadBehaviour(0, () =>
         {
             OwnerTransform.position += (TargetTransform.position - OwnerTransform.position).normalized *
                                        (speed * Time.deltaTime);
         });
-
-        behaviour.SetTransitionBehavior(() =>
-        {
-            if (Vector3.Distance(TargetTransform.position, OwnerTransform.position) < explodeDistance && isCreeper)
-            {
-                OnFlag?.Invoke(FLags.OnTargetReach);
-            }
-        }); 
         
+
         behaviour.SetTransitionBehavior(() =>
         {
             if (Vector3.Distance(TargetTransform.position, OwnerTransform.position) < shootDistance && !isCreeper)
             {
                 OnFlag?.Invoke(FLags.OnTargetShotDistance);
             }
-        });
-
-        behaviour.SetTransitionBehavior(() =>
-        {
+            
+            if (Vector3.Distance(TargetTransform.position, OwnerTransform.position) < explodeDistance && isCreeper)
+            {
+                OnFlag?.Invoke(FLags.OnTargetReach);
+            }
+            
             if (Vector3.Distance(TargetTransform.position, OwnerTransform.position) > lostDistance)
             {
                 OnFlag?.Invoke(FLags.OnTargetLost);
             }
         });
+        
 
         return behaviour;
     }
@@ -126,17 +123,13 @@ public sealed class PatrolState : State
         float speed = Convert.ToSingle(parameters[4]);
         float chaseDistance = Convert.ToSingle(parameters[5]);
 
-        behaviour.AddMultithreadbleBehaviours(0,() =>
+        behaviour.AddMainThreadBehaviour(0, () =>
         {
             if (Vector3.Distance(ownerTransform.position, direction ? wayPoint1.position : wayPoint2.position) < 0.2f)
             {
                 direction = !direction;
             }
 
-        });
-        
-        behaviour.AddMainThreadBehaviour(1, () =>
-        {
             ownerTransform.position +=
                 (direction ? wayPoint1.position : wayPoint2.position - ownerTransform.position).normalized *
                 (speed * Time.deltaTime);
@@ -181,7 +174,7 @@ public sealed class ExplodeState : State
     public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
-        behaviours.AddMultithreadbleBehaviours(0,() => { Debug.Log("Explode!"); });
+        behaviours.AddMultithreadbleBehaviours(0, () => { Debug.Log("Explode!"); });
 
 
         return behaviours;
@@ -197,18 +190,18 @@ public sealed class ShootState : State
 {
     float shootDelay;
     float time;
+
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
-        //behaviours.Add(() => { Debug.Log("Shooting!"); });
 
         Transform ownerTransform = parameters[0] as Transform;
         Transform targetTransform = parameters[1] as Transform;
         float arrowSpeed = Convert.ToSingle(parameters[2]);
         shootDelay = Convert.ToSingle(parameters[3]);
         float shootDistance = Convert.ToSingle(parameters[4]);
-        
-        behaviours.AddMultithreadbleBehaviours(0,() =>
+
+        behaviours.AddMainThreadBehaviour(0, () =>
         {
             time -= Time.deltaTime;
 
@@ -218,7 +211,7 @@ public sealed class ShootState : State
                 time = shootDelay;
             }
         });
-        
+
 
         behaviours.SetTransitionBehavior(() =>
         {
@@ -235,9 +228,9 @@ public sealed class ShootState : State
     {
         BehavioursActions behaviours = new BehavioursActions();
 
-        behaviours.AddMultithreadbleBehaviours(0,() => { time = shootDelay; });
+        behaviours.AddMultithreadbleBehaviours(0, () => { time = shootDelay; });
 
-         return behaviours;
+        return behaviours;
     }
 
     public override BehavioursActions GetOnExitBehaviour(params object[] parameters)

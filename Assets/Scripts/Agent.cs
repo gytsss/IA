@@ -39,11 +39,11 @@ namespace DefaultNamespace
         {
             fsm = new FSM<Behaviours, FLags>();
 
-
-            fsm.AddBehaviour<PatrolState>(Behaviours.Patrol, PatrolTickParameters);
-            fsm.AddBehaviour<ChaseState>(Behaviours.Chase, ChaseTickParameters);
-            fsm.AddBehaviour<ExplodeState>(Behaviours.Explode, ExplodeTickParameters);
-            fsm.AddBehaviour<ShootState>(Behaviours.Shoot, ShootTickParameters);
+            
+            fsm.AddBehaviour<PatrolState>(Behaviours.Patrol, onTickParameters:PatrolTickParameters);
+            fsm.AddBehaviour<ChaseState>(Behaviours.Chase, onTickParameters:ChaseTickParameters);
+            fsm.AddBehaviour<ExplodeState>(Behaviours.Explode, onTickParameters:ExplodeTickParameters);
+            fsm.AddBehaviour<ShootState>(Behaviours.Shoot, onTickParameters:ShootTickParameters);
 
 
             fsm.SetTransition(Behaviours.Patrol, FLags.OnTargetNear, Behaviours.Chase, () => {Debug.Log("Te vi!");});
@@ -51,6 +51,8 @@ namespace DefaultNamespace
             fsm.SetTransition(Behaviours.Chase, FLags.OnTargetLost, Behaviours.Patrol);
             fsm.SetTransition(Behaviours.Chase, FLags.OnTargetShotDistance, Behaviours.Shoot);
             fsm.SetTransition(Behaviours.Shoot, FLags.OnTargetLost, Behaviours.Chase);
+            
+            fsm.ForceState(Behaviours.Patrol);
         }
 
         private object[] ChaseTickParameters()
