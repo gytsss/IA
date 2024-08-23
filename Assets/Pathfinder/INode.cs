@@ -1,7 +1,7 @@
 ﻿public interface INode
 {
     public bool EqualsTo(INode other);
-    public bool IsBloqued();
+    public bool IsBlocked();
 }
 
 public interface INode<Coordinate> 

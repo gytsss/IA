@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Traveler : MonoBehaviour
 {
-    public GrapfView grapfView;
+    [FormerlySerializedAs("grapfView")] public GraphView graphView;
     
     private AStarPathfinder<Node<Vector2Int>> Pathfinder;
     //private DijstraPathfinder<Node<Vector2Int>> Pathfinder;
@@ -22,7 +23,7 @@ public class Traveler : MonoBehaviour
         destinationNode = new Node<Vector2Int>();
         destinationNode.SetCoordinate(new Vector2Int(Random.Range(0, 10), Random.Range(0, 10)));
 
-        List<Node<Vector2Int>> path = Pathfinder.FindPath(startNode, destinationNode, grapfView.grapf.nodes);
+        List<Node<Vector2Int>> path = Pathfinder.FindPath(startNode, destinationNode, graphView.Graph.nodes);
         StartCoroutine(Move(path));
     }
 

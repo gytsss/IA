@@ -1,11 +1,26 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
+
+struct Transition <NodeType>
+{
+    public NodeType to;
+    public int cost;
+    public float distance;
+}
 public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode
 {
+    private Dictionary<NodeType, Transition<NodeType>> transitions = new Dictionary<NodeType, Transition<NodeType>>();
+    
+    
     protected override int Distance(NodeType A, NodeType B)
     {
-        //Euclidean distance 
-        return 0;
+        int distance = 0;
+
+        distance += Mathf.Abs((A as INode<(int x, int y)>).GetCoordinate().x - (B as INode<(int x, int y)>).GetCoordinate().x );
+        distance += Mathf.Abs((A as INode<(int x, int y)>).GetCoordinate().y - (B as INode<(int x, int y)>).GetCoordinate().y );
+        
+        return distance;
     }
 
     protected override ICollection<NodeType> GetNeighbors(NodeType node)
@@ -13,9 +28,9 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
         throw new System.NotImplementedException();
     }
 
-    protected override bool IsBloqued(NodeType node)
+    protected override bool IsBlocked(NodeType node)
     {
-       return node.IsBloqued();
+        return node.IsBlocked();
     }
 
     protected override int MoveToNeighborCost(NodeType A, NodeType b)
@@ -23,8 +38,8 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
         throw new System.NotImplementedException();
     }
 
-    protected override bool NodesEquals(NodeType A, NodeType B) 
+    protected override bool NodesEquals(NodeType A, NodeType B)
     {
-        throw new System.NotImplementedException();
+        return A.Equals(B);
     }
 }

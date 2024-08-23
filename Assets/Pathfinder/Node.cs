@@ -1,6 +1,6 @@
 ﻿public class Node<Coordinate> : INode, INode<Coordinate>
 {
-    private bool isBloqued = false;
+    private bool isBlocked = false;
     private Coordinate coordinate;
 
     public void SetCoordinate(Coordinate coordinate)
@@ -18,8 +18,9 @@
         return coordinate.Equals((other as Node<Coordinate>).coordinate);
     }
 
-    public bool IsBloqued()
+    public bool IsBlocked()
     {
-        return isBloqued;
+        return isBlocked;
     }
+    
 }
