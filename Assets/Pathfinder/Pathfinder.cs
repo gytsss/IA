@@ -1,13 +1,17 @@
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
-public abstract class Pathfinder<NodeType> where NodeType : INode
+public abstract class Pathfinder<NodeType> where NodeType : INode<Vector2Int>, INode, new()
 {
-    public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode, ICollection<NodeType> graph)
+    protected Vector2IntGraph<NodeType> graph;
+
+    public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode)
     {
         Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)> nodes =
             new Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)>();
 
-        foreach (NodeType node in graph)
+        foreach (NodeType node in graph.nodes)
         {
             nodes.Add(node, (default, 0, 0));
         }
@@ -17,6 +21,16 @@ public abstract class Pathfinder<NodeType> where NodeType : INode
 
         openList.Add(startNode);
 
+        foreach (var node in nodes.Keys.ToList())
+        {
+            if (NodesEquals(startNode, node)) continue;
+
+            var nodeData = nodes[node];
+            nodes.Remove(node);
+            nodes[startNode] = nodeData;
+            break;
+        }
+
         while (openList.Count > 0)
         {
             NodeType currentNode = openList[0];
@@ -24,12 +38,11 @@ public abstract class Pathfinder<NodeType> where NodeType : INode
 
             for (int i = 1; i < openList.Count; i++)
             {
-                if (nodes[openList[i]].AcumulativeCost + nodes[openList[i]].Heuristic <
-                nodes[currentNode].AcumulativeCost + nodes[currentNode].Heuristic)
-                {
-                    currentNode = openList[i];
-                    currentIndex = i;
-                }
+                if (nodes[openList[i]].AcumulativeCost + nodes[openList[i]].Heuristic >=
+                    nodes[currentNode].AcumulativeCost + nodes[currentNode].Heuristic) continue;
+
+                currentNode = openList[i];
+                currentIndex = i;
             }
 
             openList.RemoveAt(currentIndex);
@@ -42,14 +55,13 @@ public abstract class Pathfinder<NodeType> where NodeType : INode
 
             foreach (NodeType neighbor in GetNeighbors(currentNode))
             {
-                if (!nodes.ContainsKey(neighbor) ||
-                IsBlocked(neighbor) ||
-                closedList.Contains(neighbor))
+                if (!nodes.ContainsKey(neighbor) || IsBlocked(neighbor) || closedList.Contains(neighbor))
                 {
                     continue;
                 }
 
                 int tentativeNewAcumulatedCost = 0;
+
                 tentativeNewAcumulatedCost += nodes[currentNode].AcumulativeCost;
                 tentativeNewAcumulatedCost += MoveToNeighborCost(currentNode, neighbor);
 
@@ -75,7 +87,12 @@ public abstract class Pathfinder<NodeType> where NodeType : INode
             while (!NodesEquals(currentNode, startNode))
             {
                 path.Add(currentNode);
-                currentNode = nodes[currentNode].Parent;
+                
+                foreach (var node in nodes.Keys.ToList().Where(node => NodesEquals(currentNode, node)))
+                {
+                    currentNode = nodes[node].Parent;
+                    break;
+                }
             }
 
             path.Reverse();
@@ -89,7 +106,7 @@ public abstract class Pathfinder<NodeType> where NodeType : INode
 
     protected abstract bool NodesEquals(NodeType A, NodeType B);
 
-    protected abstract int MoveToNeighborCost(NodeType A, NodeType b);
+    protected abstract int MoveToNeighborCost(NodeType A, NodeType B);
 
     protected abstract bool IsBlocked(NodeType node);
 }

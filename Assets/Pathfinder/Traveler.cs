@@ -17,13 +17,17 @@ public class Traveler : MonoBehaviour
 
     void Start()
     {
+        Pathfinder = new AStarPathfinder<Node<Vector2Int>>(graphView.Graph);
         startNode = new Node<Vector2Int>();
         startNode.SetCoordinate(new Vector2Int(Random.Range(0, 10), Random.Range(0, 10)));
 
         destinationNode = new Node<Vector2Int>();
         destinationNode.SetCoordinate(new Vector2Int(Random.Range(0, 10), Random.Range(0, 10)));
 
-        List<Node<Vector2Int>> path = Pathfinder.FindPath(startNode, destinationNode, graphView.Graph.nodes);
+        graphView.startNode = startNode;
+        graphView.destinationNode = destinationNode;
+
+        List<Node<Vector2Int>> path = Pathfinder.FindPath(startNode, destinationNode);
         StartCoroutine(Move(path));
     }
 
