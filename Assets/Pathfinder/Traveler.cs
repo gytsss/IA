@@ -7,17 +7,21 @@ public class Traveler : MonoBehaviour
 {
     [FormerlySerializedAs("grapfView")] public GraphView graphView;
     
-    private AStarPathfinder<Node<Vector2Int>> Pathfinder;
-    //private DijstraPathfinder<Node<Vector2Int>> Pathfinder;
+    //private AStarPathfinder<Node<Vector2Int>> Pathfinder;
+    //private DijkstraPathfinder<Node<Vector2Int>> Pathfinder;
     //private DepthFirstPathfinder<Node<Vector2Int>> Pathfinder;
-    //private BreadthPathfinder<Node<Vector2Int>> Pathfinder;
+    private BreadthPathfinder<Node<Vector2Int>> Pathfinder;
 
     private Node<Vector2Int> startNode; 
     private Node<Vector2Int> destinationNode;
 
     void Start()
     {
-        Pathfinder = new AStarPathfinder<Node<Vector2Int>>(graphView.Graph);
+        //Pathfinder = new AStarPathfinder<Node<Vector2Int>>(graphView.Graph);
+        //Pathfinder = new DijkstraPathfinder<Node<Vector2Int>>(graphView.Graph);
+        //Pathfinder = new DepthFirstPathfinder<Node<Vector2Int>>(graphView.Graph);
+        Pathfinder = new BreadthPathfinder<Node<Vector2Int>>(graphView.Graph);
+        
         startNode = new Node<Vector2Int>();
         startNode.SetCoordinate(new Vector2Int(Random.Range(0, 10), Random.Range(0, 10)));
 
@@ -28,6 +32,9 @@ public class Traveler : MonoBehaviour
         graphView.destinationNode = destinationNode;
 
         List<Node<Vector2Int>> path = Pathfinder.FindPath(startNode, destinationNode);
+        
+        graphView.pathNodes = path;
+        
         StartCoroutine(Move(path));
     }
 
@@ -38,5 +45,7 @@ public class Traveler : MonoBehaviour
             transform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
             yield return new WaitForSeconds(1.0f);
         }
+        
+        Debug.Log("Destination reached!");
     }
 }
