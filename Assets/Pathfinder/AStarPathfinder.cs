@@ -4,7 +4,8 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
 {
     protected override int Distance(NodeType A, NodeType B)
     {
-        throw new System.NotImplementedException();
+        //Euclidean distance 
+        return 0;
     }
 
     protected override ICollection<NodeType> GetNeighbors(NodeType node)
@@ -14,7 +15,7 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
 
     protected override bool IsBloqued(NodeType node)
     {
-        throw new System.NotImplementedException();
+       return node.IsBloqued();
     }
 
     protected override int MoveToNeighborCost(NodeType A, NodeType b)
@@ -22,7 +23,7 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
         throw new System.NotImplementedException();
     }
 
-    protected override bool NodesEquals(NodeType A, NodeType B)
+    protected override bool NodesEquals(NodeType A, NodeType B) 
     {
         throw new System.NotImplementedException();
     }
