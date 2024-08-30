@@ -57,8 +57,6 @@ public class ECSExample_ECSWhitoutGOs : MonoBehaviour
         Parallel.For(0, entities.Count, i =>
         {
             PositionComponent position = ECSManager.GetComponent<PositionComponent>(entities[i]);
-            drawMatrix[(i / MAX_OBJS_PER_DRAWCALL)][(i % MAX_OBJS_PER_DRAWCALL)]
-            .SetTRS(new Vector3(position.X, position.Y, position.Z), Quaternion.identity, prefabScale);
 
             RotationComponent rotation = ECSManager.GetComponent<RotationComponent>(entities[i]);
             drawMatrix[(i / MAX_OBJS_PER_DRAWCALL)][(i % MAX_OBJS_PER_DRAWCALL)]

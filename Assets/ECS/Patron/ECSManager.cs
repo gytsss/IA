@@ -10,12 +10,14 @@ public static class ECSManager
     private static ConcurrentDictionary<uint, ECSEntity> entities = null;
     private static ConcurrentDictionary<Type, ConcurrentDictionary<uint, ECSComponent>> components = null;
     private static ConcurrentDictionary<Type, ECSSystem> systems = null;
+    private static ConcurrentDictionary<uint, FlagSystem> flagSystems = null;
 
     public static void Init()
     {
         entities = new ConcurrentDictionary<uint, ECSEntity>();
         components = new ConcurrentDictionary<Type, ConcurrentDictionary<uint, ECSComponent>>();
         systems = new ConcurrentDictionary<Type, ECSSystem>();
+        flagSystems = new ConcurrentDictionary<uint, FlagSystem>();
 
         foreach (Type classType in typeof(ECSSystem).Assembly.GetTypes())
         {
