@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class Pathfinder<NodeType> where NodeType : INode<Vector2Int>, INode, new()
 {
     protected Vector2IntGraph<NodeType> graph;
+    protected List<NodeType> goldMines;
 
     public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode)
     {
