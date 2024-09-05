@@ -12,9 +12,17 @@ public class FlockingManager : MonoBehaviour
     {
         for (int i = 0; i < boidCount; i++)
         {
-            GameObject boidGO = Instantiate(boidPrefab.gameObject, new Vector3(Random.Range(-10, 10), Random.Range(-10, 10)), Quaternion.identity);
+            GameObject boidGO = Instantiate(boidPrefab.gameObject,
+                new Vector3(Random.Range(-10, 10), Random.Range(-10, 10), 0), Quaternion.identity);
+
             Boid boid = boidGO.GetComponent<Boid>();
             boid.Init(Alignment, Cohesion, Separation, Direction);
+
+            boid.alignmentMultiplier = 1.0f;
+            boid.cohesionMultiplier = 1.5f;
+            boid.separationMultiplier = 2.0f;
+            boid.directionMultiplier = 2.0f;
+
             boids.Add(boid);
         }
     }
@@ -22,16 +30,15 @@ public class FlockingManager : MonoBehaviour
     public Vector3 Alignment(Boid boid)
     {
         List<Boid> insideRadiusBoids = GetBoidsInsideRadius(boid);
-        if (insideRadiusBoids.Count == 0) return Vector3.zero;
-            
+        if (insideRadiusBoids.Count == 0) return boid.transform.forward;
+
         Vector3 avg = Vector3.zero;
         foreach (Boid b in insideRadiusBoids)
         {
             avg += b.transform.up;
         }
         avg /= insideRadiusBoids.Count;
-        avg.Normalize();
-        return avg;
+        return avg.normalized;
     }
 
     public Vector3 Cohesion(Boid boid)
@@ -56,10 +63,10 @@ public class FlockingManager : MonoBehaviour
         Vector3 avg = Vector3.zero;
         foreach (Boid b in insideRadiusBoids)
         {
-            avg += (b.transform.position - boid.transform.position);
+            avg += (boid.transform.position - b.transform.position);
         }
         avg /= insideRadiusBoids.Count;
-        return avg;
+        return avg.normalized;
     }
 
     public Vector3 Direction(Boid boid)
