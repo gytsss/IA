@@ -44,6 +44,30 @@ public class BreadthPathfinder<NodeType> : Pathfinder<NodeType> where NodeType :
         return node.IsBlocked();
     }
 
+    protected override ICollection<NodeType> GetNeighbors(NodeType node, float distance)
+    {
+        List<NodeType> neighbors = new List<NodeType>();
+        var nodeCoordinate = node.GetCoordinate();
+        
+        graph.nodes.ForEach(neighbor =>
+        {
+            var neighborCoordinate = neighbor.GetCoordinate();
+            if ((neighborCoordinate.x == nodeCoordinate.x && Math.Abs(neighborCoordinate.y - nodeCoordinate.y) == distance) ||
+                (neighborCoordinate.y == nodeCoordinate.y && Math.Abs(neighborCoordinate.x - nodeCoordinate.x) == distance) ||
+                (Math.Abs(neighborCoordinate.x - nodeCoordinate.x) == distance && Math.Abs(neighborCoordinate.y - nodeCoordinate.y) == distance))
+            {
+                neighbors.Add(neighbor);
+            }
+        });
+        
+        return neighbors;
+    }
+
+    protected override int MoveToNeighborCost(NodeType A, NodeType B, float distanceBetweenNodes)
+    {
+        return 0;
+    }
+
     protected override int MoveToNeighborCost(NodeType A, NodeType B)
     {
         return 0;

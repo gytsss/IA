@@ -17,7 +17,7 @@ public class Traveler : MonoBehaviour
     private Node<Vector2Int> startNode;
     private Node<Vector2Int> destinationNode;
 
-    public TMP_InputField heightInputField, widthInputField, goldMinesInputField;
+    public TMP_InputField heightInputField, widthInputField, goldMinesInputField, distanceBetweenNodesInputField;
 
     private List<Node<Vector2Int>> goldMines = new List<Node<Vector2Int>>();
 
@@ -27,17 +27,19 @@ public class Traveler : MonoBehaviour
         string height = heightInputField.text;
         string width = widthInputField.text;
         string goldMines = goldMinesInputField.text;
+        string distanceBetweenNodes = distanceBetweenNodesInputField.text.Replace(',', '.');
 
-        Debug.Log("Height: " + height + " Width: " + width + " GoldMines: " + goldMines);
+        Debug.Log("Height: " + height + " Width: " + width + " GoldMines: " + goldMines + " Distance: " +
+                  distanceBetweenNodes);
 
-        graphView.CreateGraph(int.Parse(height), int.Parse(width));
-        SetGoldMines(int.Parse(goldMines));
-        InitTraveler();
+        graphView.CreateGraph(int.Parse(height), int.Parse(width), float.Parse(distanceBetweenNodes));
+        SetGoldMines(int.Parse(goldMines), float.Parse(distanceBetweenNodes));
+        InitTraveler(float.Parse(distanceBetweenNodes));
     }
 
-    private void InitTraveler()
+    private void InitTraveler(float distanceBetweenNodes)
     {
-        Pathfinder = new AStarPathfinder<Node<Vector2Int>>(graphView.Graph);
+        Pathfinder = new AStarPathfinder<Node<Vector2Int>>(graphView.Graph, distanceBetweenNodes);
         //Pathfinder = new DijkstraPathfinder<Node<Vector2Int>>(graphView.Graph);
         //Pathfinder = new DepthFirstPathfinder<Node<Vector2Int>>(graphView.Graph);
         //Pathfinder = new BreadthPathfinder<Node<Vector2Int>>(graphView.Graph);
@@ -52,8 +54,20 @@ public class Traveler : MonoBehaviour
 
         graphView.startNode = startNode;
         graphView.destinationNode = destinationNode;
+        
+        if (startNode == null || destinationNode == null)
+        {
+            Debug.LogError("Start node or destination node is null.");
+            return;
+        }
 
-        List<Node<Vector2Int>> path = Pathfinder.FindPath(startNode, destinationNode);
+        List<Node<Vector2Int>> path = Pathfinder.FindPath(startNode, destinationNode, distanceBetweenNodes);
+        
+        if (path == null)
+        {
+            Debug.LogError("Path is null. No valid path found.");
+            return;
+        }
 
         graphView.pathNodes = path;
 
@@ -68,18 +82,19 @@ public class Traveler : MonoBehaviour
             yield return new WaitForSeconds(0.70f);
         }
 
-        Debug.Log("Destination reached!");
+        Debug.Log("Destination reached! x: " + destinationNode.GetCoordinate().x + " y: " +
+                  destinationNode.GetCoordinate().y);
     }
 
-    private void SetGoldMines(int count)
+    private void SetGoldMines(int count, float distance)
     {
         goldMines.Clear();
 
-        for (int i = 0; i <= count; i++)
+        for (int i = 0; i < count; i++)
         {
             Node<Vector2Int> goldMine = new Node<Vector2Int>();
-            goldMine.SetCoordinate(new Vector2Int(Random.Range(0, graphView.size.x),
-                Random.Range(0, graphView.size.y)));
+            Node<Vector2Int> randomNode = graphView.Graph.nodes[Random.Range(0, graphView.Graph.nodes.Count)];
+            goldMine.SetCoordinate(randomNode.GetCoordinate());
             goldMine.SetIsGoldMine(true);
             goldMines.Add(goldMine);
 
@@ -93,7 +108,7 @@ public class Traveler : MonoBehaviour
     {
         Node<Vector2Int> closestMine = null;
         float closestDistance = float.MaxValue;
-        
+
         foreach (Node<Vector2Int> mine in goldMines)
         {
             float distance = Vector2Int.Distance(mine.GetCoordinate(), startNode.GetCoordinate());
@@ -103,9 +118,7 @@ public class Traveler : MonoBehaviour
                 closestMine = mine;
             }
         }
-        
+
         return closestMine;
     }
 }
-
-

@@ -5,14 +5,14 @@ public class Vector2IntGraph<NodeType>
 { 
     public List<NodeType> nodes = new List<NodeType>();
 
-    public Vector2IntGraph(int x, int y) 
+    public Vector2IntGraph(int x, int y, float distance) 
     {
         for (int i = 0; i < x; i++)
         {
             for (int j = 0; j < y; j++)
             {
                 NodeType node = new NodeType();
-                node.SetCoordinate(new UnityEngine.Vector2Int(i, j));
+                node.SetCoordinate(new UnityEngine.Vector2Int((int)(i * distance), (int)(j * distance)));
                 nodes.Add(node);
             }
         }

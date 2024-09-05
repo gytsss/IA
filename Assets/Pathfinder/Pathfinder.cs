@@ -7,7 +7,7 @@ public abstract class Pathfinder<NodeType> where NodeType : INode<Vector2Int>, I
     protected Vector2IntGraph<NodeType> graph;
     protected List<NodeType> goldMines;
 
-    public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode)
+    public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode, float distanceBetweenNodes)
     {
         Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)> nodes =
             new Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)>();
@@ -54,7 +54,7 @@ public abstract class Pathfinder<NodeType> where NodeType : INode<Vector2Int>, I
                 return GeneratePath(startNode, destinationNode);
             }
 
-            foreach (NodeType neighbor in GetNeighbors(currentNode))
+            foreach (NodeType neighbor in GetNeighbors(currentNode, distanceBetweenNodes))
             {
                 if (!nodes.ContainsKey(neighbor) || IsBlocked(neighbor) || closedList.Contains(neighbor))
                 {
@@ -64,7 +64,7 @@ public abstract class Pathfinder<NodeType> where NodeType : INode<Vector2Int>, I
                 int tentativeNewAcumulatedCost = 0;
 
                 tentativeNewAcumulatedCost += nodes[currentNode].AcumulativeCost;
-                tentativeNewAcumulatedCost += MoveToNeighborCost(currentNode, neighbor);
+                tentativeNewAcumulatedCost += MoveToNeighborCost(currentNode, neighbor, distanceBetweenNodes);
 
                 if (!openList.Contains(neighbor) || tentativeNewAcumulatedCost < nodes[currentNode].AcumulativeCost)
                 {
@@ -110,4 +110,6 @@ public abstract class Pathfinder<NodeType> where NodeType : INode<Vector2Int>, I
     protected abstract int MoveToNeighborCost(NodeType A, NodeType B);
 
     protected abstract bool IsBlocked(NodeType node);
+    protected abstract ICollection<NodeType> GetNeighbors(NodeType node, float distance);
+    protected abstract int MoveToNeighborCost(NodeType A, NodeType B, float distanceBetweenNodes);
 }

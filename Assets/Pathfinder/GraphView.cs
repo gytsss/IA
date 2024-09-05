@@ -41,9 +41,9 @@ public class GraphView : MonoBehaviour
         }
     }
 
-    public void CreateGraph(int x, int y)
+    public void CreateGraph(int x, int y, float distance)
     {
-        Graph = new Vector2IntGraph<Node<Vector2Int>>(x, y);
+        Graph = new Vector2IntGraph<Node<Vector2Int>>(x, y, distance);
         size.x = x;
         size.y = y;
 
