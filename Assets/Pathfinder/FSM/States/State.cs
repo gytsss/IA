@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using DefaultNamespace;
@@ -52,26 +53,119 @@ public abstract class State
     public abstract BehavioursActions GetOnExitBehaviour(params object[] parameters);
 }
 
-public sealed class MoveToMineState : State
+public sealed class IdleState : State
 {
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
-        
-        Transform ownerTransform = parameters[0] as Transform;
-        Node<Vector2Int> mine = parameters[1] as Node<Vector2Int>;
-        float speed = 0;
-        
-        
-        behaviours.AddMainThreadBehaviour(0, () => { });
+
+        bool start = Convert.ToBoolean(parameters[0]);
+
+        behaviours.AddMultithreadbleBehaviours(0, () => { Debug.Log("Idle..."); });
+
 
         behaviours.SetTransitionBehavior(() =>
         {
-            OnFlag?.Invoke(MinerFlags.OnGoldExtract); 
+            if (start)
+            {
+                OnFlag?.Invoke(MinerFlags.OnStart);
+            }
         });
 
         return behaviours;
     }
+
+
+    public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
+    {
+        return default;
+    }
+
+    public override BehavioursActions GetOnExitBehaviour(params object[] parameters)
+    {
+        return default;
+    }
+}
+
+public sealed class MoveToMineState : State
+{
+    private float timeSinceLastMove;
+    private int currentNodeIndex;
+    private List<Node<Vector2Int>> path;
+    private Transform minerTransform;
+    private float travelTime;
+    private bool isMoving;
+
+    public override BehavioursActions GetTickBehaviour(params object[] parameters)
+    {
+        BehavioursActions behaviours = new BehavioursActions();
+
+        Miner miner = parameters[0] as Miner;
+        minerTransform = parameters[1] as Transform;
+        Node<Vector2Int> mine = parameters[2] as Node<Vector2Int>;
+        Node<Vector2Int> startNode = parameters[3] as Node<Vector2Int>;
+        travelTime = Convert.ToSingle(parameters[4]);
+        float distanceBetweenNodes = Convert.ToSingle(parameters[5]);
+        path = parameters[6] as List<Node<Vector2Int>>;
+
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            if (miner == null || mine == null || startNode == null)
+                Debug.Log("Null parameters in MoveToMineState");
+        });
+
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            if (path == null)
+                Debug.Log("Path is null. No valid path found.");
+        });
+
+
+        behaviours.AddMainThreadBehaviour(0, () =>
+        {
+            if (path != null && path.Count > 0)
+            {
+                if (!isMoving)
+                {
+                    timeSinceLastMove = 0f;
+                    currentNodeIndex = 0;
+                    isMoving = true;
+                }
+                
+                timeSinceLastMove += Time.deltaTime;
+
+                if (timeSinceLastMove >= travelTime)
+                {
+                    if (currentNodeIndex < path.Count)
+                    {
+                        Node<Vector2Int> node = path[currentNodeIndex];
+                        minerTransform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
+                        currentNodeIndex++;
+                        timeSinceLastMove = 0f;
+                    }
+                    else
+                    {
+                        isMoving = false;
+                        Debug.Log("Destination reached! x: " + mine.GetCoordinate().x + " y: " +
+                                  mine.GetCoordinate().y);
+                    }
+                }
+            }
+        });
+
+        behaviours.SetTransitionBehavior(() =>
+        {
+            if (miner.IsAtMine(mine))
+            {
+                miner.SetCurrentMine(mine);
+                Debug.Log("Start mining!");
+                // OnFlag?.Invoke(MinerFlags.OnGoldExtract);
+            }
+        });
+
+        return behaviours;
+    }
+
 
     public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
     {
@@ -89,10 +183,10 @@ public sealed class MineGoldState : State
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
-       
+
         Miner miner = parameters[0] as Miner;
         //GoldMine mine = parameters[1] as GoldMine;
-        
+
         behaviours.AddMainThreadBehaviour(0, () =>
         {
             // if (mine.HasGold() && miner.goldCollected < miner.maxGold)
@@ -102,7 +196,6 @@ public sealed class MineGoldState : State
             // }
         });
 
-      
 
         behaviours.SetTransitionBehavior(() =>
         {
@@ -139,7 +232,7 @@ public sealed class EatFoodState : State
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
-        
+
         Miner miner = parameters[0] as Miner;
         //GoldMine mine = parameters[1] as GoldMine;
 
@@ -184,15 +277,12 @@ public sealed class WaitFoodState : State
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
-        
+
         Miner miner = parameters[0] as Miner;
-       // GoldMine mine = parameters[1] as GoldMine;
+        // GoldMine mine = parameters[1] as GoldMine;
 
 
-        behaviours.AddMainThreadBehaviour(0, () =>
-        {
-            Debug.Log("Esperando a que la caravana traiga comida.");
-        });
+        behaviours.AddMainThreadBehaviour(0, () => { Debug.Log("Esperando a que la caravana traiga comida."); });
 
         behaviours.SetTransitionBehavior(() =>
         {
@@ -221,7 +311,7 @@ public sealed class DepositGoldState : State
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
-        
+
         Transform ownerTransform = parameters[0] as Transform;
         Node<Vector2Int> urbanCenter = parameters[1] as Node<Vector2Int>;
         float speed = Convert.ToSingle(parameters[2]);
@@ -261,15 +351,9 @@ public sealed class ReturnHomeState : State
     {
         BehavioursActions behaviours = new BehavioursActions();
 
-        behaviours.AddMainThreadBehaviour(0, () =>
-        {
-           
-        });
+        behaviours.AddMainThreadBehaviour(0, () => { });
 
-        behaviours.SetTransitionBehavior(() =>
-        {
-           
-        });
+        behaviours.SetTransitionBehavior(() => { });
 
         return behaviours;
     }
@@ -291,15 +375,9 @@ public sealed class AlarmState : State
     {
         BehavioursActions behaviours = new BehavioursActions();
 
-        behaviours.AddMainThreadBehaviour(0, () =>
-        {
-           
-        });
+        behaviours.AddMainThreadBehaviour(0, () => { });
 
-        behaviours.SetTransitionBehavior(() =>
-        {
-           
-        });
+        behaviours.SetTransitionBehavior(() => { });
 
         return behaviours;
     }
@@ -314,7 +392,7 @@ public sealed class AlarmState : State
         return default;
     }
 }
-  
+
 // public sealed class ChaseState : State
 // {
 //     public override BehavioursActions GetTickBehaviour(params object[] parameters)
