@@ -68,7 +68,12 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
         graph.nodes.ForEach(neighbor =>
         {
             var neighborCoordinate = neighbor.GetCoordinate();
-            if (Distance(node, neighbor) <= distance)
+            if ((neighborCoordinate.x == nodeCoordinate.x &&
+                 Math.Abs(neighborCoordinate.y - nodeCoordinate.y) <= distance) ||
+                (neighborCoordinate.y == nodeCoordinate.y &&
+                 Math.Abs(neighborCoordinate.x - nodeCoordinate.x) <= distance) ||
+                (Math.Abs(neighborCoordinate.x - nodeCoordinate.x) <= distance &&
+                 Math.Abs(neighborCoordinate.y - nodeCoordinate.y) <= distance))
             {
                 neighbors.Add(neighbor);
             }
@@ -91,7 +96,7 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
     {
         if (!GetNeighbors(A, distanceBetweenNodes).Contains(B))
             throw new InvalidOperationException("B node has to be a neighbor of A node");
-
+        
         int cost = 0;
 
         transitions.TryGetValue(A, out List<Transition<NodeType>> transition);
