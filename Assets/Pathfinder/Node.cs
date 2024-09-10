@@ -110,3 +110,55 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
         if (goldAmount < 0) goldAmount = 0;
     }
 }
+
+public class UrbanCenterNode<Coordinate> : Node<Coordinate>
+{
+    private int gold = 0;
+    private int agentCapacity = 10;
+
+    public UrbanCenterNode(Coordinate coordinate)
+    {
+        SetCoordinate(coordinate);
+        gold = 0;
+        SetNodeType(NodeTypes.UrbanCenter);
+    }
+
+    public UrbanCenterNode()
+    {
+        gold = 0;
+    }
+
+    public int GetGold()
+    {
+        return gold;
+    }
+
+    public void SetGold(int amount)
+    {
+        gold = amount;
+    }
+
+    public void AddGold(int amount)
+    {
+        gold += amount;
+    }
+    
+    public int GetAgentCapacity()
+    {
+        return agentCapacity;
+    }
+    
+    public bool CanGenerateAgent()
+    {
+        return agentCapacity > 0;
+    }
+    
+    public void GenerateAgent()
+    {
+        if (CanGenerateAgent())
+        {
+            agentCapacity--;
+            // Logic for creating a new miner/caravan.
+        }
+    }
+}

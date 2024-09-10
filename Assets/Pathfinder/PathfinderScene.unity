@@ -1963,6 +1963,7 @@ MonoBehaviour:
   goldMineSprite: {fileID: -854997940, guid: 89f80356f163e5d41b3808c6fea54ca3, type: 3}
   blockedNodeSprite: {fileID: -23493590, guid: 89f80356f163e5d41b3808c6fea54ca3, type: 3}
   defaultNodeSprite: {fileID: -1265629067, guid: 89f80356f163e5d41b3808c6fea54ca3, type: 3}
+  urbanCenterNodeSprite: {fileID: -673822174, guid: 89f80356f163e5d41b3808c6fea54ca3, type: 3}
 --- !u!4 &815766765
 Transform:
   m_ObjectHideFlags: 0
@@ -2349,8 +2350,9 @@ MonoBehaviour:
   travelTime: 0.7
   maxGold: 15
   goldCollected: 0
-  goldBetweenFood: 3
   goldExtractionSpeed: 2
+  energy: 3
+  maxEnergy: 3
 --- !u!212 &1022336800
 SpriteRenderer:
   m_ObjectHideFlags: 0

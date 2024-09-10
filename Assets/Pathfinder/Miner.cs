@@ -42,7 +42,7 @@ public class Miner : MonoBehaviour
     //private BreadthPathfinder<Node<Vector2Int>> Pathfinder;
 
     private Node<Vector2Int> currentMine;
-    private Node<Vector2Int> urbanCenter;
+    private UrbanCenterNode<Vector2Int> urbanCenter;
 
     private FSM<MinerStates, MinerFlags> fsm;
     private Node<Vector2Int> startNode;
@@ -137,13 +137,15 @@ public class Miner : MonoBehaviour
         //Pathfinder = new DepthFirstPathfinder<Node<Vector2Int>>(graphView.Graph);
         //Pathfinder = new BreadthPathfinder<Node<Vector2Int>>(graphView.Graph);
 
-        startNode = new Node<Vector2Int>();
-        startNode.SetCoordinate(new Vector2Int(Random.Range(0, graphView.size.x), Random.Range(0, graphView.size.y)));
-
+        urbanCenter = new UrbanCenterNode<Vector2Int>();
+        urbanCenter.SetCoordinate(new Vector2Int(Random.Range(0, graphView.size.x), Random.Range(0, graphView.size.y)));
+        
+        startNode = urbanCenter;
         destinationNode = goldMineManager.FindClosestGoldMine(startNode);
 
         graphView.startNode = startNode;
         graphView.destinationNode = destinationNode;
+        graphView.urbanCenterNode = urbanCenter;
         transform.position = new Vector3(startNode.GetCoordinate().x, startNode.GetCoordinate().y);
         
         path = Pathfinder.FindPath(startNode, destinationNode, distanceBetweenNodes);
@@ -152,7 +154,7 @@ public class Miner : MonoBehaviour
         fsm.AddBehaviour<MoveToMineState>(MinerStates.MoveToMine, onTickParameters: MoveToMineTickParameters);
         fsm.AddBehaviour<MineGoldState>(MinerStates.MineGold, onTickParameters: MineGoldTickParameters);
         fsm.AddBehaviour<EatFoodState>(MinerStates.EatFood, onTickParameters: EatFoodTickParameters);
-        // fsm.AddBehaviour<DepositGoldState>(MinerStates.DepositGold, onTickParameters: DepositGoldTickParameters);
+        fsm.AddBehaviour<DepositGoldState>(MinerStates.DepositGold, onTickParameters: DepositGoldTickParameters);
         // fsm.AddBehaviour<WaitFoodState>(MinerStates.WaitFood, onTickParameters: WaitForFoodTickParameters);
         // fsm.AddBehaviour<ReturnHomeState>(MinerStates.ReturnHome, onTickParameters: ReturnToUrbanCenterTickParameters);
         // fsm.AddBehaviour<AlarmState>(MinerStates.Alarm, onTickParameters: RespondToAlarmTickParameters);
@@ -161,7 +163,7 @@ public class Miner : MonoBehaviour
 
         fsm.SetTransition(MinerStates.MoveToMine, MinerFlags.OnMineFind, MinerStates.MineGold);
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFoodNeed, MinerStates.EatFood);
-        //fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
+        fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
         //fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnMineEmpty, MinerStates.MoveToMine);
         fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
         // fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnNoFood, MinerStates.WaitFood);

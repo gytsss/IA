@@ -6,8 +6,10 @@ public class GraphView : MonoBehaviour
     public Vector2IntGraph<Node<Vector2Int>> Graph;
     public Node<Vector2Int> startNode;
     public Node<Vector2Int> destinationNode;
+    public UrbanCenterNode<Vector2Int> urbanCenterNode;
     public List<Node<Vector2Int>> pathNodes = new List<Node<Vector2Int>>();
     public List<Node<Vector2Int>> goldMines = new List<Node<Vector2Int>>();
+    
 
     public Vector2Int size;
     public bool isActive = false;
@@ -16,6 +18,7 @@ public class GraphView : MonoBehaviour
     public Sprite goldMineSprite;
     public Sprite blockedNodeSprite;
     public Sprite defaultNodeSprite;
+    public Sprite urbanCenterNodeSprite;
 
     private void OnDrawGizmos()
     {
@@ -44,6 +47,7 @@ public class GraphView : MonoBehaviour
                     renderer.sprite = pathNodeSprite;
                 }
                 
+                
                 if (goldMines.Contains(node))
                 {
                     renderer.sprite = goldMineSprite;
@@ -53,6 +57,11 @@ public class GraphView : MonoBehaviour
                 else if (node.IsBlocked())
                 {
                     renderer.sprite = blockedNodeSprite;
+                }
+
+                if (node.GetCoordinate().x == urbanCenterNode.GetCoordinate().x && node.GetCoordinate().y == urbanCenterNode.GetCoordinate().y)
+                {
+                    renderer.sprite = urbanCenterNodeSprite;
                 }
 
                 nodeObject.transform.localScale = new Vector3(6.3f, 6.3f, 6.3f);
