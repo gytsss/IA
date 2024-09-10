@@ -27,6 +27,7 @@ public enum MinerFlags
     OnFullInventory,
     OnMineEmpty,
     OnMineEmptyOfFood,
+    OnGoldDeposit,
     OnAlarmTrigger
 }
 
@@ -96,7 +97,7 @@ public class Miner : MonoBehaviour
 
     private object[] DepositGoldTickParameters()
     {
-        return new object[] { this, urbanCenter };
+        return new object[] { this, currentNode, urbanCenter, travelTime, distanceBetweenNodes };
     }
 
     private object[] ReturnToUrbanCenterTickParameters()
@@ -139,7 +140,7 @@ public class Miner : MonoBehaviour
 
         urbanCenter = new UrbanCenterNode<Vector2Int>();
         urbanCenter.SetCoordinate(new Vector2Int(Random.Range(0, graphView.size.x), Random.Range(0, graphView.size.y)));
-        
+        currentNode = urbanCenter;
         startNode = urbanCenter;
         destinationNode = goldMineManager.FindClosestGoldMine(startNode);
 
@@ -166,6 +167,7 @@ public class Miner : MonoBehaviour
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
         //fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnMineEmpty, MinerStates.MoveToMine);
         fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
+        fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnGoldDeposit, MinerStates.MoveToMine);
         // fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnNoFood, MinerStates.WaitFood);
         // fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
         // fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnAlarmTrigger, MinerStates.ReturnHome);
@@ -199,11 +201,22 @@ public class Miner : MonoBehaviour
     public void SetPath(List<Node<Vector2Int>> path)
     {
         this.path = path;
+       // graphView.pathNodes = path;
+    }
+
+    public AStarPathfinder<Node<Vector2Int>> GetAStarPathfinder()
+    {
+        return Pathfinder;
     }
 
     public bool IsAtMine(Node<Vector2Int> mine)
     {
         return transform.position.x == mine.GetCoordinate().x && transform.position.y == mine.GetCoordinate().y;
+    }
+
+    public bool IsAtUrbanCenter()
+    {
+        return transform.position.x == urbanCenter.GetCoordinate().x && transform.position.y == urbanCenter.GetCoordinate().y;
     }
 
     public void SetCurrentMine(Node<Vector2Int> mine)

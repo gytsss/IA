@@ -13,8 +13,7 @@ public class GraphView : MonoBehaviour
 
     public Vector2Int size;
     public bool isActive = false;
-
-    public Sprite pathNodeSprite;
+    
     public Sprite goldMineSprite;
     public Sprite blockedNodeSprite;
     public Sprite defaultNodeSprite;
@@ -42,12 +41,6 @@ public class GraphView : MonoBehaviour
                    
                 }
                 
-                if (pathNodes.Contains(node))
-                {
-                    renderer.sprite = pathNodeSprite;
-                }
-                
-                
                 if (goldMines.Contains(node))
                 {
                     renderer.sprite = goldMineSprite;
@@ -58,7 +51,7 @@ public class GraphView : MonoBehaviour
                 {
                     renderer.sprite = blockedNodeSprite;
                 }
-
+ 
                 if (node.GetCoordinate().x == urbanCenterNode.GetCoordinate().x && node.GetCoordinate().y == urbanCenterNode.GetCoordinate().y)
                 {
                     renderer.sprite = urbanCenterNodeSprite;

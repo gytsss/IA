@@ -140,6 +140,7 @@ public sealed class MoveToMineState : State
                     {
                         Node<Vector2Int> node = path[currentNodeIndex];
                         minerTransform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
+                        miner.SetCurrentNode(node);
                         currentNodeIndex++;
                         timeSinceLastMove = 0f;
                     }
@@ -202,7 +203,7 @@ public sealed class MineGoldState : State
         behaviours.AddMainThreadBehaviour(0, () =>
         {
             timeSinceLastExtraction += Time.deltaTime;
-            
+
             if (timeSinceLastExtraction >= goldExtractionSpeed)
             {
                 if (mine.HasGold() && miner.GetEnergy() > 0)
@@ -223,6 +224,7 @@ public sealed class MineGoldState : State
             if (miner.goldCollected >= maxGold)
             {
                 Debug.Log("Full inventory!");
+                goldCount = 0;
                 OnFlag?.Invoke(MinerFlags.OnFullInventory);
             }
             else if (miner.GetEnergy() <= 0)
@@ -260,20 +262,20 @@ public sealed class EatFoodState : State
         Miner miner = parameters[0] as Miner;
         GoldMineNode<Vector2Int> mine = parameters[1] as GoldMineNode<Vector2Int>;
 
-        
+
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
             if (miner == null || mine == null)
                 Debug.Log("Miner or mine is null in EatFoodState");
         });
-        
+
         behaviours.AddMainThreadBehaviour(0, () =>
         {
             if (mine != null && mine.HasFood())
             {
                 mine.ConsumeFood();
                 Debug.Log("Food consumed! Food left: " + mine.GetFoodAmount());
-                
+
                 miner.ResetEnergy();
             }
             else
@@ -346,27 +348,95 @@ public sealed class WaitFoodState : State
 
 public sealed class DepositGoldState : State
 {
+    private List<Node<Vector2Int>> pathToUrbanCenter;
+    private bool alreadyDeposited = false;
+    private float timeSinceLastMove;
+    private int currentNodeIndex;
+    private bool isMoving;
+
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
 
-        Transform ownerTransform = parameters[0] as Transform;
-        Node<Vector2Int> urbanCenter = parameters[1] as Node<Vector2Int>;
-        float speed = Convert.ToSingle(parameters[2]);
+        Miner miner = parameters[0] as Miner;
+        Node<Vector2Int> currentNode = parameters[1] as Node<Vector2Int>;
+        UrbanCenterNode<Vector2Int> urbanCenter = parameters[2] as UrbanCenterNode<Vector2Int>;
+        float travelTime = Convert.ToSingle(parameters[3]);
+        float distanceBetweenNodes = Convert.ToSingle(parameters[4]);
+
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            if (miner == null)
+                Debug.Log("Miner is null in DepositGoldState");
+
+            if (urbanCenter == null)
+                Debug.Log("Urban center is null in DepositGoldState");
+
+            if (currentNode == null)
+                Debug.Log("Current node is null in DepositGoldState");
+        });
 
 
         behaviours.AddMainThreadBehaviour(0, () =>
         {
-            // ownerTransform.position += (urbanCenter.Position - (Vector2Int)ownerTransform.position).normalized *
-            //                            (speed * Time.deltaTime);
+            if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
+            {
+                pathToUrbanCenter = miner.GetAStarPathfinder().FindPath(currentNode, urbanCenter, distanceBetweenNodes);
+                Debug.Log("Path to urban center calculated");
+            }
+
+            if (pathToUrbanCenter != null && pathToUrbanCenter.Count > 0)
+            {
+                if (!isMoving)
+                {
+                    timeSinceLastMove = 0f;
+                    currentNodeIndex = 0;
+                    isMoving = true;
+                }
+
+                timeSinceLastMove += Time.deltaTime;
+
+                if (timeSinceLastMove >= travelTime)
+                {
+                    if (currentNodeIndex < pathToUrbanCenter.Count)
+                    {
+                        Node<Vector2Int> nextNode = pathToUrbanCenter[currentNodeIndex];
+                        miner.transform.position = new Vector3(nextNode.GetCoordinate().x, nextNode.GetCoordinate().y);
+                        miner.SetCurrentNode(nextNode);
+                        currentNodeIndex++;
+                        timeSinceLastMove = 0f;
+                    }
+                    else
+                    {
+                        isMoving = false;
+                        Debug.Log("Urban Center reached!");
+                    }
+                }
+            }
+        });
+
+
+        behaviours.AddMainThreadBehaviour(0, () =>
+        {
+            if (miner.IsAtUrbanCenter())
+            {
+                if (urbanCenter != null)
+                {
+                    urbanCenter.AddGold(miner.goldCollected);
+                    Debug.Log("Gold deposited! Amount: " + urbanCenter.GetGold());
+                    miner.goldCollected = 0;
+                    alreadyDeposited = true;
+                }
+            }
         });
 
         behaviours.SetTransitionBehavior(() =>
         {
-            // if (Vector2Int.Distance((Vector2Int)ownerTransform.position, urbanCenter.Position) < 0.1f)
-            // {
-            //     OnFlag?.Invoke(MinerFlags.OnMineEmpty);  // Cambiar a OnGoldDeposited si es necesario
-            // }
+            if (alreadyDeposited)
+            {
+                alreadyDeposited = false;
+                OnFlag?.Invoke(MinerFlags.OnGoldDeposit);
+            }
         });
 
         return behaviours;
