@@ -191,8 +191,7 @@ public sealed class MineGoldState : State
         Miner miner = parameters[0] as Miner;
         GoldMineNode<Vector2Int> mine = parameters[1] as GoldMineNode<Vector2Int>;
         float goldExtractionSpeed = Convert.ToSingle(parameters[2]);
-        int goldBetweenFood = Convert.ToInt32(parameters[3]);
-        int maxGold = Convert.ToInt32(parameters[4]);
+        int maxGold = Convert.ToInt32(parameters[3]);
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
@@ -206,10 +205,11 @@ public sealed class MineGoldState : State
             
             if (timeSinceLastExtraction >= goldExtractionSpeed)
             {
-                if (mine.HasGold())
+                if (mine.HasGold() && miner.GetEnergy() > 0)
                 {
                     goldCount++;
-                    mine.MineGold(); 
+                    mine.MineGold();
+                    miner.SetEnergy(miner.GetEnergy() - 1);
                     timeSinceLastExtraction = 0f;
                     Debug.Log("Gold mined: " + goldCount);
                     miner.goldCollected += 1;
@@ -225,9 +225,9 @@ public sealed class MineGoldState : State
                 Debug.Log("Full inventory!");
                 OnFlag?.Invoke(MinerFlags.OnFullInventory);
             }
-            else if (goldCount >= goldBetweenFood)
+            else if (miner.GetEnergy() <= 0)
             {
-                Debug.Log("Food needed!");
+                Debug.Log("Food needed! Gold mined: " + goldCount);
                 OnFlag?.Invoke(MinerFlags.OnFoodNeed);
             }
             else if (!mine.HasGold())
@@ -258,28 +258,42 @@ public sealed class EatFoodState : State
         BehavioursActions behaviours = new BehavioursActions();
 
         Miner miner = parameters[0] as Miner;
-        //GoldMine mine = parameters[1] as GoldMine;
+        GoldMineNode<Vector2Int> mine = parameters[1] as GoldMineNode<Vector2Int>;
 
-
+        
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            if (miner == null || mine == null)
+                Debug.Log("Miner or mine is null in EatFoodState");
+        });
+        
         behaviours.AddMainThreadBehaviour(0, () =>
         {
-            // if (mine.foodAvailable > 0)
-            // {
-            //     mine.ConsumeFood();
-            //     miner.foodCollected++;
-            // }
+            if (mine != null && mine.HasFood())
+            {
+                mine.ConsumeFood();
+                Debug.Log("Food consumed! Food left: " + mine.GetFoodAmount());
+                
+                miner.ResetEnergy();
+            }
+            else
+            {
+                Debug.Log("No food available!");
+            }
         });
 
         behaviours.SetTransitionBehavior(() =>
         {
-            // if (miner.foodCollected >= miner.foodNeededAfterGold)
-            // {
-            //     OnFlag?.Invoke(MinerFlags.OnFoodAvailable);
-            // }
-            // else if (mine.IsOutOfFood())
-            // {
-            //     OnFlag?.Invoke(MinerFlags.OnMineEmpty);
-            // }
+            if (miner.GetEnergy() >= miner.GetMaxEnergy())
+            {
+                Debug.Log("Back to work! Food left: " + mine.GetFoodAmount());
+                OnFlag?.Invoke(MinerFlags.OnFoodEaten);
+            }
+            else if (!mine.HasFood())
+            {
+                Debug.Log("Mine empty of food!");
+                OnFlag?.Invoke(MinerFlags.OnMineEmptyOfFood);
+            }
         });
 
         return behaviours;

@@ -26,7 +26,7 @@ public enum MinerFlags
     OnFoodEaten,
     OnFullInventory,
     OnMineEmpty,
-    OnNoFood,
+    OnMineEmptyOfFood,
     OnAlarmTrigger
 }
 
@@ -57,8 +57,9 @@ public class Miner : MonoBehaviour
     public float travelTime = 0.70f;
     public int maxGold = 15;
     public int goldCollected = 0;
-    public int goldBetweenFood = 3;
     public float goldExtractionSpeed = 1f;
+    public int energy = 3;
+    public int maxEnergy = 3;
     private bool start = false;
 
 
@@ -80,7 +81,7 @@ public class Miner : MonoBehaviour
 
     private object[] MineGoldTickParameters()
     {
-        return new object[] { this, currentMine, goldExtractionSpeed, goldBetweenFood, maxGold };
+        return new object[] { this, currentMine, goldExtractionSpeed, maxGold };
     }
 
     private object[] EatFoodTickParameters()
@@ -150,7 +151,7 @@ public class Miner : MonoBehaviour
         
         fsm.AddBehaviour<MoveToMineState>(MinerStates.MoveToMine, onTickParameters: MoveToMineTickParameters);
         fsm.AddBehaviour<MineGoldState>(MinerStates.MineGold, onTickParameters: MineGoldTickParameters);
-        // fsm.AddBehaviour<EatFoodState>(MinerStates.EatFood, onTickParameters: EatFoodTickParameters);
+        fsm.AddBehaviour<EatFoodState>(MinerStates.EatFood, onTickParameters: EatFoodTickParameters);
         // fsm.AddBehaviour<DepositGoldState>(MinerStates.DepositGold, onTickParameters: DepositGoldTickParameters);
         // fsm.AddBehaviour<WaitFoodState>(MinerStates.WaitFood, onTickParameters: WaitForFoodTickParameters);
         // fsm.AddBehaviour<ReturnHomeState>(MinerStates.ReturnHome, onTickParameters: ReturnToUrbanCenterTickParameters);
@@ -159,10 +160,10 @@ public class Miner : MonoBehaviour
          
 
         fsm.SetTransition(MinerStates.MoveToMine, MinerFlags.OnMineFind, MinerStates.MineGold);
+        fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFoodNeed, MinerStates.EatFood);
         //fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
-        //fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFoodNeed, MinerStates.EatFood);
         //fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnMineEmpty, MinerStates.MoveToMine);
-        // fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
+        fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
         // fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnNoFood, MinerStates.WaitFood);
         // fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
         // fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnAlarmTrigger, MinerStates.ReturnHome);
@@ -206,5 +207,30 @@ public class Miner : MonoBehaviour
     public void SetCurrentMine(Node<Vector2Int> mine)
     {
         currentMine = mine;
+    }
+    
+    public int GetEnergy()
+    {
+        return energy;
+    }
+    
+    public void SetEnergy(int energy)
+    {
+        this.energy = energy;
+    }
+    
+    public int GetMaxEnergy()
+    {
+        return maxEnergy;
+    }
+    
+    public void SetMaxEnergy(int maxEnergy)
+    {
+        this.maxEnergy = maxEnergy;
+    }
+    
+    public void ResetEnergy()
+    {
+        energy = maxEnergy;
     }
 }

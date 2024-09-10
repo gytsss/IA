@@ -26,7 +26,7 @@ public class GraphView : MonoBehaviour
             foreach (Node<Vector2Int> node in Graph.nodes)
             {
                 GameObject nodeObject = new GameObject("Node");
-                nodeObject.transform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
+                nodeObject.transform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y, 1f);
                 SpriteRenderer renderer = nodeObject.AddComponent<SpriteRenderer>();
                 renderer.sprite = defaultNodeSprite;
 

@@ -16,8 +16,8 @@ public class GoldMineManager : MonoBehaviour
             Node<Vector2Int> randomNode = graphView.Graph.nodes[Random.Range(0, graphView.Graph.nodes.Count)];
             
             goldMine.SetCoordinate(randomNode.GetCoordinate());
-            goldMine.SetGoldAmount(Random.Range(10, 15));
-            goldMine.SetFoodAmount(Random.Range(2, 5));
+            //goldMine.SetGoldAmount(Random.Range(10, 15));
+            //goldMine.SetFoodAmount(Random.Range(2, 5));
             goldMines.Add(goldMine);
             
             graphView.Graph.nodes.Remove(randomNode);
