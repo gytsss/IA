@@ -131,7 +131,7 @@ public sealed class MoveToMineState : State
                     currentNodeIndex = 0;
                     isMoving = true;
                 }
-                
+
                 timeSinceLastMove += Time.deltaTime;
 
                 if (timeSinceLastMove >= travelTime)
@@ -148,6 +148,7 @@ public sealed class MoveToMineState : State
                         isMoving = false;
                         Debug.Log("Destination reached! x: " + mine.GetCoordinate().x + " y: " +
                                   mine.GetCoordinate().y);
+                        miner.SetCurrentMine(mine);
                     }
                 }
             }
@@ -159,7 +160,7 @@ public sealed class MoveToMineState : State
             {
                 miner.SetCurrentMine(mine);
                 Debug.Log("Start mining!");
-                // OnFlag?.Invoke(MinerFlags.OnGoldExtract);
+                OnFlag?.Invoke(MinerFlags.OnMineFind);
             }
         });
 
@@ -180,37 +181,60 @@ public sealed class MoveToMineState : State
 
 public sealed class MineGoldState : State
 {
+    private float timeSinceLastExtraction = 0f;
+    private int goldCount = 0;
+
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
 
         Miner miner = parameters[0] as Miner;
-        //GoldMine mine = parameters[1] as GoldMine;
+        GoldMineNode<Vector2Int> mine = parameters[1] as GoldMineNode<Vector2Int>;
+        float goldExtractionSpeed = Convert.ToSingle(parameters[2]);
+        int goldBetweenFood = Convert.ToInt32(parameters[3]);
+        int maxGold = Convert.ToInt32(parameters[4]);
+
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            if (miner == null || mine == null)
+                Debug.Log("Miner or mine is null in MineGoldState");
+        });
 
         behaviours.AddMainThreadBehaviour(0, () =>
         {
-            // if (mine.HasGold() && miner.goldCollected < miner.maxGold)
-            // {
-            //     mine.MineGold();  // Extrae oro de la mina
-            //     miner.goldCollected++;
-            // }
+            timeSinceLastExtraction += Time.deltaTime;
+            
+            if (timeSinceLastExtraction >= goldExtractionSpeed)
+            {
+                if (mine.HasGold())
+                {
+                    goldCount++;
+                    mine.MineGold(); 
+                    timeSinceLastExtraction = 0f;
+                    Debug.Log("Gold mined: " + goldCount);
+                    miner.goldCollected += 1;
+                }
+            }
         });
 
 
         behaviours.SetTransitionBehavior(() =>
         {
-            // if (miner.goldCollected >= miner.maxGold)
-            // {
-            //     OnFlag?.Invoke(MinerFlags.OnGoldFull);
-            // }
-            // else if (miner.foodCollected >= miner.foodNeededAfterGold)
-            // {
-            //     OnFlag?.Invoke(MinerFlags.OnFoodNeeded);
-            // }
-            // else if (!mine.HasGold())
-            // {
-            //     OnFlag?.Invoke(MinerFlags.OnMineEmpty);
-            // }
+            if (miner.goldCollected >= maxGold)
+            {
+                Debug.Log("Full inventory!");
+                OnFlag?.Invoke(MinerFlags.OnFullInventory);
+            }
+            else if (goldCount >= goldBetweenFood)
+            {
+                Debug.Log("Food needed!");
+                OnFlag?.Invoke(MinerFlags.OnFoodNeed);
+            }
+            else if (!mine.HasGold())
+            {
+                Debug.Log("Mine empty!");
+                OnFlag?.Invoke(MinerFlags.OnMineEmpty);
+            }
         });
 
         return behaviours;

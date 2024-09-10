@@ -58,54 +58,53 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
 
     public GoldMineNode()
     {
-       //default constructor
+        //default constructor
     }
 
     public int GetGoldAmount()
     {
         return goldAmount;
     }
-    
+
     public void SetGoldAmount(int goldAmount)
     {
         this.goldAmount = goldAmount;
     }
-    
+
     public int GetFoodAmount()
     {
         return foodAmount;
     }
-    
+
     public void SetFoodAmount(int foodAmount)
     {
         this.foodAmount = foodAmount;
     }
-    
+
     public int GetMaxFoodAmount()
     {
         return maxFoodAmount;
     }
-    
+
     public bool HasFood()
     {
         return foodAmount > 0;
     }
-    
-    public void ConsumeFood()
+
+    public void ConsumeFood(int amount = 1)
     {
-        foodAmount--;
-        if (foodAmount < 0) foodAmount = 0; 
+        foodAmount -= amount;
+        if (foodAmount < 0) foodAmount = 0;
     }
-    
+
     public bool HasGold()
     {
         return goldAmount > 0;
     }
-    
-    public void MineGold()
+
+    public void MineGold(int amount = 1)
     {
-        goldAmount--;
-        if (goldAmount < 0) goldAmount = 0; 
+        goldAmount -= amount;
+        if (goldAmount < 0) goldAmount = 0;
     }
-    
 }

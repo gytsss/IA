@@ -22,7 +22,6 @@ public enum MinerFlags
 {
     OnStart,
     OnMineFind,
-    OnGoldExtract,
     OnFoodNeed,
     OnFoodEaten,
     OnFullInventory,
@@ -59,6 +58,7 @@ public class Miner : MonoBehaviour
     public int maxGold = 15;
     public int goldCollected = 0;
     public int goldBetweenFood = 3;
+    public float goldExtractionSpeed = 1f;
     private bool start = false;
 
 
@@ -80,7 +80,7 @@ public class Miner : MonoBehaviour
 
     private object[] MineGoldTickParameters()
     {
-        return new object[] { this, currentMine };
+        return new object[] { this, currentMine, goldExtractionSpeed, goldBetweenFood, maxGold };
     }
 
     private object[] EatFoodTickParameters()
@@ -144,55 +144,33 @@ public class Miner : MonoBehaviour
         graphView.startNode = startNode;
         graphView.destinationNode = destinationNode;
         transform.position = new Vector3(startNode.GetCoordinate().x, startNode.GetCoordinate().y);
-
-        // if (startNode == null || destinationNode == null)
-        // {
-        //     Debug.LogError("Start node or destination node is null.");
-        //     return;
-        // }
-
+        
         path = Pathfinder.FindPath(startNode, destinationNode, distanceBetweenNodes);
-
-        // if (path == null)
-        // {
-        //     Debug.LogError("Path is null. No valid path found.");
-        //     return;
-        // }
-
-
+        
+        
         fsm.AddBehaviour<MoveToMineState>(MinerStates.MoveToMine, onTickParameters: MoveToMineTickParameters);
-        // fsm.AddBehaviour<MineGoldState>(MinerStates.MineGold, onTickParameters: MineGoldTickParameters);
+        fsm.AddBehaviour<MineGoldState>(MinerStates.MineGold, onTickParameters: MineGoldTickParameters);
         // fsm.AddBehaviour<EatFoodState>(MinerStates.EatFood, onTickParameters: EatFoodTickParameters);
         // fsm.AddBehaviour<DepositGoldState>(MinerStates.DepositGold, onTickParameters: DepositGoldTickParameters);
         // fsm.AddBehaviour<WaitFoodState>(MinerStates.WaitFood, onTickParameters: WaitForFoodTickParameters);
         // fsm.AddBehaviour<ReturnHomeState>(MinerStates.ReturnHome, onTickParameters: ReturnToUrbanCenterTickParameters);
         // fsm.AddBehaviour<AlarmState>(MinerStates.Alarm, onTickParameters: RespondToAlarmTickParameters);
         //
-        // fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
-        // fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFoodNeed, MinerStates.EatFood);
+         
+
+        fsm.SetTransition(MinerStates.MoveToMine, MinerFlags.OnMineFind, MinerStates.MineGold);
+        //fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
+        //fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFoodNeed, MinerStates.EatFood);
+        //fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnMineEmpty, MinerStates.MoveToMine);
         // fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
         // fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnNoFood, MinerStates.WaitFood);
         // fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
-        // fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnMineEmpty, MinerStates.MoveToMine);
         // fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnAlarmTrigger, MinerStates.ReturnHome);
         // fsm.SetTransition(MinerStates.ReturnHome, MinerFlags.OnAlarmTrigger, MinerStates.MoveToMine);
         
 
         graphView.pathNodes = path;
-
-        //StartCoroutine(Move(path));
-    }
-
-    public IEnumerator Move(List<Node<Vector2Int>> path)
-    {
-        foreach (Node<Vector2Int> node in path)
-        {
-            transform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
-            yield return new WaitForSeconds(travelTime);
-        }
-
-        Debug.Log("Destination reached! x: " + destinationNode.GetCoordinate().x + " y: " +
-                  destinationNode.GetCoordinate().y);
+        
     }
 
     public Node<Vector2Int> GetCurrentNode()
@@ -203,11 +181,6 @@ public class Miner : MonoBehaviour
     public void SetCurrentNode(Node<Vector2Int> node)
     {
         currentNode = node;
-    }
-
-    public AStarPathfinder<Node<Vector2Int>> GetPathfinder()
-    {
-        return Pathfinder;
     }
 
     public void SetPathfinder(AStarPathfinder<Node<Vector2Int>> pathfinder)

@@ -2574,6 +2574,7 @@ MonoBehaviour:
   maxGold: 15
   goldCollected: 0
   goldBetweenFood: 3
+  goldExtractionSpeed: 2
 --- !u!1 &1148216369
 GameObject:
   m_ObjectHideFlags: 0
