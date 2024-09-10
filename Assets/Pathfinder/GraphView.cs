@@ -12,6 +12,11 @@ public class GraphView : MonoBehaviour
     public Vector2Int size;
     public bool isActive = false;
 
+    public Sprite pathNodeSprite;
+    public Sprite goldMineSprite;
+    public Sprite blockedNodeSprite;
+    public Sprite defaultNodeSprite;
+
     private void OnDrawGizmos()
     {
         if (isActive)
@@ -20,23 +25,37 @@ public class GraphView : MonoBehaviour
                 return;
             foreach (Node<Vector2Int> node in Graph.nodes)
             {
-                if (node.EqualsTo(startNode))
-                    Gizmos.color = Color.gray;
-                else if (node.EqualsTo(destinationNode))
-                    Gizmos.color = Color.cyan;
-                else if (pathNodes.Contains(node))
-                    Gizmos.color = Color.magenta;
-                else if (goldMines.Contains(node))
+                GameObject nodeObject = new GameObject("Node");
+                nodeObject.transform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
+                SpriteRenderer renderer = nodeObject.AddComponent<SpriteRenderer>();
+                renderer.sprite = defaultNodeSprite;
+
+                if (node.EqualsTo(startNode) && !goldMines.Contains(node))
                 {
-                    Gizmos.color = Color.white;
+                    
+                }
+                else if (node.EqualsTo(destinationNode) && !goldMines.Contains(node))
+                {
+                   
+                }
+                
+                if (pathNodes.Contains(node))
+                {
+                    renderer.sprite = pathNodeSprite;
+                }
+                
+                if (goldMines.Contains(node))
+                {
+                    renderer.sprite = goldMineSprite;
+
                     Debug.Log($"Gold mine node at: {node.GetCoordinate()}");
                 }
                 else if (node.IsBlocked())
-                    Gizmos.color = Color.red;
-                else
-                    Gizmos.color = Color.green;
+                {
+                    renderer.sprite = blockedNodeSprite;
+                }
 
-                Gizmos.DrawWireSphere(new Vector3(node.GetCoordinate().x, node.GetCoordinate().y), 0.1f);
+                nodeObject.transform.localScale = new Vector3(6.3f, 6.3f, 6.3f);
             }
         }
     }
