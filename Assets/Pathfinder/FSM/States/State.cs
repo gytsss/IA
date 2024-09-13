@@ -61,7 +61,7 @@ public sealed class IdleState : State
 
         bool start = Convert.ToBoolean(parameters[0]);
 
-        behaviours.AddMultithreadbleBehaviours(0, () => { Debug.Log("Idle..."); });
+        //behaviours.AddMultithreadbleBehaviours(0, () => { Debug.Log("Idle..."); });
 
 
         behaviours.SetTransitionBehavior(() =>
@@ -102,16 +102,23 @@ public sealed class MoveToMineState : State
 
         Miner miner = parameters[0] as Miner;
         minerTransform = parameters[1] as Transform;
-        Node<Vector2Int> mine = parameters[2] as Node<Vector2Int>;
+        GoldMineNode<Vector2Int> mine = parameters[2] as GoldMineNode<Vector2Int>;
         Node<Vector2Int> startNode = parameters[3] as Node<Vector2Int>;
         travelTime = Convert.ToSingle(parameters[4]);
         float distanceBetweenNodes = Convert.ToSingle(parameters[5]);
         path = parameters[6] as List<Node<Vector2Int>>;
 
+        
+        
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
             if (miner == null || mine == null || startNode == null)
                 Debug.Log("Null parameters in MoveToMineState");
+            
+            miner.SetDestinationNode(miner.GetClosestGoldMineNode(miner.GetStartNode()));
+            Debug.Log("Miner.GetClosestGoldMineNode: " + miner.GetClosestGoldMineNode(miner.GetStartNode()).GetCoordinate());
+            Debug.Log("Miner.GetStartNode: " + miner.GetStartNode().GetCoordinate());
+            Debug.Log("Miner.GetDestinationNode: " + miner.GetDestinationNode().GetCoordinate());
         });
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
@@ -123,6 +130,9 @@ public sealed class MoveToMineState : State
 
         behaviours.AddMainThreadBehaviour(0, () =>
         {
+            path = miner.GetAStarPathfinder().FindPath(miner.GetStartNode(), miner.GetDestinationNode(), distanceBetweenNodes);
+
+            
             if (path != null && path.Count > 0)
             {
                 if (!isMoving)
@@ -160,7 +170,8 @@ public sealed class MoveToMineState : State
             if (miner.IsAtMine(mine))
             {
                 miner.SetCurrentMine(mine);
-                Debug.Log("Start mining!");
+                miner.SetStartNode(mine);
+                Debug.Log("Start mining! x: " + mine.GetCoordinate().x + " y: " + mine.GetCoordinate().y);
                 OnFlag?.Invoke(MinerFlags.OnMineFind);
             }
         });
@@ -214,6 +225,7 @@ public sealed class MineGoldState : State
                     timeSinceLastExtraction = 0f;
                     Debug.Log("Gold mined: " + goldCount);
                     miner.goldCollected += 1;
+                   
                 }
             }
         });
@@ -379,9 +391,10 @@ public sealed class DepositGoldState : State
 
         behaviours.AddMainThreadBehaviour(0, () =>
         {
+
             if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
             {
-                pathToUrbanCenter = miner.GetAStarPathfinder().FindPath(currentNode, urbanCenter, distanceBetweenNodes);
+                pathToUrbanCenter = miner.GetAStarPathfinder().FindPath(miner.GetCurrentNode(), urbanCenter, distanceBetweenNodes);
                 Debug.Log("Path to urban center calculated");
             }
 
@@ -422,6 +435,7 @@ public sealed class DepositGoldState : State
             {
                 if (urbanCenter != null)
                 {
+                    miner.SetStartNode(urbanCenter);
                     urbanCenter.AddGold(miner.goldCollected);
                     Debug.Log("Gold deposited! Amount: " + urbanCenter.GetGold());
                     miner.goldCollected = 0;

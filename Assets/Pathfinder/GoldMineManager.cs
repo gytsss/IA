@@ -35,11 +35,12 @@ public class GoldMineManager : MonoBehaviour
         foreach (GoldMineNode<Vector2Int> mine in goldMines)
         {
             float distance = Vector2Int.Distance(mine.GetCoordinate(), startNode.GetCoordinate());
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                closestMine = mine;
-            }
+                if (distance < closestDistance && mine.HasGold())
+                {
+                    closestDistance = distance;
+                    closestMine = mine;
+                }
+            
         }
 
         return closestMine;

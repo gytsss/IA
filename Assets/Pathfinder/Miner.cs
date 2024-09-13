@@ -77,7 +77,7 @@ public class Miner : MonoBehaviour
 
     private object[] MoveToMineTickParameters()
     {
-        return new object[] { this, this.transform, destinationNode, startNode, travelTime, distanceBetweenNodes, path };
+        return new object[] { this as Miner, this.transform, destinationNode, startNode, travelTime, distanceBetweenNodes, path };
     }
 
     private object[] MineGoldTickParameters()
@@ -165,7 +165,7 @@ public class Miner : MonoBehaviour
         fsm.SetTransition(MinerStates.MoveToMine, MinerFlags.OnMineFind, MinerStates.MineGold);
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFoodNeed, MinerStates.EatFood);
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
-        //fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnMineEmpty, MinerStates.MoveToMine);
+        fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnMineEmpty, MinerStates.MoveToMine);
         fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
         fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnGoldDeposit, MinerStates.MoveToMine);
         // fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnNoFood, MinerStates.WaitFood);
@@ -187,6 +187,24 @@ public class Miner : MonoBehaviour
     {
         currentNode = node;
     }
+    
+    public void SetStartNode(Node<Vector2Int> node)
+    {
+        startNode = node;
+    }
+    public Node<Vector2Int> GetStartNode()
+    {
+        return startNode;
+    }
+    
+    public void SetDestinationNode(Node<Vector2Int> node)
+    {
+        destinationNode = node;
+    }
+    public Node<Vector2Int> GetDestinationNode()
+    {
+        return destinationNode;
+    }
 
     public void SetPathfinder(AStarPathfinder<Node<Vector2Int>> pathfinder)
     {
@@ -196,6 +214,11 @@ public class Miner : MonoBehaviour
     public float GetDistanceBetweenNodes()
     {
         return distanceBetweenNodes;
+    }
+
+    public GoldMineNode<Vector2Int> GetClosestGoldMineNode(Node<Vector2Int> startNode)
+    {
+        return goldMineManager.FindClosestGoldMine(startNode);
     }
 
     public void SetPath(List<Node<Vector2Int>> path)
