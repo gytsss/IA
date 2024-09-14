@@ -57,7 +57,7 @@ public class GraphView : MonoBehaviour
                     renderer.sprite = urbanCenterNodeSprite;
                 }
 
-                nodeObject.transform.localScale = new Vector3(6.3f, 6.3f, 6.3f);
+               // nodeObject.transform.localScale = new Vector3(6.3f, 6.3f, 6.3f);
             }
         }
     }

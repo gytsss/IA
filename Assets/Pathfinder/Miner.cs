@@ -184,6 +184,11 @@ public class Miner : MonoBehaviour
         return currentNode;
     }
 
+    public UrbanCenterNode<Vector2Int> GetUrbanCenterNode()
+    {
+        return urbanCenter;
+    }
+
     public void SetCurrentNode(Node<Vector2Int> node)
     {
         currentNode = node;
@@ -275,5 +280,15 @@ public class Miner : MonoBehaviour
     public void ResetEnergy()
     {
         energy = maxEnergy;
+    }
+
+    public Vector2 GetMapSize()
+    {
+        return new Vector2(float.Parse(widthInputField.text), float.Parse(heightInputField.text));
+    }
+    
+    public int GetMineCount()
+    {
+        return int.Parse(goldMinesInputField.text);
     }
 }

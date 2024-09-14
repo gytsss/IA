@@ -522,6 +522,110 @@ public sealed class AlarmState : State
     }
 }
 
+public sealed class CaravanMoveToMineState : State
+{
+    private float timeSinceLastMove;
+    private int currentNodeIndex;
+    private List<Node<Vector2Int>> path;
+    private Transform minerTransform;
+    private float travelTime;
+    private bool isMoving;
+
+    public override BehavioursActions GetTickBehaviour(params object[] parameters)
+    {
+        BehavioursActions behaviours = new BehavioursActions();
+
+        Caravan miner = parameters[0] as Caravan;
+        minerTransform = parameters[1] as Transform;
+        GoldMineNode<Vector2Int> mine = parameters[2] as GoldMineNode<Vector2Int>;
+        Node<Vector2Int> startNode = parameters[3] as Node<Vector2Int>;
+        travelTime = Convert.ToSingle(parameters[4]);
+        float distanceBetweenNodes = Convert.ToSingle(parameters[5]);
+        path = parameters[6] as List<Node<Vector2Int>>;
+
+        
+        
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            if (miner == null || mine == null || startNode == null)
+                Debug.Log("Null parameters in MoveToMineState");
+            
+            miner.SetDestinationNode(miner.GetClosestGoldMineNode(miner.GetStartNode()));
+            Debug.Log("Miner.GetClosestGoldMineNode: " + miner.GetClosestGoldMineNode(miner.GetStartNode()).GetCoordinate());
+            Debug.Log("Miner.GetStartNode: " + miner.GetStartNode().GetCoordinate());
+            Debug.Log("Miner.GetDestinationNode: " + miner.GetDestinationNode().GetCoordinate());
+        });
+
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            if (path == null)
+                Debug.Log("Path is null. No valid path found.");
+        });
+
+
+        behaviours.AddMainThreadBehaviour(0, () =>
+        {
+            path = miner.GetAStarPathfinder().FindPath(miner.GetStartNode(), miner.GetDestinationNode(), distanceBetweenNodes);
+
+            
+            if (path != null && path.Count > 0)
+            {
+                if (!isMoving)
+                {
+                    timeSinceLastMove = 0f;
+                    currentNodeIndex = 0;
+                    isMoving = true;
+                }
+
+                timeSinceLastMove += Time.deltaTime;
+
+                if (timeSinceLastMove >= travelTime)
+                {
+                    if (currentNodeIndex < path.Count)
+                    {
+                        Node<Vector2Int> node = path[currentNodeIndex];
+                        minerTransform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
+                        miner.SetCurrentNode(node);
+                        currentNodeIndex++;
+                        timeSinceLastMove = 0f;
+                    }
+                    else
+                    {
+                        isMoving = false;
+                        Debug.Log("Destination reached! x: " + mine.GetCoordinate().x + " y: " +
+                                  mine.GetCoordinate().y);
+                        miner.SetCurrentMine(mine);
+                    }
+                }
+            }
+        });
+
+        behaviours.SetTransitionBehavior(() =>
+        {
+            if (miner.IsAtMine(mine))
+            {
+                miner.SetCurrentMine(mine);
+                miner.SetStartNode(mine);
+                Debug.Log("Start mining! x: " + mine.GetCoordinate().x + " y: " + mine.GetCoordinate().y);
+                OnFlag?.Invoke(MinerFlags.OnMineFind);
+            }
+        });
+
+        return behaviours;
+    }
+
+
+    public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
+    {
+        return default;
+    }
+
+    public override BehavioursActions GetOnExitBehaviour(params object[] parameters)
+    {
+        return default;
+    }
+}
+
 // public sealed class ChaseState : State
 // {
 //     public override BehavioursActions GetTickBehaviour(params object[] parameters)
