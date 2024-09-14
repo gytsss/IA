@@ -2346,10 +2346,10 @@ MonoBehaviour:
   widthInputField: {fileID: 1444149904}
   goldMinesInputField: {fileID: 1148216371}
   distanceBetweenNodesInputField: {fileID: 541396603}
-  travelTime: 0.7
-  maxGold: 3
+  travelTime: 0.5
+  maxGold: 4
   goldCollected: 0
-  goldExtractionSpeed: 2
+  goldExtractionSpeed: 1.5
   energy: 3
   maxEnergy: 3
 --- !u!212 &1022336800

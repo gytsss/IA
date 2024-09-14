@@ -331,17 +331,24 @@ public sealed class WaitFoodState : State
         BehavioursActions behaviours = new BehavioursActions();
 
         Miner miner = parameters[0] as Miner;
-        // GoldMine mine = parameters[1] as GoldMine;
-
-
-        behaviours.AddMainThreadBehaviour(0, () => { Debug.Log("Esperando a que la caravana traiga comida."); });
+        
+        
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            Debug.Log("Waiting for food...");
+        });
+        
+        behaviours.AddMainThreadBehaviour(0, () =>
+        {
+           
+        });
 
         behaviours.SetTransitionBehavior(() =>
         {
-            // if (mine.foodAvailable > 0)
-            // {
-            //     OnFlag?.Invoke(MinerFlags.OnFoodAvailable);
-            // }
+             if (miner.GetCurrentMine().HasFood())
+             {
+                 OnFlag?.Invoke(MinerFlags.OnFoodAvailable);
+             }
         });
 
         return behaviours;
