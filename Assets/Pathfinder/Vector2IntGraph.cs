@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 public class Vector2IntGraph<NodeType> 
-    where NodeType : INode<UnityEngine.Vector2Int>, INode, new()
+    where NodeType : INode<Vec2Int>, INode, new()
 { 
     public List<NodeType> nodes = new List<NodeType>();
 
@@ -12,7 +12,7 @@ public class Vector2IntGraph<NodeType>
             for (int j = 0; j < y; j++)
             {
                 NodeType node = new NodeType();
-                node.SetCoordinate(new UnityEngine.Vector2Int((int)(i * distance), (int)(j * distance)));
+                node.SetCoordinate(new Vec2Int((int)(i * distance), (int)(j * distance)));
                 nodes.Add(node);
             }
         }

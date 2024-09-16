@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 
-public abstract class Pathfinder<NodeType> where NodeType : INode<Vector2Int>, INode, new()
+
+public abstract class Pathfinder<NodeType> where NodeType : INode<Vec2Int>, INode, new()
 {
     protected Vector2IntGraph<NodeType> graph;
     protected List<NodeType> goldMines;

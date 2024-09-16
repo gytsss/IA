@@ -5,54 +5,54 @@
 
     public class BaseAgent : MonoBehaviour
     {
-        private AStarPathfinder<Node<Vector2Int>> Pathfinder;
-        //private DijkstraPathfinder<Node<Vector2Int>> Pathfinder;
-        //private DepthFirstPathfinder<Node<Vector2Int>> Pathfinder;
-        //private BreadthPathfinder<Node<Vector2Int>> Pathfinder;
+        private AStarPathfinder<Node<Vec2Int>> Pathfinder;
+        //private DijkstraPathfinder<Node<Vec2Int>> Pathfinder;
+        //private DepthFirstPathfinder<Node<Vec2Int>> Pathfinder;
+        //private BreadthPathfinder<Node<Vec2Int>> Pathfinder;
 
-        private GoldMineNode<Vector2Int> currentMine;
-        private UrbanCenterNode<Vector2Int> urbanCenter;
+        private GoldMineNode<Vec2Int> currentMine;
+        private UrbanCenterNode<Vec2Int> urbanCenter;
 
         private FSM<MinerStates, MinerFlags> fsm;
-        private Node<Vector2Int> startNode;
-        private Node<Vector2Int> destinationNode;
+        private Node<Vec2Int> startNode;
+        private Node<Vec2Int> destinationNode;
 
-        private Node<Vector2Int> currentNode;
-        private List<Node<Vector2Int>> path;
+        private Node<Vec2Int> currentNode;
+        private List<Node<Vec2Int>> path;
         private float distanceBetweenNodes = 0;
 
 
-        public Node<Vector2Int> GetCurrentNode()
+        public Node<Vec2Int> GetCurrentNode()
         {
             return currentNode;
         }
 
-        public void SetCurrentNode(Node<Vector2Int> node)
+        public void SetCurrentNode(Node<Vec2Int> node)
         {
             currentNode = node;
         }
 
-        public void SetStartNode(Node<Vector2Int> node)
+        public void SetStartNode(Node<Vec2Int> node)
         {
             startNode = node;
         }
 
-        public Node<Vector2Int> GetStartNode()
+        public Node<Vec2Int> GetStartNode()
         {
             return startNode;
         }
 
-        public void SetDestinationNode(Node<Vector2Int> node)
+        public void SetDestinationNode(Node<Vec2Int> node)
         {
             destinationNode = node;
         }
 
-        public Node<Vector2Int> GetDestinationNode()
+        public Node<Vec2Int> GetDestinationNode()
         {
             return destinationNode;
         }
 
-        public void SetPathfinder(AStarPathfinder<Node<Vector2Int>> pathfinder)
+        public void SetPathfinder(AStarPathfinder<Node<Vec2Int>> pathfinder)
         {
             Pathfinder = pathfinder;
         }
@@ -62,22 +62,22 @@
             return distanceBetweenNodes;
         }
 
-        // public GoldMineNode<Vector2Int> GetClosestGoldMineNode(Node<Vector2Int> startNode)
+        // public GoldMineNode<Vec2Int> GetClosestGoldMineNode(Node<Vec2Int> startNode)
         // {
         //     return goldMineManager.FindClosestGoldMine(startNode);
         // }
 
-        public void SetPath(List<Node<Vector2Int>> path)
+        public void SetPath(List<Node<Vec2Int>> path)
         {
             this.path = path;
         }
 
-        public AStarPathfinder<Node<Vector2Int>> GetAStarPathfinder()
+        public AStarPathfinder<Node<Vec2Int>> GetAStarPathfinder()
         {
             return Pathfinder;
         }
 
-        public bool IsAtMine(Node<Vector2Int> mine)
+        public bool IsAtMine(Node<Vec2Int> mine)
         {
             return transform.position.x == mine.GetCoordinate().x && transform.position.y == mine.GetCoordinate().y;
         }
@@ -88,12 +88,12 @@
                    transform.position.y == urbanCenter.GetCoordinate().y;
         }
 
-        public void SetCurrentMine(GoldMineNode<Vector2Int> mine)
+        public void SetCurrentMine(GoldMineNode<Vec2Int> mine)
         {
             currentMine = mine;
         }
 
-        public GoldMineNode<Vector2Int> GetCurrentMine()
+        public GoldMineNode<Vec2Int> GetCurrentMine()
         {
             return currentMine;
         }

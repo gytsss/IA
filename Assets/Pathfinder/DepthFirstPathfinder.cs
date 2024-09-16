@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class DepthFirstPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode, INode<Vector2Int>, new()
+public class DepthFirstPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode, INode<Vec2Int>, new()
 {
     
     public DepthFirstPathfinder(Vector2IntGraph<NodeType> graph)
@@ -13,8 +12,8 @@ public class DepthFirstPathfinder<NodeType> : Pathfinder<NodeType> where NodeTyp
     {
         int distance = 0;
 
-        distance += Mathf.Abs(A.GetCoordinate().x - B.GetCoordinate().x);
-        distance += Mathf.Abs(A.GetCoordinate().y - B.GetCoordinate().y);
+        distance += Math.Abs(A.GetCoordinate().x - B.GetCoordinate().x);
+        distance += Math.Abs(A.GetCoordinate().y - B.GetCoordinate().y);
 
         return distance;
     }

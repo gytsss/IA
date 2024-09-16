@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+
 
 
 struct Transition<NodeType>
@@ -10,7 +10,7 @@ struct Transition<NodeType>
     public float distance;
 }
 
-public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode<Vector2Int>, INode, new()
+public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode<Vec2Int>, INode, new()
 {
     private Dictionary<NodeType, List<Transition<NodeType>>> transitions =
         new Dictionary<NodeType, List<Transition<NodeType>>>();
@@ -54,8 +54,8 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
     {
         int distance = 0;
 
-        distance += Mathf.Abs(A.GetCoordinate().x - B.GetCoordinate().x);
-        distance += Mathf.Abs(A.GetCoordinate().y - B.GetCoordinate().y);
+        distance += Math.Abs(A.GetCoordinate().x - B.GetCoordinate().x);
+        distance += Math.Abs(A.GetCoordinate().y - B.GetCoordinate().y);
 
         return distance;
     }

@@ -91,7 +91,7 @@ public sealed class MoveToMineState : State
 {
     private float timeSinceLastMove;
     private int currentNodeIndex;
-    private List<Node<Vector2Int>> path;
+    private List<Node<Vec2Int>> path;
     private Transform minerTransform;
     private float travelTime;
     private bool isMoving;
@@ -102,11 +102,11 @@ public sealed class MoveToMineState : State
 
         Miner miner = parameters[0] as Miner;
         minerTransform = parameters[1] as Transform;
-        GoldMineNode<Vector2Int> mine = parameters[2] as GoldMineNode<Vector2Int>;
-        Node<Vector2Int> startNode = parameters[3] as Node<Vector2Int>;
+        GoldMineNode<Vec2Int> mine = parameters[2] as GoldMineNode<Vec2Int>;
+        Node<Vec2Int> startNode = parameters[3] as Node<Vec2Int>;
         travelTime = Convert.ToSingle(parameters[4]);
         float distanceBetweenNodes = Convert.ToSingle(parameters[5]);
-        path = parameters[6] as List<Node<Vector2Int>>;
+        path = parameters[6] as List<Node<Vec2Int>>;
 
         
         
@@ -148,7 +148,7 @@ public sealed class MoveToMineState : State
                 {
                     if (currentNodeIndex < path.Count)
                     {
-                        Node<Vector2Int> node = path[currentNodeIndex];
+                        Node<Vec2Int> node = path[currentNodeIndex];
                         minerTransform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
                         miner.SetCurrentNode(node);
                         currentNodeIndex++;
@@ -201,7 +201,7 @@ public sealed class MineGoldState : State
         BehavioursActions behaviours = new BehavioursActions();
 
         Miner miner = parameters[0] as Miner;
-        GoldMineNode<Vector2Int> mine = parameters[1] as GoldMineNode<Vector2Int>;
+        GoldMineNode<Vec2Int> mine = parameters[1] as GoldMineNode<Vec2Int>;
         float goldExtractionSpeed = Convert.ToSingle(parameters[2]);
         int maxGold = Convert.ToInt32(parameters[3]);
 
@@ -272,7 +272,7 @@ public sealed class EatFoodState : State
         BehavioursActions behaviours = new BehavioursActions();
 
         Miner miner = parameters[0] as Miner;
-        GoldMineNode<Vector2Int> mine = parameters[1] as GoldMineNode<Vector2Int>;
+        GoldMineNode<Vec2Int> mine = parameters[1] as GoldMineNode<Vec2Int>;
 
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
@@ -372,7 +372,7 @@ public sealed class WaitFoodState : State
 
 public sealed class DepositGoldState : State
 {
-    private List<Node<Vector2Int>> pathToUrbanCenter;
+    private List<Node<Vec2Int>> pathToUrbanCenter;
     private bool alreadyDeposited = false;
     private float timeSinceLastMove;
     private int currentNodeIndex;
@@ -383,8 +383,8 @@ public sealed class DepositGoldState : State
         BehavioursActions behaviours = new BehavioursActions();
 
         Miner miner = parameters[0] as Miner;
-        Node<Vector2Int> currentNode = parameters[1] as Node<Vector2Int>;
-        UrbanCenterNode<Vector2Int> urbanCenter = parameters[2] as UrbanCenterNode<Vector2Int>;
+        Node<Vec2Int> currentNode = parameters[1] as Node<Vec2Int>;
+        UrbanCenterNode<Vec2Int> urbanCenter = parameters[2] as UrbanCenterNode<Vec2Int>;
         float travelTime = Convert.ToSingle(parameters[3]);
         float distanceBetweenNodes = Convert.ToSingle(parameters[4]);
 
@@ -425,7 +425,7 @@ public sealed class DepositGoldState : State
                 {
                     if (currentNodeIndex < pathToUrbanCenter.Count)
                     {
-                        Node<Vector2Int> nextNode = pathToUrbanCenter[currentNodeIndex];
+                        Node<Vec2Int> nextNode = pathToUrbanCenter[currentNodeIndex];
                         miner.transform.position = new Vector3(nextNode.GetCoordinate().x, nextNode.GetCoordinate().y);
                         miner.SetCurrentNode(nextNode);
                         currentNodeIndex++;
@@ -531,7 +531,7 @@ public sealed class CaravanMoveToMineState : State
 {
     private float timeSinceLastMove;
     private int currentNodeIndex;
-    private List<Node<Vector2Int>> path;
+    private List<Node<Vec2Int>> path;
     private Transform caravanTransform;
     private float travelTime;
     private bool isMoving;
@@ -542,11 +542,11 @@ public sealed class CaravanMoveToMineState : State
 
         Caravan caravan = parameters[0] as Caravan;
         caravanTransform = parameters[1] as Transform;
-        GoldMineNode<Vector2Int> mine = parameters[2] as GoldMineNode<Vector2Int>;
-        Node<Vector2Int> startNode = parameters[3] as Node<Vector2Int>;
+        GoldMineNode<Vec2Int> mine = parameters[2] as GoldMineNode<Vec2Int>;
+        Node<Vec2Int> startNode = parameters[3] as Node<Vec2Int>;
         travelTime = Convert.ToSingle(parameters[4]);
         float distanceBetweenNodes = Convert.ToSingle(parameters[5]);
-        path = parameters[6] as List<Node<Vector2Int>>;
+        path = parameters[6] as List<Node<Vec2Int>>;
 
         
         
@@ -588,7 +588,7 @@ public sealed class CaravanMoveToMineState : State
                 {
                     if (currentNodeIndex < path.Count)
                     {
-                        Node<Vector2Int> node = path[currentNodeIndex];
+                        Node<Vec2Int> node = path[currentNodeIndex];
                         caravanTransform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
                         caravan.SetCurrentNode(node);
                         currentNodeIndex++;

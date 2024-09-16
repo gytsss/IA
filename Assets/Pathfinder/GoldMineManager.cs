@@ -6,14 +6,14 @@ using UnityEngine;
 public class GoldMineManager : MonoBehaviour
 {
     public GraphView graphView;
-    public List<GoldMineNode<Vector2Int>> goldMines = new List<GoldMineNode<Vector2Int>>();
+    public List<GoldMineNode<Vec2Int>> goldMines = new List<GoldMineNode<Vec2Int>>();
 
     public void SetGoldMines(int count, float distanceBetweenNodes)
     {
         for (int i = 0; i < count; i++)
         {
-            GoldMineNode<Vector2Int> goldMine = new GoldMineNode<Vector2Int>();
-            Node<Vector2Int> randomNode = graphView.Graph.nodes[Random.Range(0, graphView.Graph.nodes.Count)];
+            GoldMineNode<Vec2Int> goldMine = new GoldMineNode<Vec2Int>();
+            Node<Vec2Int> randomNode = graphView.Graph.nodes[Random.Range(0, graphView.Graph.nodes.Count)];
             
             goldMine.SetCoordinate(randomNode.GetCoordinate());
             //goldMine.SetGoldAmount(Random.Range(10, 15));
@@ -28,17 +28,17 @@ public class GoldMineManager : MonoBehaviour
             graphView.Graph.nodes.Add(goldMine);
         }
 
-        graphView.goldMines = goldMines.Cast<Node<Vector2Int>>().ToList(); 
+        graphView.goldMines = goldMines.Cast<Node<Vec2Int>>().ToList(); 
     }
     
-    public GoldMineNode<Vector2Int> FindClosestGoldMine(Node<Vector2Int> startNode)
+    public GoldMineNode<Vec2Int> FindClosestGoldMine(Node<Vec2Int> startNode)
     {
-        GoldMineNode<Vector2Int> closestMine = null;
+        GoldMineNode<Vec2Int> closestMine = null;
         float closestDistance = float.MaxValue;
 
-        foreach (GoldMineNode<Vector2Int> mine in goldMines)
+        foreach (GoldMineNode<Vec2Int> mine in goldMines)
         {
-            float distance = Vector2Int.Distance(mine.GetCoordinate(), startNode.GetCoordinate());
+            float distance = Vec2Int.Distance(mine.GetCoordinate(), startNode.GetCoordinate());
                 if (distance < closestDistance && mine.HasGold())
                 {
                     closestDistance = distance;

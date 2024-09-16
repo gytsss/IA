@@ -3,15 +3,14 @@ using UnityEngine;
 
 public class GraphView : MonoBehaviour
 {
-    public Vector2IntGraph<Node<Vector2Int>> Graph;
-    public Node<Vector2Int> startNode;
-    public Node<Vector2Int> destinationNode;
-    public UrbanCenterNode<Vector2Int> urbanCenterNode;
-    public List<Node<Vector2Int>> pathNodes = new List<Node<Vector2Int>>();
-    public List<Node<Vector2Int>> goldMines = new List<Node<Vector2Int>>();
+    public Vector2IntGraph<Node<Vec2Int>> Graph;
+    public Node<Vec2Int> startNode;
+    public Node<Vec2Int> destinationNode;
+    public UrbanCenterNode<Vec2Int> urbanCenterNode;
+    public List<Node<Vec2Int>> pathNodes = new List<Node<Vec2Int>>();
+    public List<Node<Vec2Int>> goldMines = new List<Node<Vec2Int>>();
     
-
-    public Vector2Int size;
+    public Vec2Int size = new Vec2Int(0,0);
     public bool isActive = false;
     
     public Sprite goldMineSprite;
@@ -25,7 +24,7 @@ public class GraphView : MonoBehaviour
         {
             if (!Application.isPlaying)
                 return;
-            foreach (Node<Vector2Int> node in Graph.nodes)
+            foreach (Node<Vec2Int> node in Graph.nodes)
             {
                 GameObject nodeObject = new GameObject("Node");
                 nodeObject.transform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y, 1f);
@@ -64,7 +63,7 @@ public class GraphView : MonoBehaviour
 
     public void CreateGraph(int x, int y, float distance)
     {
-        Graph = new Vector2IntGraph<Node<Vector2Int>>(x, y, distance);
+        Graph = new Vector2IntGraph<Node<Vec2Int>>(x, y, distance);
         size.x = x;
         size.y = y;
 
