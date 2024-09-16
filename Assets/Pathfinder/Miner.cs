@@ -292,3 +292,8 @@ public class Miner : MonoBehaviour
         return int.Parse(goldMinesInputField.text);
     }
 }
+
+public static class MinerEvents
+{
+    public static Action<Miner> OnNeedFood;
+}

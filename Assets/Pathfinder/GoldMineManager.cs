@@ -18,6 +18,10 @@ public class GoldMineManager : MonoBehaviour
             goldMine.SetCoordinate(randomNode.GetCoordinate());
             //goldMine.SetGoldAmount(Random.Range(10, 15));
             //goldMine.SetFoodAmount(Random.Range(2, 5));
+            goldMine.SetMaxFoodAmount(100);
+            goldMine.SetMaxGoldAmount(100);
+            goldMine.SetFoodAmount(5);
+            goldMine.SetGoldAmount(5);
             goldMines.Add(goldMine);
             
             graphView.Graph.nodes.Remove(randomNode);

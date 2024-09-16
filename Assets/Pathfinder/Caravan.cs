@@ -52,6 +52,25 @@ public class Caravan : MonoBehaviour
 
 
     public Miner miner;
+
+    private void OnEnable()
+    {
+        MinerEvents.OnNeedFood += OnFoodNeed;
+    }
+    
+    private void OnDisable()
+    {
+        MinerEvents.OnNeedFood -= OnFoodNeed;
+    }
+
+    private void OnFoodNeed(Miner obj)
+    {
+        Debug.Log("Caravan moving to mine");
+        fsm.AddBehaviour<CaravanMoveToMineState>(CaravanStates.CaravanMoveToMine, onTickParameters: CaravanMoveToMineTickParameters);
+
+        fsm.ForceState(CaravanStates.CaravanMoveToMine);
+    }
+
     private void Start()
     {
         fsm = new FSM<CaravanStates, CaravanFlags>();
@@ -112,10 +131,10 @@ public class Caravan : MonoBehaviour
         destinationNode = miner.GetCurrentMine();
 
         
-        transform.position = new Vector3(startNode.GetCoordinate().x, startNode.GetCoordinate().y);
+        transform.position = new Vector3(urbanCenter.GetCoordinate().x, urbanCenter.GetCoordinate().y);
         
 
-        fsm.AddBehaviour<CaravanMoveToMineState>(CaravanStates.CaravanMoveToMine, onTickParameters: CaravanMoveToMineTickParameters);
+       //fsm.AddBehaviour<CaravanMoveToMineState>(CaravanStates.CaravanMoveToMine, onTickParameters: CaravanMoveToMineTickParameters);
         //fsm.AddBehaviour<MineGoldState>(CaravanStates.DepositGold, onTickParameters: MineGoldTickParameters);
         //fsm.AddBehaviour<EatFoodState>(CaravanStates.EatFood, onTickParameters: EatFoodTickParameters);
         //fsm.AddBehaviour<DepositGoldState>(CaravanStates.DepositGold, onTickParameters: DepositGoldTickParameters);

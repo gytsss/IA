@@ -46,8 +46,8 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
 {
     private int goldAmount;
     private int foodAmount;
-    private int maxFoodAmount = 0;
-    private int maxGoldAmount = 6;
+    private int maxFoodAmount;
+    private int maxGoldAmount;
 
     public GoldMineNode(Coordinate coordinate, int initialGoldAmount, int initialFoodAmount)
     {
@@ -86,6 +86,16 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
     public int GetMaxFoodAmount()
     {
         return maxFoodAmount;
+    }
+
+    public void SetMaxFoodAmount(int maxFoodAmount)
+    {
+        this.maxFoodAmount = maxFoodAmount;
+    }
+    
+    public void SetMaxGoldAmount(int maxGoldAmount)
+    {
+        this.maxGoldAmount = maxGoldAmount;
     }
 
     public bool HasFood()

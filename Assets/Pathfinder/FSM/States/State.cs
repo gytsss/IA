@@ -349,6 +349,11 @@ public sealed class WaitFoodState : State
              {
                  OnFlag?.Invoke(MinerFlags.OnFoodAvailable);
              }
+             else
+             {
+                 MinerEvents.OnNeedFood?.Invoke(miner);
+             }
+             
         });
 
         return behaviours;
@@ -527,7 +532,7 @@ public sealed class CaravanMoveToMineState : State
     private float timeSinceLastMove;
     private int currentNodeIndex;
     private List<Node<Vector2Int>> path;
-    private Transform minerTransform;
+    private Transform caravanTransform;
     private float travelTime;
     private bool isMoving;
 
@@ -535,8 +540,8 @@ public sealed class CaravanMoveToMineState : State
     {
         BehavioursActions behaviours = new BehavioursActions();
 
-        Caravan miner = parameters[0] as Caravan;
-        minerTransform = parameters[1] as Transform;
+        Caravan caravan = parameters[0] as Caravan;
+        caravanTransform = parameters[1] as Transform;
         GoldMineNode<Vector2Int> mine = parameters[2] as GoldMineNode<Vector2Int>;
         Node<Vector2Int> startNode = parameters[3] as Node<Vector2Int>;
         travelTime = Convert.ToSingle(parameters[4]);
@@ -547,13 +552,13 @@ public sealed class CaravanMoveToMineState : State
         
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
-            if (miner == null || mine == null || startNode == null)
-                Debug.Log("Null parameters in MoveToMineState");
+            if (caravan == null || mine == null || startNode == null)
+                Debug.Log("Null parameters in CaravanMoveToMineState");
             
-            miner.SetDestinationNode(miner.GetClosestGoldMineNode(miner.GetStartNode()));
-            Debug.Log("Miner.GetClosestGoldMineNode: " + miner.GetClosestGoldMineNode(miner.GetStartNode()).GetCoordinate());
-            Debug.Log("Miner.GetStartNode: " + miner.GetStartNode().GetCoordinate());
-            Debug.Log("Miner.GetDestinationNode: " + miner.GetDestinationNode().GetCoordinate());
+            caravan.SetDestinationNode(caravan.GetClosestGoldMineNode(caravan.GetStartNode()));
+            Debug.Log("caravan.GetClosestGoldMineNode: " + caravan.GetClosestGoldMineNode(caravan.GetStartNode()).GetCoordinate());
+            Debug.Log("caravan.GetStartNode: " + caravan.GetStartNode().GetCoordinate());
+            Debug.Log("caravan.GetDestinationNode: " + caravan.GetDestinationNode().GetCoordinate());
         });
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
@@ -565,7 +570,7 @@ public sealed class CaravanMoveToMineState : State
 
         behaviours.AddMainThreadBehaviour(0, () =>
         {
-            path = miner.GetAStarPathfinder().FindPath(miner.GetStartNode(), miner.GetDestinationNode(), distanceBetweenNodes);
+            path = caravan.GetAStarPathfinder().FindPath(caravan.GetStartNode(), caravan.GetDestinationNode(), distanceBetweenNodes);
 
             
             if (path != null && path.Count > 0)
@@ -584,8 +589,8 @@ public sealed class CaravanMoveToMineState : State
                     if (currentNodeIndex < path.Count)
                     {
                         Node<Vector2Int> node = path[currentNodeIndex];
-                        minerTransform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
-                        miner.SetCurrentNode(node);
+                        caravanTransform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
+                        caravan.SetCurrentNode(node);
                         currentNodeIndex++;
                         timeSinceLastMove = 0f;
                     }
@@ -594,7 +599,7 @@ public sealed class CaravanMoveToMineState : State
                         isMoving = false;
                         Debug.Log("Destination reached! x: " + mine.GetCoordinate().x + " y: " +
                                   mine.GetCoordinate().y);
-                        miner.SetCurrentMine(mine);
+                        caravan.SetCurrentMine(mine);
                     }
                 }
             }
@@ -602,10 +607,10 @@ public sealed class CaravanMoveToMineState : State
 
         behaviours.SetTransitionBehavior(() =>
         {
-            if (miner.IsAtMine(mine))
+            if (caravan.IsAtMine(mine))
             {
-                miner.SetCurrentMine(mine);
-                miner.SetStartNode(mine);
+                caravan.SetCurrentMine(mine);
+                caravan.SetStartNode(mine);
                 Debug.Log("Start mining! x: " + mine.GetCoordinate().x + " y: " + mine.GetCoordinate().y);
                 OnFlag?.Invoke(MinerFlags.OnMineFind);
             }
