@@ -7,6 +7,7 @@ namespace Pathfinder
     {
         public GraphView graphView;
         public Miner miner;
+        public Caravan caravan;
         public GoldMineManager goldMineManager;
     
         public TMP_InputField heightInputField, widthInputField, goldMinesInputField, distanceBetweenNodesInputField;
@@ -39,7 +40,7 @@ namespace Pathfinder
             urbanCenterText.text = "Urban Center gold: " + urbanCenter.GetGold();
             
             miner.InitAgent();
-
+            caravan.InitAgent();
             
         }
 
