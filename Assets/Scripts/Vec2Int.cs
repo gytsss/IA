@@ -121,12 +121,5 @@ using Vector2 = System.Numerics.Vector2;
         {
             return $"{x}, {y}";
         }
-        /// <summary>
-        ///   <para>Returns a formatted string for this vector.</para>
-        /// </summary>
-        /// <param name="format">A numeric format string.</param>
-        /// <param name="formatProvider">An object that specifies culture-specific formatting.</param>
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public string ToString(string format, IFormatProvider formatProvider) => this.ToString(format, (IFormatProvider) null);
-        
+       
     }

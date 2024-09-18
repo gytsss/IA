@@ -112,10 +112,16 @@ public sealed class MoveToMineState : State
         
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
-            if (miner == null || mine == null || startNode == null)
-                Debug.Log("Null parameters in MoveToMineState");
-            
             miner.SetDestinationNode(miner.GetClosestGoldMineNode(miner.GetStartNode()));
+            
+            if (miner == null )
+                Debug.Log("Null miner in MoveToMineState");
+            if (mine == null)
+                Debug.Log("Null mine in MoveToMineState");
+            if (startNode == null)
+                Debug.Log("Null startNode in MoveToMineState");
+            
+            
             Debug.Log("Miner.GetClosestGoldMineNode: " + miner.GetClosestGoldMineNode(miner.GetStartNode()).GetCoordinate());
             Debug.Log("Miner.GetStartNode: " + miner.GetStartNode().GetCoordinate());
             Debug.Log("Miner.GetDestinationNode: " + miner.GetDestinationNode().GetCoordinate());
@@ -458,11 +464,17 @@ public sealed class DepositGoldState : State
 
         behaviours.SetTransitionBehavior(() =>
         {
-            if (alreadyDeposited)
+            if (alreadyDeposited && miner.GetClosestGoldMineNode(miner.GetCurrentNode()) != null)
             {
                 alreadyDeposited = false;
                 OnFlag?.Invoke(MinerFlags.OnGoldDeposit);
             }
+
+            if (miner.GetClosestGoldMineNode(miner.GetCurrentNode()) == null)
+            {
+                Debug.Log("No more gold mines to mine");
+            }
+            
         });
 
         return behaviours;
