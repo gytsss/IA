@@ -92,6 +92,8 @@ public sealed class MoveToMineState : State
     private float timeSinceLastMove;
     private int currentNodeIndex;
     private List<Node<Vec2Int>> path;
+    GoldMineNode<Vec2Int> destinationNode;
+    Node<Vec2Int> startNode;
     private Transform minerTransform;
     private float travelTime;
     private bool isMoving;
@@ -102,21 +104,19 @@ public sealed class MoveToMineState : State
 
         Miner miner = parameters[0] as Miner;
         minerTransform = parameters[1] as Transform;
-        GoldMineNode<Vec2Int> mine = parameters[2] as GoldMineNode<Vec2Int>;
-        Node<Vec2Int> startNode = parameters[3] as Node<Vec2Int>;
-        travelTime = Convert.ToSingle(parameters[4]);
-        float distanceBetweenNodes = Convert.ToSingle(parameters[5]);
-        path = parameters[6] as List<Node<Vec2Int>>;
-
-        
+        travelTime = Convert.ToSingle(parameters[2]);
+        float distanceBetweenNodes = Convert.ToSingle(parameters[3]);
+      
         
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
-            miner.SetDestinationNode(miner.GetClosestGoldMineNode(miner.GetStartNode()));
-            
+            startNode = miner.GetStartNode();
+            miner.SetDestinationNode(miner.GetClosestGoldMineNode(startNode));
+            destinationNode = miner.GetDestinationNode() as GoldMineNode<Vec2Int>;
+
             if (miner == null )
                 Debug.Log("Null miner in MoveToMineState");
-            if (mine == null)
+            if (destinationNode == null)
                 Debug.Log("Null mine in MoveToMineState");
             if (startNode == null)
                 Debug.Log("Null startNode in MoveToMineState");
@@ -126,18 +126,14 @@ public sealed class MoveToMineState : State
             Debug.Log("Miner.GetStartNode: " + miner.GetStartNode().GetCoordinate());
             Debug.Log("Miner.GetDestinationNode: " + miner.GetDestinationNode().GetCoordinate());
         });
-
-        behaviours.AddMultithreadbleBehaviours(0, () =>
-        {
-            if (path == null)
-                Debug.Log("Path is null. No valid path found.");
-        });
-
+        
 
         behaviours.AddMainThreadBehaviour(0, () =>
         {
-            path = miner.GetAStarPathfinder().FindPath(miner.GetStartNode(), miner.GetDestinationNode(), distanceBetweenNodes);
+            path = miner.GetAStarPathfinder().FindPath(startNode, destinationNode, distanceBetweenNodes);
 
+            if (path == null)
+                Debug.Log("Path is null. No valid path found.");
             
             if (path != null && path.Count > 0)
             {
@@ -163,9 +159,9 @@ public sealed class MoveToMineState : State
                     else
                     {
                         isMoving = false;
-                        Debug.Log("Destination reached! x: " + mine.GetCoordinate().x + " y: " +
-                                  mine.GetCoordinate().y);
-                        miner.SetCurrentMine(mine);
+                        Debug.Log("Destination reached! x: " + destinationNode.GetCoordinate().x + " y: " +
+                                  destinationNode.GetCoordinate().y);
+                        //miner.SetCurrentMine(destinationNode);
                     }
                 }
             }
@@ -173,11 +169,11 @@ public sealed class MoveToMineState : State
 
         behaviours.SetTransitionBehavior(() =>
         {
-            if (miner.IsAtMine(mine))
+            if (miner.IsAtMine(destinationNode))
             {
-                miner.SetCurrentMine(mine);
-                miner.SetStartNode(mine);
-                Debug.Log("Start mining! x: " + mine.GetCoordinate().x + " y: " + mine.GetCoordinate().y);
+                //miner.SetCurrentMine(destinationNode);
+                miner.SetStartNode(destinationNode);
+                Debug.Log("Start mining! x: " + destinationNode.GetCoordinate().x + " y: " + destinationNode.GetCoordinate().y);
                 OnFlag?.Invoke(MinerFlags.OnMineFind);
             }
         });
@@ -199,39 +195,51 @@ public sealed class MoveToMineState : State
 
 public sealed class MineGoldState : State
 {
+    private GoldMineNode<Vec2Int> mine;
     private float timeSinceLastExtraction = 0f;
     private int goldCount = 0;
+    private bool noMoreMines = false;
 
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
 
         Miner miner = parameters[0] as Miner;
-        GoldMineNode<Vec2Int> mine = parameters[1] as GoldMineNode<Vec2Int>;
-        float goldExtractionSpeed = Convert.ToSingle(parameters[2]);
-        int maxGold = Convert.ToInt32(parameters[3]);
+        float goldExtractionSpeed = Convert.ToSingle(parameters[1]);
+        int maxGold = Convert.ToInt32(parameters[2]);
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
-            if (miner == null || mine == null)
-                Debug.Log("Miner or mine is null in MineGoldState");
+            mine = miner.GetClosestGoldMineNode(miner.GetStartNode());
+            miner.SetStartNode(miner.GetCurrentNode());
+
+            if (mine == null)
+            {
+                Debug.Log("Mine is null in MineGoldState because no mine with gold was found");
+                noMoreMines = true;
+            }
+            if (miner == null)
+                Debug.Log("Miner is null in MineGoldState");
         });
 
         behaviours.AddMainThreadBehaviour(0, () =>
         {
-            timeSinceLastExtraction += Time.deltaTime;
-
-            if (timeSinceLastExtraction >= goldExtractionSpeed)
+            if (mine != null)
             {
-                if (mine.HasGold() && miner.GetEnergy() > 0)
+                timeSinceLastExtraction += Time.deltaTime;
+
+                if (timeSinceLastExtraction >= goldExtractionSpeed)
                 {
-                    goldCount++;
-                    mine.MineGold();
-                    miner.SetEnergy(miner.GetEnergy() - 1);
-                    timeSinceLastExtraction = 0f;
-                    Debug.Log("Gold mined: " + goldCount);
-                    miner.goldCollected += 1;
-                   
+                    if (mine.HasGold() && miner.GetEnergy() > 0)
+                    {
+                        goldCount++;
+                        mine.MineGold();
+                        miner.SetEnergy(miner.GetEnergy() - 1);
+                        timeSinceLastExtraction = 0f;
+                        Debug.Log("Gold mined: " + goldCount);
+                        miner.goldCollected += 1;
+
+                    }
                 }
             }
         });
@@ -239,7 +247,14 @@ public sealed class MineGoldState : State
 
         behaviours.SetTransitionBehavior(() =>
         {
-            if (miner.goldCollected >= maxGold)
+            if (noMoreMines)
+            {
+                Debug.Log("No more mines! Back to urban center!");
+                goldCount = 0;
+                noMoreMines = false;
+                OnFlag?.Invoke(MinerFlags.OnFullInventory);
+            }
+            else if (miner.goldCollected >= maxGold)
             {
                 Debug.Log("Full inventory!");
                 goldCount = 0;
@@ -255,6 +270,7 @@ public sealed class MineGoldState : State
                 Debug.Log("Mine empty!");
                 OnFlag?.Invoke(MinerFlags.OnMineEmpty);
             }
+            
         });
 
         return behaviours;
@@ -273,16 +289,18 @@ public sealed class MineGoldState : State
 
 public sealed class EatFoodState : State
 {
+    private GoldMineNode<Vec2Int> mine;
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
 
         Miner miner = parameters[0] as Miner;
-        GoldMineNode<Vec2Int> mine = parameters[1] as GoldMineNode<Vec2Int>;
 
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
+            mine = miner.GetClosestGoldMineNode(miner.GetStartNode());
+            
             if (miner == null || mine == null)
                 Debug.Log("Miner or mine is null in EatFoodState");
         });
@@ -379,10 +397,12 @@ public sealed class WaitFoodState : State
 public sealed class DepositGoldState : State
 {
     private List<Node<Vec2Int>> pathToUrbanCenter;
+    private GoldMineNode<Vec2Int> mine;
     private bool alreadyDeposited = false;
     private float timeSinceLastMove;
     private int currentNodeIndex;
     private bool isMoving;
+    private bool noMoreMines = false;
 
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
@@ -396,6 +416,8 @@ public sealed class DepositGoldState : State
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
+            mine = miner.GetClosestGoldMineNode(miner.GetStartNode());
+            
             if (miner == null)
                 Debug.Log("Miner is null in DepositGoldState");
 
@@ -412,7 +434,7 @@ public sealed class DepositGoldState : State
 
             if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
             {
-                pathToUrbanCenter = miner.GetAStarPathfinder().FindPath(miner.GetCurrentNode(), urbanCenter, distanceBetweenNodes);
+                pathToUrbanCenter = miner.GetAStarPathfinder().FindPath(miner.GetStartNode(), urbanCenter, distanceBetweenNodes);
                 Debug.Log("Path to urban center calculated");
             }
 
@@ -458,21 +480,26 @@ public sealed class DepositGoldState : State
                     Debug.Log("Gold deposited! Amount: " + urbanCenter.GetGold());
                     miner.goldCollected = 0;
                     alreadyDeposited = true;
+                    
+                    if(mine == null)
+                        noMoreMines = true;
                 }
             }
         });
 
         behaviours.SetTransitionBehavior(() =>
         {
-            if (alreadyDeposited && miner.GetClosestGoldMineNode(miner.GetCurrentNode()) != null)
+            if (noMoreMines)
+            {
+                Debug.Log("No more gold mines to mine....");
+                noMoreMines = false;
+                miner.SetStart(false);
+                OnFlag?.Invoke(MinerFlags.OnNoMoreMines);
+            }
+            else if (alreadyDeposited && !noMoreMines)
             {
                 alreadyDeposited = false;
                 OnFlag?.Invoke(MinerFlags.OnGoldDeposit);
-            }
-
-            if (miner.GetClosestGoldMineNode(miner.GetCurrentNode()) == null)
-            {
-                Debug.Log("No more gold mines to mine");
             }
             
         });

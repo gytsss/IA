@@ -43,8 +43,7 @@ public class GraphView : MonoBehaviour
                 if (goldMines.Contains(node))
                 {
                     renderer.sprite = goldMineSprite;
-
-                    Debug.Log($"Gold mine node at: {node.GetCoordinate()}");
+                    
                 }
                 else if (node.IsBlocked())
                 {

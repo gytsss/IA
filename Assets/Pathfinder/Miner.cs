@@ -29,6 +29,7 @@ public enum MinerFlags
     OnMineEmpty,
     OnMineEmptyOfFood,
     OnGoldDeposit,
+    OnNoMoreMines,
     OnAlarmTrigger
 }
 
@@ -55,7 +56,9 @@ public class Miner : MonoBehaviour
     private float distanceBetweenNodes = 0;
 
     public TMP_InputField heightInputField, widthInputField, goldMinesInputField, distanceBetweenNodesInputField;
-
+    public TMP_Text urbanCenterText, currentGoldText, currentEnergyText;
+    
+    
     public float travelTime = 0.70f;
     public int maxGold = 15;
     public int goldCollected = 0;
@@ -78,22 +81,22 @@ public class Miner : MonoBehaviour
 
     private object[] MoveToMineTickParameters()
     {
-        return new object[] { this as Miner, this.transform, destinationNode, startNode, travelTime, distanceBetweenNodes, path };
+        return new object[] { this as Miner, this.transform, travelTime, distanceBetweenNodes };
     }
 
     private object[] MineGoldTickParameters()
     {
-        return new object[] { this, currentMine, goldExtractionSpeed, maxGold };
+        return new object[] { this, goldExtractionSpeed, maxGold };
     }
 
     private object[] EatFoodTickParameters()
     {
-        return new object[] { this, currentMine };
+        return new object[] { this };
     }
 
     private object[] WaitForFoodTickParameters()
     {
-        return new object[] { this, currentMine };
+        return new object[] { this };
     }
 
     private object[] DepositGoldTickParameters()
@@ -114,6 +117,10 @@ public class Miner : MonoBehaviour
     private void Update()
     {
         fsm.Tick();
+        
+        currentGoldText.text = "Miner Gold: " + goldCollected;
+        currentEnergyText.text = "Miner Energy: " + energy;
+        urbanCenterText.text = "Urban Center gold: " + urbanCenter.GetGold();
     }
 
     public void GetMapInputValues()
@@ -168,13 +175,13 @@ public class Miner : MonoBehaviour
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnMineEmpty, MinerStates.MoveToMine);
         fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
+        fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnNoMoreMines, MinerStates.Idle);
         fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnGoldDeposit, MinerStates.MoveToMine);
         fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnMineEmptyOfFood, MinerStates.WaitFood);
         fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnFoodAvailable, MinerStates.EatFood);
         // fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnAlarmTrigger, MinerStates.ReturnHome);
         // fsm.SetTransition(MinerStates.ReturnHome, MinerFlags.OnAlarmTrigger, MinerStates.MoveToMine);
         
-
         graphView.pathNodes = path;
         
     }
@@ -290,6 +297,11 @@ public class Miner : MonoBehaviour
     public int GetMineCount()
     {
         return int.Parse(goldMinesInputField.text);
+    }
+
+    public void SetStart(bool start)
+    {
+        this.start = start;
     }
 }
 
