@@ -121,11 +121,7 @@ public sealed class MoveToMineState : State
             if (startNode == null)
                 Debug.Log("Null startNode in MoveToMineState");
             
-            
-            Debug.Log("Miner.GetClosestGoldMineNode: " + miner.GetClosestGoldMineNode(miner.GetStartNode()).GetCoordinate());
-            Debug.Log("Miner.GetStartNode: " + miner.GetStartNode().GetCoordinate());
-            Debug.Log("Miner.GetDestinationNode: " + miner.GetDestinationNode().GetCoordinate());
-        });
+           });
         
 
         behaviours.AddMainThreadBehaviour(0, () =>
@@ -249,7 +245,8 @@ public sealed class MineGoldState : State
         {
             if (noMoreMines)
             {
-                Debug.Log("No more mines! Back to urban center!");
+                miner.SetStartNode(miner.GetCurrentNode());
+                Debug.Log("No more mines! Back to urban center! From: " + miner.GetCurrentNode().GetCoordinate());
                 goldCount = 0;
                 noMoreMines = false;
                 OnFlag?.Invoke(MinerFlags.OnFullInventory);
@@ -435,7 +432,7 @@ public sealed class DepositGoldState : State
             if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
             {
                 pathToUrbanCenter = miner.GetAStarPathfinder().FindPath(miner.GetStartNode(), urbanCenter, distanceBetweenNodes);
-                Debug.Log("Path to urban center calculated");
+                Debug.Log("Path to urban center calculated From: " + miner.GetStartNode().GetCoordinate());
             }
 
             if (pathToUrbanCenter != null && pathToUrbanCenter.Count > 0)
@@ -477,12 +474,15 @@ public sealed class DepositGoldState : State
                 {
                     miner.SetStartNode(urbanCenter);
                     urbanCenter.AddGold(miner.goldCollected);
+                    miner.gameManager.UpdateUrbanCenterGoldText();
                     Debug.Log("Gold deposited! Amount: " + urbanCenter.GetGold());
                     miner.goldCollected = 0;
                     alreadyDeposited = true;
                     
                     if(mine == null)
                         noMoreMines = true;
+
+                    pathToUrbanCenter = null;
                 }
             }
         });

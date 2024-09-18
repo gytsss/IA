@@ -1,13 +1,11 @@
 using System.Collections.Generic;
+using Pathfinder;
 using UnityEngine;
 
 public class GraphView : MonoBehaviour
 {
+    public GameManager GameManager;
     public Vector2IntGraph<Node<Vec2Int>> Graph;
-    public Node<Vec2Int> startNode;
-    public Node<Vec2Int> destinationNode;
-    public UrbanCenterNode<Vec2Int> urbanCenterNode;
-    public List<Node<Vec2Int>> pathNodes = new List<Node<Vec2Int>>();
     public List<Node<Vec2Int>> goldMines = new List<Node<Vec2Int>>();
     
     public Vec2Int size = new Vec2Int(0,0);
@@ -30,15 +28,6 @@ public class GraphView : MonoBehaviour
                 nodeObject.transform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y, 1f);
                 SpriteRenderer renderer = nodeObject.AddComponent<SpriteRenderer>();
                 renderer.sprite = defaultNodeSprite;
-
-                if (node.EqualsTo(startNode) && !goldMines.Contains(node))
-                {
-                    
-                }
-                else if (node.EqualsTo(destinationNode) && !goldMines.Contains(node))
-                {
-                   
-                }
                 
                 if (goldMines.Contains(node))
                 {
@@ -50,12 +39,12 @@ public class GraphView : MonoBehaviour
                     renderer.sprite = blockedNodeSprite;
                 }
  
-                if (node.GetCoordinate().x == urbanCenterNode.GetCoordinate().x && node.GetCoordinate().y == urbanCenterNode.GetCoordinate().y)
+                if (node.GetCoordinate().x == GameManager.GetUrbanCenterNode().GetCoordinate().x && node.GetCoordinate().y == GameManager.GetUrbanCenterNode().GetCoordinate().y)
                 {
                     renderer.sprite = urbanCenterNodeSprite;
                 }
 
-               // nodeObject.transform.localScale = new Vector3(6.3f, 6.3f, 6.3f);
+                nodeObject.transform.localScale = new Vector3(nodeObject.transform.localScale.x * GameManager.GetDistanceBetweenNodes(), nodeObject.transform.localScale.y * GameManager.GetDistanceBetweenNodes(), nodeObject.transform.localScale.z * GameManager.GetDistanceBetweenNodes());
             }
         }
     }

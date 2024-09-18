@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace;
+using Pathfinder;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -37,7 +38,6 @@ public enum MinerFlags
 public class Miner : MonoBehaviour
 {
     public GraphView graphView;
-    public GoldMineManager goldMineManager;
 
     private AStarPathfinder<Node<Vec2Int>> Pathfinder;
     //private DijkstraPathfinder<Node<Vec2Int>> Pathfinder;
@@ -45,7 +45,6 @@ public class Miner : MonoBehaviour
     //private BreadthPathfinder<Node<Vec2Int>> Pathfinder;
 
     private GoldMineNode<Vec2Int> currentMine;
-    private UrbanCenterNode<Vec2Int> urbanCenter;
 
     private FSM<MinerStates, MinerFlags> fsm;
     private Node<Vec2Int> startNode;
@@ -53,11 +52,11 @@ public class Miner : MonoBehaviour
 
     private Node<Vec2Int> currentNode;
     private List<Node<Vec2Int>> path;
-    private float distanceBetweenNodes = 0;
 
     public TMP_InputField heightInputField, widthInputField, goldMinesInputField, distanceBetweenNodesInputField;
     public TMP_Text urbanCenterText, currentGoldText, currentEnergyText;
     
+    public GameManager gameManager;
     
     public float travelTime = 0.70f;
     public int maxGold = 15;
@@ -81,7 +80,7 @@ public class Miner : MonoBehaviour
 
     private object[] MoveToMineTickParameters()
     {
-        return new object[] { this as Miner, this.transform, travelTime, distanceBetweenNodes };
+        return new object[] { this as Miner, this.transform, travelTime, gameManager.GetDistanceBetweenNodes() };
     }
 
     private object[] MineGoldTickParameters()
@@ -101,63 +100,44 @@ public class Miner : MonoBehaviour
 
     private object[] DepositGoldTickParameters()
     {
-        return new object[] { this, currentNode, urbanCenter, travelTime, distanceBetweenNodes };
+        return new object[] { this, currentNode, gameManager.GetUrbanCenterNode(), travelTime, gameManager.GetDistanceBetweenNodes() };
     }
 
     private object[] ReturnToUrbanCenterTickParameters()
     {
-        return new object[] { this, urbanCenter };
+        return new object[] { this, gameManager.GetUrbanCenterNode() };
     }
 
     private object[] RespondToAlarmTickParameters()
     {
-        return new object[] { this, urbanCenter };
+        return new object[] { this, gameManager.GetUrbanCenterNode() };
     }
 
     private void Update()
     {
         fsm.Tick();
-        
-        currentGoldText.text = "Miner Gold: " + goldCollected;
-        currentEnergyText.text = "Miner Energy: " + energy;
-        urbanCenterText.text = "Urban Center gold: " + urbanCenter.GetGold();
     }
 
     public void GetMapInputValues()
     {
-        string height = heightInputField.text;
-        string width = widthInputField.text;
-        string goldMines = goldMinesInputField.text;
-        distanceBetweenNodes = float.Parse(distanceBetweenNodesInputField.text.Replace(',', '.'));
-
-        Debug.Log("Height: " + height + " Width: " + width + " GoldMines: " + goldMines + " Distance: " +
-                  distanceBetweenNodes);
-
-        graphView.CreateGraph(int.Parse(height), int.Parse(width), distanceBetweenNodes);
-        goldMineManager.SetGoldMines(int.Parse(goldMines), distanceBetweenNodes);
         start = true;
-        InitTraveler(distanceBetweenNodes);
+        
     }
 
-    private void InitTraveler(float distanceBetweenNodes)
+    public void InitTraveler()
     {
-        Pathfinder = new AStarPathfinder<Node<Vec2Int>>(graphView.Graph, distanceBetweenNodes);
+        Pathfinder = new AStarPathfinder<Node<Vec2Int>>(graphView.Graph, gameManager.GetDistanceBetweenNodes());
         //Pathfinder = new DijkstraPathfinder<Node<Vec2Int>>(graphView.Graph);
         //Pathfinder = new DepthFirstPathfinder<Node<Vec2Int>>(graphView.Graph);
         //Pathfinder = new BreadthPathfinder<Node<Vec2Int>>(graphView.Graph);
 
-        urbanCenter = new UrbanCenterNode<Vec2Int>();
-        urbanCenter.SetCoordinate(new Vec2Int(Random.Range(0, graphView.size.x), Random.Range(0, graphView.size.y)));
-        currentNode = urbanCenter;
-        startNode = urbanCenter;
-        destinationNode = goldMineManager.FindClosestGoldMine(startNode);
-
-        graphView.startNode = startNode;
-        graphView.destinationNode = destinationNode;
-        graphView.urbanCenterNode = urbanCenter;
+        currentNode = gameManager.GetUrbanCenterNode();
+        startNode = gameManager.GetUrbanCenterNode();
+        destinationNode = gameManager.GetGoldMineManager().FindClosestGoldMine(startNode);
+        
         transform.position = new Vector3(startNode.GetCoordinate().x, startNode.GetCoordinate().y);
         
-        path = Pathfinder.FindPath(startNode, destinationNode, distanceBetweenNodes);
+        path = Pathfinder.FindPath(startNode, destinationNode, gameManager.GetDistanceBetweenNodes());
         
         
         fsm.AddBehaviour<MoveToMineState>(MinerStates.MoveToMine, onTickParameters: MoveToMineTickParameters);
@@ -181,9 +161,7 @@ public class Miner : MonoBehaviour
         fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnFoodAvailable, MinerStates.EatFood);
         // fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnAlarmTrigger, MinerStates.ReturnHome);
         // fsm.SetTransition(MinerStates.ReturnHome, MinerFlags.OnAlarmTrigger, MinerStates.MoveToMine);
-        
-        graphView.pathNodes = path;
-        
+
     }
 
     public Node<Vec2Int> GetCurrentNode()
@@ -193,7 +171,7 @@ public class Miner : MonoBehaviour
 
     public UrbanCenterNode<Vec2Int> GetUrbanCenterNode()
     {
-        return urbanCenter;
+        return gameManager.GetUrbanCenterNode();
     }
 
     public void SetCurrentNode(Node<Vec2Int> node)
@@ -226,12 +204,12 @@ public class Miner : MonoBehaviour
 
     public float GetDistanceBetweenNodes()
     {
-        return distanceBetweenNodes;
+        return gameManager.GetDistanceBetweenNodes();
     }
 
     public GoldMineNode<Vec2Int> GetClosestGoldMineNode(Node<Vec2Int> startNode)
     {
-        return goldMineManager.FindClosestGoldMine(startNode);
+        return gameManager.GetGoldMineManager().FindClosestGoldMine(startNode);
     }
 
     public void SetPath(List<Node<Vec2Int>> path)
@@ -251,7 +229,7 @@ public class Miner : MonoBehaviour
 
     public bool IsAtUrbanCenter()
     {
-        return transform.position.x == urbanCenter.GetCoordinate().x && transform.position.y == urbanCenter.GetCoordinate().y;
+        return transform.position.x == gameManager.GetUrbanCenterNode().GetCoordinate().x && transform.position.y == gameManager.GetUrbanCenterNode().GetCoordinate().y;
     }
 
     public void SetCurrentMine(GoldMineNode<Vec2Int> mine)
@@ -267,6 +245,11 @@ public class Miner : MonoBehaviour
     public int GetEnergy()
     {
         return energy;
+    }
+    
+    public int GetGoldCollected()
+    {
+        return goldCollected;
     }
     
     public void SetEnergy(int energy)

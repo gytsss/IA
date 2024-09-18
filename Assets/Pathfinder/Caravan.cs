@@ -111,7 +111,6 @@ public class Caravan : MonoBehaviour
 
     public void GetMapInputValues()
     {
-       
         start = true;
         InitCaravan();
     }
