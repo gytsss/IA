@@ -6,19 +6,17 @@
     using UnityEngine;
     using Random = UnityEngine.Random;
     
-    public class BaseAgent<TState, TFlag> : MonoBehaviour 
+    public abstract class BaseAgent<TState, TFlag> : MonoBehaviour 
     where TState : Enum
     where TFlag : Enum
     {
     
         public GameManager gameManager;
         public GraphView graphView;
-        public GoldMineManager goldMineManager;
-    
+
         protected AStarPathfinder<Node<Vec2Int>> Pathfinder;
         protected GoldMineNode<Vec2Int> currentMine;
-        protected UrbanCenterNode<Vec2Int> urbanCenter;
-    
+
         protected FSM<TState, TFlag> fsm;
         protected Node<Vec2Int> startNode;
         protected Node<Vec2Int> destinationNode;
@@ -28,34 +26,35 @@
         protected float distanceBetweenNodes = 0;
     
         public float travelTime = 0.70f;
-    
-        protected bool start = false;
+        
     
         protected virtual void Start()
         {
             fsm = new FSM<TState, TFlag>();
-            InitAgent();
         }
         
         public void InitAgent()
         {
-            distanceBetweenNodes = GetDistanceBetweenNodes();
+            distanceBetweenNodes = gameManager.GetDistanceBetweenNodes();
     
             Pathfinder = new AStarPathfinder<Node<Vec2Int>>(graphView.Graph, distanceBetweenNodes);
-    
-            urbanCenter = new UrbanCenterNode<Vec2Int>();
-            urbanCenter.SetCoordinate(new Vec2Int(Random.Range(0, graphView.size.x),
-                Random.Range(0, graphView.size.y)));
-            currentNode = urbanCenter;
-            startNode = urbanCenter;
-            destinationNode = GetClosestGoldMineNode(startNode);
+            
+            currentNode = gameManager.GetUrbanCenterNode();
+            startNode = gameManager.GetUrbanCenterNode();
+            destinationNode = gameManager.GetGoldMineManager().FindClosestGoldMine(startNode);
     
             transform.position = new Vector3(startNode.GetCoordinate().x, startNode.GetCoordinate().y);
     
             path = Pathfinder.FindPath(startNode, destinationNode, distanceBetweenNodes);
             
+            AddStates();
+            AddTransitions();
         }
-    
+
+        protected abstract void AddStates();
+        
+        public abstract void AddTransitions();
+
         public Node<Vec2Int> GetCurrentNode()
         {
             return currentNode;
@@ -98,7 +97,7 @@
     
         public GoldMineNode<Vec2Int> GetClosestGoldMineNode(Node<Vec2Int> startNode)
         {
-            return goldMineManager.FindClosestGoldMine(startNode);
+            return gameManager.GetGoldMineManager().FindClosestGoldMine(startNode);
         }
     
         public void SetPath(List<Node<Vec2Int>> path)
@@ -118,8 +117,8 @@
     
         public bool IsAtUrbanCenter()
         {
-            return transform.position.x == urbanCenter.GetCoordinate().x &&
-                   transform.position.y == urbanCenter.GetCoordinate().y;
+            return transform.position.x == gameManager.GetUrbanCenterNode().GetCoordinate().x &&
+                   transform.position.y == gameManager.GetUrbanCenterNode().GetCoordinate().y;
         }
     
         public void SetCurrentMine(GoldMineNode<Vec2Int> mine)

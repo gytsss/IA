@@ -37,8 +37,9 @@ namespace Pathfinder
             urbanCenter = new UrbanCenterNode<Vec2Int>();
             urbanCenter.SetCoordinate(new Vec2Int(Random.Range(0, graphView.size.x), Random.Range(0, graphView.size.y)));
             urbanCenterText.text = "Urban Center gold: " + urbanCenter.GetGold();
+            
+            miner.InitAgent();
 
-            miner.InitTraveler();
             
         }
 

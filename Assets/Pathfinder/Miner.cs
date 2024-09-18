@@ -35,27 +35,9 @@ public enum MinerFlags
 }
 
 
-public class Miner : MonoBehaviour
+public class Miner : BaseAgent<MinerStates, MinerFlags>
 {
-    public GraphView graphView;
-
-    private AStarPathfinder<Node<Vec2Int>> Pathfinder;
-    //private DijkstraPathfinder<Node<Vec2Int>> Pathfinder;
-    //private DepthFirstPathfinder<Node<Vec2Int>> Pathfinder;
-    //private BreadthPathfinder<Node<Vec2Int>> Pathfinder;
-
-    private GoldMineNode<Vec2Int> currentMine;
-
-    private FSM<MinerStates, MinerFlags> fsm;
-    private Node<Vec2Int> startNode;
-    private Node<Vec2Int> destinationNode;
-
-    private Node<Vec2Int> currentNode;
-    private List<Node<Vec2Int>> path;
     
-    public GameManager gameManager;
-    
-    public float travelTime = 0.70f;
     public int maxGold = 15;
     public int goldCollected = 0;
     public float goldExtractionSpeed = 1f;
@@ -66,7 +48,7 @@ public class Miner : MonoBehaviour
 
     private void Start()
     {
-        fsm = new FSM<MinerStates, MinerFlags>();
+        base.Start();
 
         fsm.AddBehaviour<IdleState>(MinerStates.Idle, onTickParameters: () => { return new object[] { start }; });
 
@@ -74,6 +56,8 @@ public class Miner : MonoBehaviour
         
         fsm.ForceState(MinerStates.Idle);
     }
+
+    
 
     private object[] MoveToMineTickParameters()
     {
@@ -121,22 +105,8 @@ public class Miner : MonoBehaviour
         
     }
 
-    public void InitTraveler()
+    protected override void AddStates()
     {
-        Pathfinder = new AStarPathfinder<Node<Vec2Int>>(graphView.Graph, gameManager.GetDistanceBetweenNodes());
-        //Pathfinder = new DijkstraPathfinder<Node<Vec2Int>>(graphView.Graph);
-        //Pathfinder = new DepthFirstPathfinder<Node<Vec2Int>>(graphView.Graph);
-        //Pathfinder = new BreadthPathfinder<Node<Vec2Int>>(graphView.Graph);
-
-        currentNode = gameManager.GetUrbanCenterNode();
-        startNode = gameManager.GetUrbanCenterNode();
-        destinationNode = gameManager.GetGoldMineManager().FindClosestGoldMine(startNode);
-        
-        transform.position = new Vector3(startNode.GetCoordinate().x, startNode.GetCoordinate().y);
-        
-        path = Pathfinder.FindPath(startNode, destinationNode, gameManager.GetDistanceBetweenNodes());
-        
-        
         fsm.AddBehaviour<MoveToMineState>(MinerStates.MoveToMine, onTickParameters: MoveToMineTickParameters);
         fsm.AddBehaviour<MineGoldState>(MinerStates.MineGold, onTickParameters: MineGoldTickParameters);
         fsm.AddBehaviour<EatFoodState>(MinerStates.EatFood, onTickParameters: EatFoodTickParameters);
@@ -144,9 +114,11 @@ public class Miner : MonoBehaviour
         fsm.AddBehaviour<WaitFoodState>(MinerStates.WaitFood, onTickParameters: WaitForFoodTickParameters);
         // fsm.AddBehaviour<ReturnHomeState>(MinerStates.ReturnHome, onTickParameters: ReturnToUrbanCenterTickParameters);
         // fsm.AddBehaviour<AlarmState>(MinerStates.Alarm, onTickParameters: RespondToAlarmTickParameters);
-        
-         
 
+    }
+
+    public override void AddTransitions()
+    {
         fsm.SetTransition(MinerStates.MoveToMine, MinerFlags.OnMineFind, MinerStates.MineGold);
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFoodNeed, MinerStates.EatFood);
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
@@ -161,84 +133,11 @@ public class Miner : MonoBehaviour
 
     }
 
-    public Node<Vec2Int> GetCurrentNode()
-    {
-        return currentNode;
-    }
-
     public UrbanCenterNode<Vec2Int> GetUrbanCenterNode()
     {
         return gameManager.GetUrbanCenterNode();
     }
-
-    public void SetCurrentNode(Node<Vec2Int> node)
-    {
-        currentNode = node;
-    }
     
-    public void SetStartNode(Node<Vec2Int> node)
-    {
-        startNode = node;
-    }
-    public Node<Vec2Int> GetStartNode()
-    {
-        return startNode;
-    }
-    
-    public void SetDestinationNode(Node<Vec2Int> node)
-    {
-        destinationNode = node;
-    }
-    public Node<Vec2Int> GetDestinationNode()
-    {
-        return destinationNode;
-    }
-
-    public void SetPathfinder(AStarPathfinder<Node<Vec2Int>> pathfinder)
-    {
-        Pathfinder = pathfinder;
-    }
-
-    public float GetDistanceBetweenNodes()
-    {
-        return gameManager.GetDistanceBetweenNodes();
-    }
-
-    public GoldMineNode<Vec2Int> GetClosestGoldMineNode(Node<Vec2Int> startNode)
-    {
-        return gameManager.GetGoldMineManager().FindClosestGoldMine(startNode);
-    }
-
-    public void SetPath(List<Node<Vec2Int>> path)
-    {
-        this.path = path;
-    }
-
-    public AStarPathfinder<Node<Vec2Int>> GetAStarPathfinder()
-    {
-        return Pathfinder;
-    }
-
-    public bool IsAtMine(Node<Vec2Int> mine)
-    {
-        return transform.position.x == mine.GetCoordinate().x && transform.position.y == mine.GetCoordinate().y;
-    }
-
-    public bool IsAtUrbanCenter()
-    {
-        return transform.position.x == gameManager.GetUrbanCenterNode().GetCoordinate().x && transform.position.y == gameManager.GetUrbanCenterNode().GetCoordinate().y;
-    }
-
-    public void SetCurrentMine(GoldMineNode<Vec2Int> mine)
-    {
-        currentMine = mine;
-    }
-
-    public GoldMineNode<Vec2Int> GetCurrentMine()
-    {
-        return currentMine;
-    }
-
     public int GetEnergy()
     {
         return energy;
