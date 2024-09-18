@@ -1939,6 +1939,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 1
+      - m_Target: {fileID: 1154729528}
+        m_TargetAssemblyTypeName: Pathfinder.GameManager, Assembly-CSharp
+        m_MethodName: GetMapInputValues
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 1
       - m_Target: {fileID: 1022336799}
         m_TargetAssemblyTypeName: Miner, Assembly-CSharp
         m_MethodName: GetMapInputValues
@@ -1951,30 +1963,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 1
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Caravan, Assembly-CSharp
-        m_MethodName: GetMapInputValues
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 1
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Miner, Assembly-CSharp
-        m_MethodName: GetMapInputValues
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &588506658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2249,6 +2237,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9505ac3f90de150418590939da61c3e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GameManager: {fileID: 1154729528}
   isActive: 0
   goldMineSprite: {fileID: -854997940, guid: 89f80356f163e5d41b3808c6fea54ca3, type: 3}
   blockedNodeSprite: {fileID: -23493590, guid: 89f80356f163e5d41b3808c6fea54ca3, type: 3}
@@ -4093,6 +4082,14 @@ PrefabInstance:
       propertyPath: graphView
       value: 
       objectReference: {fileID: 815766764}
+    - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
+      propertyPath: travelTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
+      propertyPath: gameManager
+      value: 
+      objectReference: {fileID: 1154729528}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: currentGoldText
       value: 

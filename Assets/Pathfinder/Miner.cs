@@ -52,9 +52,6 @@ public class Miner : MonoBehaviour
 
     private Node<Vec2Int> currentNode;
     private List<Node<Vec2Int>> path;
-
-    public TMP_InputField heightInputField, widthInputField, goldMinesInputField, distanceBetweenNodesInputField;
-    public TMP_Text urbanCenterText, currentGoldText, currentEnergyText;
     
     public GameManager gameManager;
     
@@ -271,16 +268,7 @@ public class Miner : MonoBehaviour
     {
         energy = maxEnergy;
     }
-
-    public Vector2 GetMapSize()
-    {
-        return new Vector2(float.Parse(widthInputField.text), float.Parse(heightInputField.text));
-    }
     
-    public int GetMineCount()
-    {
-        return int.Parse(goldMinesInputField.text);
-    }
 
     public void SetStart(bool start)
     {

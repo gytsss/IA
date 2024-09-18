@@ -36,9 +36,8 @@
             fsm = new FSM<TState, TFlag>();
             InitAgent();
         }
-    
-        // Método común para inicializar el agente
-        protected void InitAgent()
+        
+        public void InitAgent()
         {
             distanceBetweenNodes = GetDistanceBetweenNodes();
     
