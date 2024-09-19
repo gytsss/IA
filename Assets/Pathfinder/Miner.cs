@@ -15,7 +15,8 @@ public enum MinerStates
     EatFood,
     DepositGold,
     WaitFood,
-    Alarm
+    Alarm,
+    DisableAlarm
 }
 
 public enum MinerFlags
@@ -31,7 +32,8 @@ public enum MinerFlags
     OnGoldDeposit,
     OnNoMoreMines,
     OnAlarmTrigger,
-    OnHome
+    OnHome,
+    OnBackToWork
 }
 
 
@@ -128,6 +130,7 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
         fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnFoodAvailable, MinerStates.EatFood);
         fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnAlarmTrigger, MinerStates.Alarm);
         fsm.SetTransition(MinerStates.Alarm, MinerFlags.OnHome, MinerStates.Idle);
+        fsm.SetTransition(MinerStates.Alarm, MinerFlags.OnBackToWork, MinerStates.MoveToMine);
         // fsm.SetTransition(MinerStates.ReturnHome, MinerFlags.OnAlarmTrigger, MinerStates.MoveToMine);
 
     }

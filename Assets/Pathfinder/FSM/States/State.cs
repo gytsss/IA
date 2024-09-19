@@ -625,6 +625,13 @@ public sealed class AlarmState : State
         
         behaviours.SetTransitionBehavior(() =>
         {
+            if (!agent.gameManager.GetAlarm())
+            {
+                Debug.Log("Alarm disable!");
+                agent.SetStartNode(agent.GetCurrentNode());
+                OnFlag?.Invoke(MinerFlags.OnBackToWork);
+            }
+            
             if (agent.IsAtUrbanCenter())
             {
                 agent.SetStartNode(urbanCenter);

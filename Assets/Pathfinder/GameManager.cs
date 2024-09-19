@@ -70,6 +70,11 @@ namespace Pathfinder
             alarm = true;
         }
         
+        public void DisableAlarm()
+        {
+            alarm = false;
+        }
+        
         public bool GetAlarm()
         {
             return alarm;
