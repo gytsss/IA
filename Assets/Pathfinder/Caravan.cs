@@ -28,9 +28,6 @@ public enum CaravanFlags
 public class Caravan : BaseAgent<CaravanStates, CaravanFlags>
 {
 
-
-    public Miner miner;
-
     private void OnEnable()
     {
         MinerEvents.OnNeedFood += OnFoodNeed;
@@ -53,7 +50,7 @@ public class Caravan : BaseAgent<CaravanStates, CaravanFlags>
     {
         base.Start();
 
-        fsm.AddBehaviour<IdleState>(CaravanStates.Idle, onTickParameters: () => { return new object[] { GetStart() }; });
+        fsm.AddBehaviour<IdleState>(CaravanStates.Idle, onTickParameters: () => { return new object[] { this, GetStart() }; });
 
         fsm.SetTransition(CaravanStates.Idle, CaravanFlags.OnFoodNeed, CaravanStates.CaravanMoveToMine);
 

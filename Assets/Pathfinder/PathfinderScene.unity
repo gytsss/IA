@@ -4386,7 +4386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graphView: {fileID: 815766764}
-  goldAmount: 3
+  goldAmount: 2
   foodAmount: 5
 --- !u!4 &2056860258
 Transform:
@@ -4567,16 +4567,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
+      propertyPath: energy
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: maxGold
-      value: 3
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: graphView
       value: 
       objectReference: {fileID: 815766764}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
+      propertyPath: maxEnergy
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: travelTime
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: gameManager

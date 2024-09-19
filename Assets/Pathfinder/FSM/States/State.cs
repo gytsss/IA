@@ -60,7 +60,8 @@ public sealed class IdleState : State
     {
         BehavioursActions behaviours = new BehavioursActions();
 
-        bool start = Convert.ToBoolean(parameters[0]);
+        BaseAgent<MinerStates, MinerFlags> miner = parameters[0] as BaseAgent<MinerStates, MinerFlags>;
+        bool start = Convert.ToBoolean(parameters[1]);
 
         //behaviours.AddMultithreadbleBehaviours(0, () => { Debug.Log("Idle..."); });
 
@@ -107,31 +108,34 @@ public sealed class MoveToMineState : State
         minerTransform = parameters[1] as Transform;
         travelTime = Convert.ToSingle(parameters[2]);
         float distanceBetweenNodes = Convert.ToSingle(parameters[3]);
-      
-        
+
+
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
             startNode = miner.GetStartNode();
             miner.SetDestinationNode(miner.GetClosestGoldMineNode(startNode));
             destinationNode = miner.GetDestinationNode() as GoldMineNode<Vec2Int>;
-
-            if (miner == null )
+            
+            if (miner == null)
                 Debug.Log("Null miner in MoveToMineState");
             if (destinationNode == null)
                 Debug.Log("Null mine in MoveToMineState");
             if (startNode == null)
                 Debug.Log("Null startNode in MoveToMineState");
-            
-           });
-        
+        });
+
 
         behaviours.AddMainThreadBehaviour(0, () =>
         {
+            startNode = miner.GetStartNode();
+            miner.SetDestinationNode(miner.GetClosestGoldMineNode(startNode));
+            destinationNode = miner.GetDestinationNode() as GoldMineNode<Vec2Int>;
+            
             path = miner.GetAStarPathfinder().FindPath(startNode, destinationNode, distanceBetweenNodes);
 
             if (path == null)
                 Debug.Log("Path is null. No valid path found.");
-            
+
             if (path != null && path.Count > 0)
             {
                 if (!isMoving)
@@ -175,7 +179,8 @@ public sealed class MoveToMineState : State
             {
                 //miner.SetCurrentMine(destinationNode);
                 miner.SetStartNode(destinationNode);
-                Debug.Log("Start mining! x: " + destinationNode.GetCoordinate().x + " y: " + destinationNode.GetCoordinate().y);
+                Debug.Log("Start mining! x: " + destinationNode.GetCoordinate().x + " y: " +
+                          destinationNode.GetCoordinate().y);
                 OnFlag?.Invoke(MinerFlags.OnMineFind);
             }
         });
@@ -198,6 +203,7 @@ public sealed class MoveToMineState : State
 public sealed class MineGoldState : State
 {
     private GoldMineNode<Vec2Int> mine;
+    private Miner miner;
     private float timeSinceLastExtraction = 0f;
     private int goldCount = 0;
     private bool noMoreMines = false;
@@ -206,20 +212,17 @@ public sealed class MineGoldState : State
     {
         BehavioursActions behaviours = new BehavioursActions();
 
-        Miner miner = parameters[0] as Miner;
-        float goldExtractionSpeed = Convert.ToSingle(parameters[1]);
-        int maxGold = Convert.ToInt32(parameters[2]);
+        float goldExtractionSpeed = Convert.ToSingle(parameters[0]);
+        int maxGold = Convert.ToInt32(parameters[1]);
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
-            mine = miner.GetClosestGoldMineNode(miner.GetStartNode());
-            miner.SetStartNode(miner.GetCurrentNode());
-
             if (mine == null)
             {
                 Debug.Log("Mine is null in MineGoldState because no mine with gold was found");
                 noMoreMines = true;
             }
+
             if (miner == null)
                 Debug.Log("Miner is null in MineGoldState");
         });
@@ -234,13 +237,13 @@ public sealed class MineGoldState : State
                 {
                     if (mine.HasGold() && miner.GetEnergy() > 0)
                     {
-                        goldCount++;
                         mine.MineGold();
+                        goldCount++;
+                        miner.goldCollected ++;
                         miner.SetEnergy(miner.GetEnergy() - 1);
                         timeSinceLastExtraction = 0f;
+                        Debug.Log("Mine Gold amount: " + mine.GetGoldAmount() +" at mine " + mine.GetCoordinate());
                         Debug.Log("Gold mined: " + goldCount);
-                        miner.goldCollected += 1;
-
                     }
                 }
             }
@@ -268,15 +271,15 @@ public sealed class MineGoldState : State
                 goldCount = 0;
                 OnFlag?.Invoke(MinerFlags.OnFullInventory);
             }
-            else if (miner.GetEnergy() <= 0)
-            {
-                Debug.Log("Food needed! Gold mined: " + goldCount);
-                OnFlag?.Invoke(MinerFlags.OnFoodNeed);
-            }
             else if (!mine.HasGold())
             {
                 Debug.Log("Mine empty!");
                 OnFlag?.Invoke(MinerFlags.OnMineEmpty);
+            }
+            else if (miner.GetEnergy() <= 0)
+            {
+                Debug.Log("Food needed! Gold mined: " + goldCount);
+                OnFlag?.Invoke(MinerFlags.OnFoodNeed);
             }
             
         });
@@ -286,7 +289,26 @@ public sealed class MineGoldState : State
 
     public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
     {
-        return default;
+        BehavioursActions behaviours = new BehavioursActions();
+        
+        miner = parameters[0] as Miner;
+        
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            miner.SetStartNode(miner.GetCurrentNode());
+            mine = miner.GetClosestGoldMineNode(miner.GetStartNode());
+
+            if (mine == null)
+            {
+                Debug.Log("Mine is null in MineGoldState because no mine with gold was found");
+                noMoreMines = true;
+            }
+
+            if (miner == null)
+                Debug.Log("Miner is null in MineGoldState");
+        });
+        
+        return behaviours;
     }
 
     public override BehavioursActions GetOnExitBehaviour(params object[] parameters)
@@ -298,6 +320,7 @@ public sealed class MineGoldState : State
 public sealed class EatFoodState : State
 {
     private GoldMineNode<Vec2Int> mine;
+
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
@@ -308,7 +331,7 @@ public sealed class EatFoodState : State
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
             mine = miner.GetClosestGoldMineNode(miner.GetStartNode());
-            
+
             if (miner == null || mine == null)
                 Debug.Log("Miner or mine is null in EatFoodState");
         });
@@ -363,17 +386,11 @@ public sealed class WaitFoodState : State
         BehavioursActions behaviours = new BehavioursActions();
 
         Miner miner = parameters[0] as Miner;
-        
-        
-        behaviours.AddMultithreadbleBehaviours(0, () =>
-        {
-            Debug.Log("Waiting for food...");
-        });
-        
-        behaviours.AddMainThreadBehaviour(0, () =>
-        {
-           
-        });
+
+
+        behaviours.AddMultithreadbleBehaviours(0, () => { Debug.Log("Waiting for food..."); });
+
+        behaviours.AddMainThreadBehaviour(0, () => { });
 
         behaviours.SetTransitionBehavior(() =>
         {
@@ -387,9 +404,8 @@ public sealed class WaitFoodState : State
             }
             else
             {
-               // MinerEvents.OnNeedFood?.Invoke(miner);
+                // MinerEvents.OnNeedFood?.Invoke(miner);
             }
-             
         });
 
         return behaviours;
@@ -429,7 +445,7 @@ public sealed class DepositGoldState : State
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
             mine = miner.GetClosestGoldMineNode(miner.GetStartNode());
-            
+
             if (miner == null)
                 Debug.Log("Miner is null in DepositGoldState");
 
@@ -443,10 +459,10 @@ public sealed class DepositGoldState : State
 
         behaviours.AddMainThreadBehaviour(0, () =>
         {
-
             if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
             {
-                pathToUrbanCenter = miner.GetAStarPathfinder().FindPath(miner.GetStartNode(), urbanCenter, distanceBetweenNodes);
+                pathToUrbanCenter = miner.GetAStarPathfinder()
+                    .FindPath(miner.GetStartNode(), urbanCenter, distanceBetweenNodes);
                 Debug.Log("Path to urban center calculated From: " + miner.GetStartNode().GetCoordinate());
             }
 
@@ -493,8 +509,8 @@ public sealed class DepositGoldState : State
                     Debug.Log("Gold deposited! Amount: " + urbanCenter.GetGold());
                     miner.goldCollected = 0;
                     alreadyDeposited = true;
-                    
-                    if(mine == null)
+
+                    if (mine == null)
                         noMoreMines = true;
 
                     pathToUrbanCenter = null;
@@ -520,32 +536,7 @@ public sealed class DepositGoldState : State
                 alreadyDeposited = false;
                 OnFlag?.Invoke(MinerFlags.OnGoldDeposit);
             }
-            
         });
-
-        return behaviours;
-    }
-
-    public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
-    {
-        return default;
-    }
-
-    public override BehavioursActions GetOnExitBehaviour(params object[] parameters)
-    {
-        return default;
-    }
-}
-
-public sealed class ReturnHomeState : State
-{
-    public override BehavioursActions GetTickBehaviour(params object[] parameters)
-    {
-        BehavioursActions behaviours = new BehavioursActions();
-
-        behaviours.AddMainThreadBehaviour(0, () => { });
-
-        behaviours.SetTransitionBehavior(() => { });
 
         return behaviours;
     }
@@ -567,11 +558,12 @@ public sealed class AlarmState : State
     private float timeSinceLastMove;
     private int currentNodeIndex;
     private bool isMoving;
+
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
-        
-        BaseAgent<MinerStates,MinerFlags> agent = parameters[0] as BaseAgent<MinerStates,MinerFlags>;
+
+        BaseAgent<MinerStates, MinerFlags> agent = parameters[0] as BaseAgent<MinerStates, MinerFlags>;
         UrbanCenterNode<Vec2Int> urbanCenter = parameters[1] as UrbanCenterNode<Vec2Int>;
         float distanceBetweenNodes = Convert.ToSingle(parameters[2]);
 
@@ -584,12 +576,13 @@ public sealed class AlarmState : State
             if (urbanCenter == null)
                 Debug.Log("Urban center is null in AlarmState.");
         });
-        
+
         behaviours.AddMainThreadBehaviour(0, () =>
         {
             if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
             {
-                pathToUrbanCenter = agent.GetAStarPathfinder().FindPath(agent.GetStartNode(), urbanCenter, distanceBetweenNodes);
+                pathToUrbanCenter = agent.GetAStarPathfinder()
+                    .FindPath(agent.GetStartNode(), urbanCenter, distanceBetweenNodes);
                 Debug.Log("Path to urban center calculated for agent during alarm!");
             }
 
@@ -622,7 +615,7 @@ public sealed class AlarmState : State
                 }
             }
         });
-        
+
         behaviours.SetTransitionBehavior(() =>
         {
             if (!agent.gameManager.GetAlarm())
@@ -631,14 +624,14 @@ public sealed class AlarmState : State
                 agent.SetStartNode(agent.GetCurrentNode());
                 OnFlag?.Invoke(MinerFlags.OnBackToWork);
             }
-            
+
             if (agent.IsAtUrbanCenter())
             {
                 agent.SetStartNode(urbanCenter);
                 pathToUrbanCenter = null;
                 agent.SetStart(false);
                 Debug.Log("Alarm state finished. Agent is now at the urban center.");
-                OnFlag?.Invoke(MinerFlags.OnHome); 
+                OnFlag?.Invoke(MinerFlags.OnHome);
             }
         });
 

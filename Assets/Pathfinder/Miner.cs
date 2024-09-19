@@ -52,7 +52,7 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
     {
         base.Start();
 
-        fsm.AddBehaviour<IdleState>(MinerStates.Idle, onTickParameters: () => { return new object[] { GetStart() }; });
+        fsm.AddBehaviour<IdleState>(MinerStates.Idle, onTickParameters: () => { return new object[] { this, GetStart() }; });
 
         fsm.SetTransition(MinerStates.Idle, MinerFlags.OnStart, MinerStates.MoveToMine);
         
@@ -66,9 +66,13 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
         return new object[] { this as Miner, this.transform, travelTime, gameManager.GetDistanceBetweenNodes() };
     }
 
+    private object[] MineGoldEnterParameters()
+    {
+        return new object[] { this };
+    }
     private object[] MineGoldTickParameters()
     {
-        return new object[] { this, goldExtractionSpeed, maxGold };
+        return new object[] { goldExtractionSpeed, maxGold };
     }
 
     private object[] EatFoodTickParameters()
@@ -105,7 +109,7 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
     protected override void AddStates()
     {
         fsm.AddBehaviour<MoveToMineState>(MinerStates.MoveToMine, onTickParameters: MoveToMineTickParameters);
-        fsm.AddBehaviour<MineGoldState>(MinerStates.MineGold, onTickParameters: MineGoldTickParameters);
+        fsm.AddBehaviour<MineGoldState>(MinerStates.MineGold,onEnterParameters: MineGoldEnterParameters, onTickParameters: MineGoldTickParameters);
         fsm.AddBehaviour<EatFoodState>(MinerStates.EatFood, onTickParameters: EatFoodTickParameters);
         fsm.AddBehaviour<DepositGoldState>(MinerStates.DepositGold, onTickParameters: DepositGoldTickParameters);
         fsm.AddBehaviour<WaitFoodState>(MinerStates.WaitFood, onTickParameters: WaitForFoodTickParameters);
