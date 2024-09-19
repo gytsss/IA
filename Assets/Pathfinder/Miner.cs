@@ -43,14 +43,14 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
     public float goldExtractionSpeed = 1f;
     public int energy = 3;
     public int maxEnergy = 3;
-    private bool start = false;
+    
 
 
     private void Start()
     {
         base.Start();
 
-        fsm.AddBehaviour<IdleState>(MinerStates.Idle, onTickParameters: () => { return new object[] { start }; });
+        fsm.AddBehaviour<IdleState>(MinerStates.Idle, onTickParameters: () => { return new object[] { GetStart() }; });
 
         fsm.SetTransition(MinerStates.Idle, MinerFlags.OnStart, MinerStates.MoveToMine);
         
@@ -97,8 +97,7 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
 
     public void GetMapInputValues()
     {
-        start = true;
-        
+        SetStart(true);
     }
 
     protected override void AddStates()
@@ -116,6 +115,7 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
     public override void AddTransitions()
     {
         fsm.SetTransition(MinerStates.MoveToMine, MinerFlags.OnMineFind, MinerStates.MineGold);
+        fsm.SetTransition(MinerStates.MoveToMine, MinerFlags.OnAlarmTrigger, MinerStates.Alarm);
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFoodNeed, MinerStates.EatFood);
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnMineEmpty, MinerStates.MoveToMine);
@@ -125,6 +125,7 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
         fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnGoldDeposit, MinerStates.MoveToMine);
         fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnMineEmptyOfFood, MinerStates.WaitFood);
         fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnFoodAvailable, MinerStates.EatFood);
+        fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnAlarmTrigger, MinerStates.Alarm);
         fsm.SetTransition(MinerStates.Alarm, MinerFlags.OnHome, MinerStates.Idle);
         // fsm.SetTransition(MinerStates.ReturnHome, MinerFlags.OnAlarmTrigger, MinerStates.MoveToMine);
 
@@ -161,11 +162,6 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
         energy = maxEnergy;
     }
     
-
-    public void SetStart(bool start)
-    {
-        this.start = start;
-    }
 }
 
 public static class MinerEvents

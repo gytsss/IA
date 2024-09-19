@@ -40,6 +40,7 @@
         protected float distanceBetweenNodes = 0;
     
         public float travelTime = 0.70f;
+        private bool start = false;
 
         protected virtual void Start()
         {
@@ -141,12 +142,22 @@
     
         public GoldMineNode<Vec2Int> GetCurrentMine()
         {
-            return currentMine;
+            return currentNode as GoldMineNode<Vec2Int>;
         }
         
         public float GetTravelTime()
         {
             return travelTime;
+        }
+        
+        public void SetStart(bool start)
+        {
+            this.start = start;
+        }
+        
+        public bool GetStart()
+        {
+            return start;
         }
     
     

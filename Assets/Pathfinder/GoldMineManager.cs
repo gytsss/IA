@@ -7,6 +7,9 @@ public class GoldMineManager : MonoBehaviour
 {
     public GraphView graphView;
     public List<GoldMineNode<Vec2Int>> goldMines = new List<GoldMineNode<Vec2Int>>();
+    
+    public int goldAmount = 3;
+    public int foodAmount = 5;
 
     public void SetGoldMines(int count, float distanceBetweenNodes)
     {
@@ -20,8 +23,8 @@ public class GoldMineManager : MonoBehaviour
             //goldMine.SetFoodAmount(Random.Range(2, 5));
             goldMine.SetMaxFoodAmount(100);
             goldMine.SetMaxGoldAmount(100);
-            goldMine.SetFoodAmount(5);
-            goldMine.SetGoldAmount(3);
+            goldMine.SetFoodAmount(foodAmount);
+            goldMine.SetGoldAmount(goldAmount);
             goldMines.Add(goldMine);
             
             graphView.Graph.nodes.Remove(randomNode);

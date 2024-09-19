@@ -4306,7 +4306,7 @@ PrefabInstance:
       objectReference: {fileID: 815766764}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: travelTime
-      value: 0.2
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: gameManager

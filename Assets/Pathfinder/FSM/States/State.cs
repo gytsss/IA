@@ -166,7 +166,12 @@ public sealed class MoveToMineState : State
 
         behaviours.SetTransitionBehavior(() =>
         {
-            if (miner.IsAtMine(destinationNode))
+            if (miner.gameManager.GetAlarm())
+            {
+                Debug.Log("Alarm when moving to mine!");
+                OnFlag?.Invoke(MinerFlags.OnAlarmTrigger);
+            }
+            else if (miner.IsAtMine(destinationNode))
             {
                 //miner.SetCurrentMine(destinationNode);
                 miner.SetStartNode(destinationNode);
@@ -372,14 +377,18 @@ public sealed class WaitFoodState : State
 
         behaviours.SetTransitionBehavior(() =>
         {
-             if (miner.GetCurrentMine().HasFood())
-             {
-                 OnFlag?.Invoke(MinerFlags.OnFoodAvailable);
-             }
-             else
-             {
-                 MinerEvents.OnNeedFood?.Invoke(miner);
-             }
+            if (miner.gameManager.GetAlarm())
+            {
+                OnFlag?.Invoke(MinerFlags.OnAlarmTrigger);
+            }
+            else if (miner.GetCurrentMine().HasFood())
+            {
+                OnFlag?.Invoke(MinerFlags.OnFoodAvailable);
+            }
+            else
+            {
+               // MinerEvents.OnNeedFood?.Invoke(miner);
+            }
              
         });
 
@@ -564,6 +573,7 @@ public sealed class AlarmState : State
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
+            agent.SetStartNode(agent.GetCurrentNode());
             if (agent == null)
                 Debug.Log("Agent is null in AlarmState.");
 
@@ -613,7 +623,9 @@ public sealed class AlarmState : State
         {
             if (agent.IsAtUrbanCenter())
             {
+                agent.SetStartNode(urbanCenter);
                 pathToUrbanCenter = null;
+                agent.SetStart(false);
                 Debug.Log("Alarm state finished. Agent is now at the urban center.");
                 OnFlag?.Invoke(MinerFlags.OnHome); 
             }

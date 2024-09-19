@@ -27,7 +27,6 @@ public enum CaravanFlags
 
 public class Caravan : BaseAgent<CaravanStates, CaravanFlags>
 {
-    private bool start = false;
 
 
     public Miner miner;
@@ -54,7 +53,7 @@ public class Caravan : BaseAgent<CaravanStates, CaravanFlags>
     {
         base.Start();
 
-        fsm.AddBehaviour<IdleState>(CaravanStates.Idle, onTickParameters: () => { return new object[] { start }; });
+        fsm.AddBehaviour<IdleState>(CaravanStates.Idle, onTickParameters: () => { return new object[] { GetStart() }; });
 
         fsm.SetTransition(CaravanStates.Idle, CaravanFlags.OnFoodNeed, CaravanStates.CaravanMoveToMine);
 
@@ -65,7 +64,7 @@ public class Caravan : BaseAgent<CaravanStates, CaravanFlags>
     private object[] CaravanMoveToMineTickParameters()
     {
         return new object[]
-            { this as Caravan, this.transform, destinationNode, startNode, travelTime, distanceBetweenNodes, path };
+            { this as Caravan, this.transform, travelTime, distanceBetweenNodes };
     }
 
 
@@ -84,14 +83,9 @@ public class Caravan : BaseAgent<CaravanStates, CaravanFlags>
         return new object[] { this };
     }
 
-    private void Update()
-    {
-        fsm.Tick();
-    }
-
     public void GetMapInputValues()
     {
-        start = true;
+        SetStart(true);
     }
     
     
