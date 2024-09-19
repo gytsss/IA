@@ -244,6 +244,11 @@ public sealed class MineGoldState : State
                         timeSinceLastExtraction = 0f;
                         Debug.Log("Mine Gold amount: " + mine.GetGoldAmount() +" at mine " + mine.GetCoordinate());
                         Debug.Log("Gold mined: " + goldCount);
+
+                        if (!mine.HasGold() && miner.GetClosestGoldMineNode(miner.GetCurrentNode()) == null)
+                        {
+                            noMoreMines = true;
+                        }
                     }
                 }
             }
