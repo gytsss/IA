@@ -15,7 +15,6 @@ public enum MinerStates
     EatFood,
     DepositGold,
     WaitFood,
-    ReturnHome,
     Alarm
 }
 
@@ -31,7 +30,8 @@ public enum MinerFlags
     OnMineEmptyOfFood,
     OnGoldDeposit,
     OnNoMoreMines,
-    OnAlarmTrigger
+    OnAlarmTrigger,
+    OnHome
 }
 
 
@@ -91,13 +91,9 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
 
     private object[] RespondToAlarmTickParameters()
     {
-        return new object[] { this, gameManager.GetUrbanCenterNode() };
+        return new object[] { this, gameManager.GetUrbanCenterNode(), gameManager.GetDistanceBetweenNodes() };
     }
-
-    private void Update()
-    {
-        fsm.Tick();
-    }
+    
 
     public void GetMapInputValues()
     {
@@ -112,8 +108,8 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
         fsm.AddBehaviour<EatFoodState>(MinerStates.EatFood, onTickParameters: EatFoodTickParameters);
         fsm.AddBehaviour<DepositGoldState>(MinerStates.DepositGold, onTickParameters: DepositGoldTickParameters);
         fsm.AddBehaviour<WaitFoodState>(MinerStates.WaitFood, onTickParameters: WaitForFoodTickParameters);
+        fsm.AddBehaviour<AlarmState>(MinerStates.Alarm, onTickParameters: RespondToAlarmTickParameters);
         // fsm.AddBehaviour<ReturnHomeState>(MinerStates.ReturnHome, onTickParameters: ReturnToUrbanCenterTickParameters);
-        // fsm.AddBehaviour<AlarmState>(MinerStates.Alarm, onTickParameters: RespondToAlarmTickParameters);
 
     }
 
@@ -123,20 +119,17 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFoodNeed, MinerStates.EatFood);
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
         fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnMineEmpty, MinerStates.MoveToMine);
+        fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnAlarmTrigger, MinerStates.Alarm);
         fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
         fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnNoMoreMines, MinerStates.Idle);
         fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnGoldDeposit, MinerStates.MoveToMine);
         fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnMineEmptyOfFood, MinerStates.WaitFood);
         fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnFoodAvailable, MinerStates.EatFood);
-        // fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnAlarmTrigger, MinerStates.ReturnHome);
+        fsm.SetTransition(MinerStates.Alarm, MinerFlags.OnHome, MinerStates.Idle);
         // fsm.SetTransition(MinerStates.ReturnHome, MinerFlags.OnAlarmTrigger, MinerStates.MoveToMine);
 
     }
-
-    public UrbanCenterNode<Vec2Int> GetUrbanCenterNode()
-    {
-        return gameManager.GetUrbanCenterNode();
-    }
+    
     
     public int GetEnergy()
     {

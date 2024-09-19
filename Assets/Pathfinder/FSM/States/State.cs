@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using DefaultNamespace;
+using Pathfinder;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -250,6 +251,11 @@ public sealed class MineGoldState : State
                 goldCount = 0;
                 noMoreMines = false;
                 OnFlag?.Invoke(MinerFlags.OnFullInventory);
+            }
+            else if (miner.gameManager.GetAlarm())
+            {
+                Debug.Log("Alarm when mining!");
+                OnFlag?.Invoke(MinerFlags.OnAlarmTrigger);
             }
             else if (miner.goldCollected >= maxGold)
             {
@@ -544,75 +550,36 @@ public sealed class ReturnHomeState : State
 
 public sealed class AlarmState : State
 {
-    public override BehavioursActions GetTickBehaviour(params object[] parameters)
-    {
-        BehavioursActions behaviours = new BehavioursActions();
-
-        behaviours.AddMainThreadBehaviour(0, () => { });
-
-        behaviours.SetTransitionBehavior(() => { });
-
-        return behaviours;
-    }
-
-    public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
-    {
-        return default;
-    }
-
-    public override BehavioursActions GetOnExitBehaviour(params object[] parameters)
-    {
-        return default;
-    }
-}
-
-public sealed class CaravanMoveToMineState : State
-{
+    private List<Node<Vec2Int>> pathToUrbanCenter;
     private float timeSinceLastMove;
     private int currentNodeIndex;
-    private List<Node<Vec2Int>> path;
-    private Transform caravanTransform;
-    private float travelTime;
     private bool isMoving;
-
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
-
-        Caravan caravan = parameters[0] as Caravan;
-        caravanTransform = parameters[1] as Transform;
-        GoldMineNode<Vec2Int> mine = parameters[2] as GoldMineNode<Vec2Int>;
-        Node<Vec2Int> startNode = parameters[3] as Node<Vec2Int>;
-        travelTime = Convert.ToSingle(parameters[4]);
-        float distanceBetweenNodes = Convert.ToSingle(parameters[5]);
-        path = parameters[6] as List<Node<Vec2Int>>;
-
         
-        
-        behaviours.AddMultithreadbleBehaviours(0, () =>
-        {
-            if (caravan == null || mine == null || startNode == null)
-                Debug.Log("Null parameters in CaravanMoveToMineState");
-            
-            caravan.SetDestinationNode(caravan.GetClosestGoldMineNode(caravan.GetStartNode()));
-            Debug.Log("caravan.GetClosestGoldMineNode: " + caravan.GetClosestGoldMineNode(caravan.GetStartNode()).GetCoordinate());
-            Debug.Log("caravan.GetStartNode: " + caravan.GetStartNode().GetCoordinate());
-            Debug.Log("caravan.GetDestinationNode: " + caravan.GetDestinationNode().GetCoordinate());
-        });
+        BaseAgent<MinerStates,MinerFlags> agent = parameters[0] as BaseAgent<MinerStates,MinerFlags>;
+        UrbanCenterNode<Vec2Int> urbanCenter = parameters[1] as UrbanCenterNode<Vec2Int>;
+        float distanceBetweenNodes = Convert.ToSingle(parameters[2]);
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
-            if (path == null)
-                Debug.Log("Path is null. No valid path found.");
+            if (agent == null)
+                Debug.Log("Agent is null in AlarmState.");
+
+            if (urbanCenter == null)
+                Debug.Log("Urban center is null in AlarmState.");
         });
-
-
+        
         behaviours.AddMainThreadBehaviour(0, () =>
         {
-            path = caravan.GetAStarPathfinder().FindPath(caravan.GetStartNode(), caravan.GetDestinationNode(), distanceBetweenNodes);
+            if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
+            {
+                pathToUrbanCenter = agent.GetAStarPathfinder().FindPath(agent.GetStartNode(), urbanCenter, distanceBetweenNodes);
+                Debug.Log("Path to urban center calculated for agent during alarm!");
+            }
 
-            
-            if (path != null && path.Count > 0)
+            if (pathToUrbanCenter != null && pathToUrbanCenter.Count > 0)
             {
                 if (!isMoving)
                 {
@@ -623,41 +590,37 @@ public sealed class CaravanMoveToMineState : State
 
                 timeSinceLastMove += Time.deltaTime;
 
-                if (timeSinceLastMove >= travelTime)
+                if (timeSinceLastMove >= agent.GetTravelTime())
                 {
-                    if (currentNodeIndex < path.Count)
+                    if (currentNodeIndex < pathToUrbanCenter.Count)
                     {
-                        Node<Vec2Int> node = path[currentNodeIndex];
-                        caravanTransform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
-                        caravan.SetCurrentNode(node);
+                        Node<Vec2Int> nextNode = pathToUrbanCenter[currentNodeIndex];
+                        agent.transform.position = new Vector3(nextNode.GetCoordinate().x, nextNode.GetCoordinate().y);
+                        agent.SetCurrentNode(nextNode);
                         currentNodeIndex++;
                         timeSinceLastMove = 0f;
                     }
                     else
                     {
                         isMoving = false;
-                        Debug.Log("Destination reached! x: " + mine.GetCoordinate().x + " y: " +
-                                  mine.GetCoordinate().y);
-                        caravan.SetCurrentMine(mine);
+                        Debug.Log("Agent reached the urban center during the alarm!");
                     }
                 }
             }
         });
-
+        
         behaviours.SetTransitionBehavior(() =>
         {
-            if (caravan.IsAtMine(mine))
+            if (agent.IsAtUrbanCenter())
             {
-                caravan.SetCurrentMine(mine);
-                caravan.SetStartNode(mine);
-                Debug.Log("Start mining! x: " + mine.GetCoordinate().x + " y: " + mine.GetCoordinate().y);
-                OnFlag?.Invoke(MinerFlags.OnMineFind);
+                pathToUrbanCenter = null;
+                Debug.Log("Alarm state finished. Agent is now at the urban center.");
+                OnFlag?.Invoke(MinerFlags.OnHome); 
             }
         });
 
         return behaviours;
     }
-
 
     public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
     {
@@ -669,6 +632,7 @@ public sealed class CaravanMoveToMineState : State
         return default;
     }
 }
+
 
 // public sealed class ChaseState : State
 // {

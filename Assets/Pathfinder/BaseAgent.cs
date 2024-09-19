@@ -5,8 +5,22 @@
     using Pathfinder;
     using UnityEngine;
     using Random = UnityEngine.Random;
+
+    public enum SharedStates
+    {
+        Idle,
+        MoveToMine,
+        Alarm
+    }
     
-    public abstract class BaseAgent<TState, TFlag> : MonoBehaviour 
+    public enum SharedFlags
+    {
+        OnStart,
+        OnMineFind,
+        OnAlarmTrigger
+    }
+    
+    public abstract class BaseAgent<TState, TFlag> : MonoBehaviour, IAgent
     where TState : Enum
     where TFlag : Enum
     {
@@ -26,8 +40,7 @@
         protected float distanceBetweenNodes = 0;
     
         public float travelTime = 0.70f;
-        
-    
+
         protected virtual void Start()
         {
             fsm = new FSM<TState, TFlag>();
@@ -64,7 +77,7 @@
         {
             currentNode = node;
         }
-    
+
         public Node<Vec2Int> GetStartNode()
         {
             return startNode;
@@ -129,6 +142,11 @@
         public GoldMineNode<Vec2Int> GetCurrentMine()
         {
             return currentMine;
+        }
+        
+        public float GetTravelTime()
+        {
+            return travelTime;
         }
     
     

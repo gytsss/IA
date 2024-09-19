@@ -45,7 +45,7 @@ public class Caravan : BaseAgent<CaravanStates, CaravanFlags>
     private void OnFoodNeed(Miner obj)
     {
         Debug.Log("Caravan moving to mine");
-        fsm.AddBehaviour<CaravanMoveToMineState>(CaravanStates.CaravanMoveToMine, onTickParameters: CaravanMoveToMineTickParameters);
+        fsm.AddBehaviour<MoveToMineState>(CaravanStates.CaravanMoveToMine, onTickParameters: CaravanMoveToMineTickParameters);
 
         fsm.ForceState(CaravanStates.CaravanMoveToMine);
     }

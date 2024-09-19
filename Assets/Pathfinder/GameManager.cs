@@ -15,7 +15,7 @@ namespace Pathfinder
 
         private UrbanCenterNode<Vec2Int> urbanCenter;
 
-        
+        private bool alarm = false;
         private float distanceBetweenNodes;
         public void GetMapInputValues()
         {
@@ -63,6 +63,16 @@ namespace Pathfinder
         public UrbanCenterNode<Vec2Int> GetUrbanCenterNode()
         {
             return urbanCenter;
+        }
+        
+        public void ActivateAlarm()
+        {
+            alarm = true;
+        }
+        
+        public bool GetAlarm()
+        {
+            return alarm;
         }
 
         public float GetDistanceBetweenNodes()
