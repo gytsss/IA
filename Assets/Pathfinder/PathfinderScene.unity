@@ -4118,6 +4118,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graphView: {fileID: 815766764}
+  goldAmount: 3
+  foodAmount: 0
 --- !u!4 &2056860258
 Transform:
   m_ObjectHideFlags: 0

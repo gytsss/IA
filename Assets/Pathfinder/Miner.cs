@@ -123,6 +123,7 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
         fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
         fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnNoMoreMines, MinerStates.Idle);
         fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnGoldDeposit, MinerStates.MoveToMine);
+        fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnAlarmTrigger, MinerStates.Alarm);
         fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnMineEmptyOfFood, MinerStates.WaitFood);
         fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnFoodAvailable, MinerStates.EatFood);
         fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnAlarmTrigger, MinerStates.Alarm);

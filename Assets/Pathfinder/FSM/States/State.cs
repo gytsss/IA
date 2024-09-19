@@ -504,7 +504,11 @@ public sealed class DepositGoldState : State
 
         behaviours.SetTransitionBehavior(() =>
         {
-            if (noMoreMines)
+            if (miner.gameManager.GetAlarm())
+            {
+                OnFlag?.Invoke(MinerFlags.OnAlarmTrigger);
+            }
+            else if (noMoreMines)
             {
                 Debug.Log("No more gold mines to mine....");
                 noMoreMines = false;
