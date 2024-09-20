@@ -16,6 +16,7 @@ namespace Pathfinder
         private UrbanCenterNode<Vec2Int> urbanCenter;
 
         private bool alarm = false;
+        private bool disableAlarm = false;
         private float distanceBetweenNodes;
         public void GetMapInputValues()
         {
@@ -68,11 +69,19 @@ namespace Pathfinder
         public void ActivateAlarm()
         {
             alarm = true;
+            disableAlarm = false;
         }
         
         public void DisableAlarm()
         {
             alarm = false;
+            miner.SetStart(true);
+            //caravan.SetStart(true);
+        }
+
+        public bool GetDisableAlarm()
+        {
+            return disableAlarm;
         }
         
         public bool GetAlarm()
