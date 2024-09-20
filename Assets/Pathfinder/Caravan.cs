@@ -6,75 +6,37 @@ using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public enum CaravanStates
+
+
+public class Caravan : BaseAgent
 {
-    Idle,
-    CaravanMoveToMine,
-    DepositFood,
-    ReturnHome,
-    Alarm
-}
-
-public enum CaravanFlags
-{
-    OnFoodNeed,
-    OnMineFind,
-    OnFoodDeposit,
-    OnHome,
-    OnAlarmTrigger
-}
-
-
-public class Caravan : BaseAgent<CaravanStates, CaravanFlags>
-{
-
-    private void OnEnable()
-    {
-        MinerEvents.OnNeedFood += OnFoodNeed;
-    }
+    public int food = 10;
     
-    private void OnDisable()
-    {
-        MinerEvents.OnNeedFood -= OnFoodNeed;
-    }
-
-    private void OnFoodNeed(Miner obj)
-    {
-        Debug.Log("Caravan moving to mine");
-        fsm.AddBehaviour<MoveToMineState>(CaravanStates.CaravanMoveToMine, onTickParameters: CaravanMoveToMineTickParameters);
-
-        fsm.ForceState(CaravanStates.CaravanMoveToMine);
-    }
-
     private void Start()
     {
         base.Start();
 
-        fsm.AddBehaviour<IdleState>(CaravanStates.Idle, onTickParameters: () => { return new object[] { this, GetStart() }; });
+        SetIsMiner(false);
+        
+        fsm.AddBehaviour<IdleState>(States.Idle, onTickParameters: () => { return new object[] {  GetStart() }; });
 
-        fsm.SetTransition(CaravanStates.Idle, CaravanFlags.OnFoodNeed, CaravanStates.CaravanMoveToMine);
+        fsm.SetTransition(States.Idle, Flags.OnStart, States.WaitMine);
 
-        fsm.ForceState(CaravanStates.Idle);
+        fsm.ForceState(States.Idle);
     }
     
-
-    private object[] CaravanMoveToMineTickParameters()
+    private object[] MoveToMineTickParameters()
     {
         return new object[]
-            { this as Caravan, this.transform, travelTime, distanceBetweenNodes };
+            { this as Caravan, this.transform, travelTime, distanceBetweenNodes, GetStartNode() };
     }
-
-
+    
     private object[] DepositFoodTickParameters()
     {
         return new object[] { this, currentMine };
     }
-
-    private object[] ReturnHomeTickParameters()
-    {
-        return new object[] { this, currentMine };
-    }
-
+    
+    
     private object[] AlarmTickParameters()
     {
         return new object[] { this };
@@ -84,20 +46,17 @@ public class Caravan : BaseAgent<CaravanStates, CaravanFlags>
     {
         SetStart(true);
     }
-    
-    
+
+
     protected override void AddStates()
     {
-        //fsm.AddBehaviour<CaravanMoveToMineState>(CaravanStates.CaravanMoveToMine, onTickParameters: CaravanMoveToMineTickParameters);
-        //fsm.AddBehaviour<MineGoldState>(CaravanStates.DepositGold, onTickParameters: MineGoldTickParameters);
-        //fsm.AddBehaviour<EatFoodState>(CaravanStates.EatFood, onTickParameters: EatFoodTickParameters);
-        //fsm.AddBehaviour<DepositGoldState>(CaravanStates.DepositGold, onTickParameters: DepositGoldTickParameters);
-        
+       fsm.AddBehaviour<WaitMineState>(States.WaitMine, onTickParameters: () => { return new object[] { gameManager }; });
+        fsm.AddBehaviour<MoveToMineState>(States.MoveToMine, onTickParameters: MoveToMineTickParameters);
     }
 
     public override void AddTransitions()
     {
-        //fsm.SetTransition(CaravanStates.CaravanMoveToMine, CaravanFlags.OnMineFind, CaravanStates.DepositFood);
+        fsm.SetTransition(States.WaitMine, Flags.OnMineFind, States.MoveToMine);
         //fsm.SetTransition(CaravanStates.DepositFood, CaravanFlags.OnFoodDeposit, CaravanStates.ReturnHome);
         //fsm.SetTransition(CaravanStates.ReturnHome, CaravanFlags.OnHome, CaravanStates.Idle);
 

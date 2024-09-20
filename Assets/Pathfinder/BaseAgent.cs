@@ -6,23 +6,38 @@
     using UnityEngine;
     using Random = UnityEngine.Random;
 
-    public enum SharedStates
+    public enum States
     {
         Idle,
         MoveToMine,
-        Alarm
+        MineGold,
+        EatFood,
+        DepositGold,
+        WaitFood,
+        Alarm,
+        DepositFood,
+        WaitMine
     }
     
-    public enum SharedFlags
+    public enum Flags
     {
         OnStart,
         OnMineFind,
-        OnAlarmTrigger
+        OnFoodNeed,
+        OnFoodEaten,
+        OnFoodAvailable,
+        OnFullInventory,
+        OnMineEmpty,
+        OnMineEmptyOfFood,
+        OnGoldDeposit,
+        OnNoMoreMines,
+        OnAlarmTrigger,
+        OnHome,
+        OnBackToWork,
+        OnFoodDeposit
     }
     
-    public abstract class BaseAgent<TState, TFlag> : MonoBehaviour, IAgent
-    where TState : Enum
-    where TFlag : Enum
+    public abstract class BaseAgent : MonoBehaviour
     {
     
         public GameManager gameManager;
@@ -31,7 +46,7 @@
         protected AStarPathfinder<Node<Vec2Int>> Pathfinder;
         protected GoldMineNode<Vec2Int> currentMine;
 
-        protected FSM<TState, TFlag> fsm;
+        protected FSM<States, Flags> fsm;
         protected Node<Vec2Int> startNode;
         protected Node<Vec2Int> destinationNode;
     
@@ -40,11 +55,12 @@
         protected float distanceBetweenNodes = 0;
     
         public float travelTime = 0.70f;
-        private bool start = false;
+        protected bool start = false;
+        protected bool isMiner = false;
 
         protected virtual void Start()
         {
-            fsm = new FSM<TState, TFlag>();
+            fsm = new FSM<States, Flags>();
         }
         
         public void InitAgent()
@@ -112,6 +128,10 @@
         public GoldMineNode<Vec2Int> GetClosestGoldMineNode(Node<Vec2Int> startNode)
         {
             return gameManager.GetGoldMineManager().FindClosestGoldMine(startNode);
+        } 
+        public GoldMineNode<Vec2Int> GetClosestGoldMineNodeBeingMined(Node<Vec2Int> startNode)
+        {
+            return gameManager.GetGoldMineManager().FindClosestGoldMineBeingMined(startNode);
         }
     
         public void SetPath(List<Node<Vec2Int>> path)
@@ -158,6 +178,16 @@
         public bool GetStart()
         {
             return start;
+        }
+        
+        public void SetIsMiner(bool isMiner)
+        {
+            this.isMiner = isMiner;
+        }
+        
+        public bool GetIsMiner()
+        {
+            return isMiner;
         }
     
     

@@ -23,7 +23,6 @@ public class GoldMineManager : MonoBehaviour
             goldMine.SetMaxGoldAmount(100);
             goldMine.SetFoodAmount(foodAmount);
             goldMine.SetGoldAmount(goldAmount);
-            Debug.Log("Gold amount: " + goldMine.GetGoldAmount());
             goldMines.Add(goldMine);
             
             graphView.Graph.nodes.Remove(randomNode);
@@ -46,6 +45,25 @@ public class GoldMineManager : MonoBehaviour
                     closestDistance = distance;
                     closestMine = mine;
                 }
+            
+        }
+
+        return closestMine;
+    }
+
+    public GoldMineNode<Vec2Int> FindClosestGoldMineBeingMined(Node<Vec2Int> startNode)
+    {
+        GoldMineNode<Vec2Int> closestMine = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (GoldMineNode<Vec2Int> mine in goldMines)
+        {
+            float distance = Vec2Int.Distance(mine.GetCoordinate(), startNode.GetCoordinate());
+            if (distance < closestDistance && mine.HasGold() && mine.IsBeingMined())
+            {
+                closestDistance = distance;
+                closestMine = mine;
+            }
             
         }
 

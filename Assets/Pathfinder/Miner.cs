@@ -7,37 +7,8 @@ using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public enum MinerStates
-{
-    Idle,
-    MoveToMine,
-    MineGold,
-    EatFood,
-    DepositGold,
-    WaitFood,
-    Alarm,
-    DisableAlarm
-}
 
-public enum MinerFlags
-{
-    OnStart,
-    OnMineFind,
-    OnFoodNeed,
-    OnFoodEaten,
-    OnFoodAvailable,
-    OnFullInventory,
-    OnMineEmpty,
-    OnMineEmptyOfFood,
-    OnGoldDeposit,
-    OnNoMoreMines,
-    OnAlarmTrigger,
-    OnHome,
-    OnBackToWork
-}
-
-
-public class Miner : BaseAgent<MinerStates, MinerFlags>
+public class Miner : BaseAgent
 {
     
     public int maxGold = 15;
@@ -51,19 +22,21 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
     private void Start()
     {
         base.Start();
-
-        fsm.AddBehaviour<IdleState>(MinerStates.Idle, onTickParameters: () => { return new object[] { this, GetStart() }; });
-
-        fsm.SetTransition(MinerStates.Idle, MinerFlags.OnStart, MinerStates.MoveToMine);
         
-        fsm.ForceState(MinerStates.Idle);
+        SetIsMiner(true);
+
+        fsm.AddBehaviour<IdleState>(States.Idle, onTickParameters: () => { return new object[] {  GetStart() }; });
+
+        fsm.SetTransition(States.Idle, Flags.OnStart, States.MoveToMine);
+        
+        fsm.ForceState(States.Idle);
     }
 
     
 
     private object[] MoveToMineTickParameters()
     {
-        return new object[] { this as Miner, this.transform, travelTime, gameManager.GetDistanceBetweenNodes() };
+        return new object[] { this as Miner, this.transform, travelTime, gameManager.GetDistanceBetweenNodes(), GetStartNode() };
     }
 
     private object[] MineGoldEnterParameters()
@@ -108,33 +81,33 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
 
     protected override void AddStates()
     {
-        fsm.AddBehaviour<MoveToMineState>(MinerStates.MoveToMine, onTickParameters: MoveToMineTickParameters);
-        fsm.AddBehaviour<MineGoldState>(MinerStates.MineGold,onEnterParameters: MineGoldEnterParameters, onTickParameters: MineGoldTickParameters);
-        fsm.AddBehaviour<EatFoodState>(MinerStates.EatFood, onTickParameters: EatFoodTickParameters);
-        fsm.AddBehaviour<DepositGoldState>(MinerStates.DepositGold, onTickParameters: DepositGoldTickParameters);
-        fsm.AddBehaviour<WaitFoodState>(MinerStates.WaitFood, onTickParameters: WaitForFoodTickParameters);
-        fsm.AddBehaviour<AlarmState>(MinerStates.Alarm, onTickParameters: RespondToAlarmTickParameters);
+        fsm.AddBehaviour<MoveToMineState>(States.MoveToMine, onTickParameters: MoveToMineTickParameters);
+        fsm.AddBehaviour<MineGoldState>(States.MineGold,onEnterParameters: MineGoldEnterParameters, onTickParameters: MineGoldTickParameters);
+        fsm.AddBehaviour<EatFoodState>(States.EatFood, onTickParameters: EatFoodTickParameters);
+        fsm.AddBehaviour<DepositGoldState>(States.DepositGold, onTickParameters: DepositGoldTickParameters);
+        fsm.AddBehaviour<WaitFoodState>(States.WaitFood, onTickParameters: WaitForFoodTickParameters);
+        fsm.AddBehaviour<AlarmState>(States.Alarm, onTickParameters: RespondToAlarmTickParameters);
         // fsm.AddBehaviour<ReturnHomeState>(MinerStates.ReturnHome, onTickParameters: ReturnToUrbanCenterTickParameters);
 
     }
 
     public override void AddTransitions()
     {
-        fsm.SetTransition(MinerStates.MoveToMine, MinerFlags.OnMineFind, MinerStates.MineGold);
-        fsm.SetTransition(MinerStates.MoveToMine, MinerFlags.OnAlarmTrigger, MinerStates.Alarm);
-        fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFoodNeed, MinerStates.EatFood);
-        fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnFullInventory, MinerStates.DepositGold);
-        fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnMineEmpty, MinerStates.MoveToMine);
-        fsm.SetTransition(MinerStates.MineGold, MinerFlags.OnAlarmTrigger, MinerStates.Alarm);
-        fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnFoodEaten, MinerStates.MineGold);
-        fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnNoMoreMines, MinerStates.Idle);
-        fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnGoldDeposit, MinerStates.MoveToMine);
-        fsm.SetTransition(MinerStates.DepositGold, MinerFlags.OnAlarmTrigger, MinerStates.Alarm);
-        fsm.SetTransition(MinerStates.EatFood, MinerFlags.OnMineEmptyOfFood, MinerStates.WaitFood);
-        fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnFoodAvailable, MinerStates.EatFood);
-        fsm.SetTransition(MinerStates.WaitFood, MinerFlags.OnAlarmTrigger, MinerStates.Alarm);
-        fsm.SetTransition(MinerStates.Alarm, MinerFlags.OnHome, MinerStates.Idle);
-        fsm.SetTransition(MinerStates.Alarm, MinerFlags.OnBackToWork, MinerStates.MoveToMine);
+        fsm.SetTransition(States.MoveToMine, Flags.OnMineFind, States.MineGold);
+        fsm.SetTransition(States.MoveToMine, Flags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.MineGold, Flags.OnFoodNeed, States.EatFood);
+        fsm.SetTransition(States.MineGold, Flags.OnFullInventory, States.DepositGold);
+        fsm.SetTransition(States.MineGold, Flags.OnMineEmpty, States.MoveToMine);
+        fsm.SetTransition(States.MineGold, Flags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.EatFood, Flags.OnFoodEaten, States.MineGold);
+        fsm.SetTransition(States.DepositGold, Flags.OnNoMoreMines, States.Idle);
+        fsm.SetTransition(States.DepositGold, Flags.OnGoldDeposit, States.MoveToMine);
+        fsm.SetTransition(States.DepositGold, Flags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.EatFood, Flags.OnMineEmptyOfFood, States.WaitFood);
+        fsm.SetTransition(States.WaitFood, Flags.OnFoodAvailable, States.EatFood);
+        fsm.SetTransition(States.WaitFood, Flags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.Alarm, Flags.OnHome, States.Idle);
+        fsm.SetTransition(States.Alarm, Flags.OnBackToWork, States.MoveToMine);
         // fsm.SetTransition(MinerStates.ReturnHome, MinerFlags.OnAlarmTrigger, MinerStates.MoveToMine);
 
     }
@@ -170,9 +143,4 @@ public class Miner : BaseAgent<MinerStates, MinerFlags>
         energy = maxEnergy;
     }
     
-}
-
-public static class MinerEvents
-{
-    public static Action<Miner> OnNeedFood;
 }

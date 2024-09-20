@@ -48,6 +48,7 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
     private int foodAmount;
     private int maxFoodAmount;
     private int maxGoldAmount;
+    private bool beingMined = false;
 
     public GoldMineNode(Coordinate coordinate, int initialGoldAmount, int initialFoodAmount)
     {
@@ -118,6 +119,16 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
     {
         goldAmount -= amount;
         if (goldAmount < 0) goldAmount = 0;
+    }
+    
+    public bool IsBeingMined()
+    {
+        return beingMined;
+    }
+    
+    public void SetBeingMined(bool beingMined)
+    {
+        this.beingMined = beingMined;
     }
 }
 
