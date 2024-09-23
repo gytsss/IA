@@ -34,9 +34,13 @@ public class Miner : BaseAgent
 
     
 
+    private object[] MoveToMineEnterParameters()
+    {
+        return new object[] { this , gameManager.GetDistanceBetweenNodes(), GetStartNode() };
+    } 
     private object[] MoveToMineTickParameters()
     {
-        return new object[] { this as Miner, this.transform, travelTime, gameManager.GetDistanceBetweenNodes(), GetStartNode() };
+        return new object[] {this.transform, travelTime};
     }
 
     private object[] MineGoldEnterParameters()
@@ -81,7 +85,7 @@ public class Miner : BaseAgent
 
     protected override void AddStates()
     {
-        fsm.AddBehaviour<MoveToMineState>(States.MoveToMine, onTickParameters: MoveToMineTickParameters);
+        fsm.AddBehaviour<MoveToMineState>(States.MoveToMine, onEnterParameters: MoveToMineEnterParameters,onTickParameters: MoveToMineTickParameters);
         fsm.AddBehaviour<MineGoldState>(States.MineGold,onEnterParameters: MineGoldEnterParameters, onTickParameters: MineGoldTickParameters);
         fsm.AddBehaviour<EatFoodState>(States.EatFood, onTickParameters: EatFoodTickParameters);
         fsm.AddBehaviour<DepositGoldState>(States.DepositGold, onTickParameters: DepositGoldTickParameters);

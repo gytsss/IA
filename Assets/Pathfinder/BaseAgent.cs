@@ -16,7 +16,8 @@
         WaitFood,
         Alarm,
         DepositFood,
-        WaitMine
+        WaitMine,
+        ReturnHome
     }
     
     public enum Flags

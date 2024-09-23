@@ -62,11 +62,6 @@ public sealed class IdleState : State
 
         bool start = Convert.ToBoolean(parameters[0]);
 
-        behaviours.AddMultithreadbleBehaviours(0, () =>
-        {
-            Debug.Log("Idle agent");
-        });
-        
         behaviours.SetTransitionBehavior(() =>
         {
             if (start)
@@ -91,6 +86,7 @@ public sealed class IdleState : State
 
 public sealed class MoveToMineState : State
 {
+    private BaseAgent agent;
     private float timeSinceLastMove;
     private int currentNodeIndex;
     private List<Node<Vec2Int>> path;
@@ -99,22 +95,20 @@ public sealed class MoveToMineState : State
     private Transform minerTransform;
     private float travelTime;
     private bool isMoving;
+    private float distanceBetweenNodes;
 
     public override BehavioursActions GetTickBehaviour(params object[] parameters)
     {
         BehavioursActions behaviours = new BehavioursActions();
 
-        BaseAgent agent = parameters[0] as BaseAgent;
-        minerTransform = parameters[1] as Transform;
-        travelTime = Convert.ToSingle(parameters[2]);
-        float distanceBetweenNodes = Convert.ToSingle(parameters[3]);
-        startNode = parameters[4] as Node<Vec2Int>;
+        minerTransform = parameters[0] as Transform;
+        travelTime = Convert.ToSingle(parameters[1]);
 
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
             if (agent == null)
-                Debug.Log("Null miner in MoveToMineState");
+                Debug.Log("Null agent in MoveToMineState");
             if (destinationNode == null)
                 Debug.Log("Null mine in MoveToMineState");
             if (startNode == null)
@@ -124,19 +118,6 @@ public sealed class MoveToMineState : State
 
         behaviours.AddMainThreadBehaviour(0, () =>
         {
-            if (agent.GetIsMiner())
-                agent.SetDestinationNode(agent.GetClosestGoldMineNode(startNode));
-            else
-                agent.SetDestinationNode(agent.GetClosestGoldMineNodeBeingMined(startNode));
-
-            destinationNode = agent.GetDestinationNode() as GoldMineNode<Vec2Int>;
-            // startNode = agent.GetStartNode();
-
-            path = agent.GetAStarPathfinder().FindPath(startNode, destinationNode, distanceBetweenNodes);
-
-            if (path == null)
-                Debug.Log("Path is null. No valid path found.");
-
             if (path != null && path.Count > 0)
             {
                 if (!isMoving)
@@ -183,16 +164,43 @@ public sealed class MoveToMineState : State
                 Debug.Log("Start mining! x: " + destinationNode.GetCoordinate().x + " y: " +
                           destinationNode.GetCoordinate().y);
                 OnFlag?.Invoke(Flags.OnMineFind);
+                OnFlag?.Invoke(Flags.OnFoodDeposit);
             }
         });
 
         return behaviours;
     }
 
-
     public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
     {
-        return default;
+        BehavioursActions behaviours = new BehavioursActions();
+
+        agent = parameters[0] as BaseAgent;
+        distanceBetweenNodes = Convert.ToSingle(parameters[1]);
+        startNode = parameters[2] as Node<Vec2Int>;
+
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            if (agent == null)
+                Debug.Log("Agent is null in MoveToMineState");
+        });
+
+        behaviours.AddMainThreadBehaviour(0, () =>
+        {
+            if (agent.GetIsMiner())
+                agent.SetDestinationNode(agent.GetClosestGoldMineNode(startNode));
+            else
+                agent.SetDestinationNode(agent.GetClosestGoldMineNodeBeingMined(startNode));
+
+            destinationNode = agent.GetDestinationNode() as GoldMineNode<Vec2Int>;
+
+            path = agent.GetAStarPathfinder().FindPath(startNode, destinationNode, distanceBetweenNodes);
+
+            if (path == null)
+                Debug.Log("Path is null. No valid path found.");
+        });
+
+        return behaviours;
     }
 
     public override BehavioursActions GetOnExitBehaviour(params object[] parameters)
@@ -244,7 +252,8 @@ public sealed class MineGoldState : State
                         miner.goldCollected++;
                         miner.SetEnergy(miner.GetEnergy() - 1);
                         timeSinceLastExtraction = 0f;
-                        Debug.Log("Mine Gold amount: " + mine.GetGoldAmount() + " at mine " + mine.GetCoordinate() + "is being mined: " + mine.IsBeingMined());
+                        Debug.Log("Mine Gold amount: " + mine.GetGoldAmount() + " at mine " + mine.GetCoordinate() +
+                                  "is being mined: " + mine.IsBeingMined());
                         Debug.Log("Gold mined: " + goldCount);
 
                         if (!mine.HasGold() && miner.GetClosestGoldMineNode(miner.GetCurrentNode()) == null)
@@ -562,6 +571,7 @@ public sealed class DepositGoldState : State
     }
 }
 
+
 public sealed class AlarmState : State
 {
     private List<Node<Vec2Int>> pathToUrbanCenter;
@@ -671,24 +681,196 @@ public sealed class WaitMineState : State
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
         {
-            
             if (mine == null)
                 Debug.Log("No mines being mined");
+        });
+
+        behaviours.AddMainThreadBehaviour(0,
+            () =>
+            {
+                mine = gameManager.goldMineManager.FindClosestGoldMineBeingMined(gameManager.GetUrbanCenterNode());
+            });
+
+        behaviours.SetTransitionBehavior(() =>
+        {
+            if (gameManager.GetAlarm())
+            {
+                OnFlag?.Invoke(Flags.OnAlarmTrigger);
+            }
+            else if (mine != null)
+            {
+                Debug.Log("Mine is being mined!");
+                OnFlag?.Invoke(Flags.OnMineFind);
+            }
+        });
+
+        return behaviours;
+    }
+
+    public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
+    {
+        return default;
+    }
+
+    public override BehavioursActions GetOnExitBehaviour(params object[] parameters)
+    {
+        return default;
+    }
+}
+
+public sealed class DepositFoodState : State
+{
+    private GoldMineNode<Vec2Int> mine;
+    private bool alreadyDeposited = false;
+    private bool backToUrbanCenter = false;
+
+    public override BehavioursActions GetTickBehaviour(params object[] parameters)
+    {
+        BehavioursActions behaviours = new BehavioursActions();
+
+        BaseAgent agent = parameters[0] as BaseAgent;
+        GameManager gameManager = parameters[1] as GameManager;
+        int food = Convert.ToInt32(parameters[2]);
+
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            if (mine == null)
+            {
+                Debug.Log("No mines being mined");
+                if (agent.GetCurrentNode() != gameManager.GetUrbanCenterNode())
+                    backToUrbanCenter = true;
+            }
+
+            if (agent == null)
+                Debug.Log("Agent is null in DepositFoodState.");
         });
 
         behaviours.AddMainThreadBehaviour(0, () =>
         {
             mine = gameManager.goldMineManager.FindClosestGoldMineBeingMined(gameManager.GetUrbanCenterNode());
 
-            
+            if (mine != null && !alreadyDeposited)
+            {
+                mine.SetFoodAmount(mine.GetFoodAmount() + food);
+                Debug.Log("Food deposited! Food amount: " + mine.GetFoodAmount());
+                alreadyDeposited = true;
+            }
         });
 
         behaviours.SetTransitionBehavior(() =>
         {
-            if (mine != null)
+            if (alreadyDeposited)
             {
-                Debug.Log("Mine is being mined!");
-                OnFlag?.Invoke(Flags.OnMineFind);
+                alreadyDeposited = false;
+                OnFlag?.Invoke(Flags.OnFoodDeposit);
+            }
+            else if (mine == null && backToUrbanCenter)
+            {
+                backToUrbanCenter = false;
+                OnFlag?.Invoke(Flags.OnNoMoreMines);
+            }
+        });
+
+        return behaviours;
+    }
+
+    public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
+    {
+        return default;
+    }
+
+    public override BehavioursActions GetOnExitBehaviour(params object[] parameters)
+    {
+        return default;
+    }
+}
+
+public sealed class ReturnHomeState : State
+{
+    private List<Node<Vec2Int>> pathToUrbanCenter;
+    private GoldMineNode<Vec2Int> mine;
+    private bool alreadyDeposited = false;
+    private float timeSinceLastMove;
+    private int currentNodeIndex;
+    private bool isMoving;
+
+    public override BehavioursActions GetTickBehaviour(params object[] parameters)
+    {
+        BehavioursActions behaviours = new BehavioursActions();
+
+        BaseAgent baseAgent = parameters[0] as BaseAgent;
+        Node<Vec2Int> currentNode = parameters[1] as Node<Vec2Int>;
+        UrbanCenterNode<Vec2Int> urbanCenter = parameters[2] as UrbanCenterNode<Vec2Int>;
+        float travelTime = Convert.ToSingle(parameters[3]);
+        float distanceBetweenNodes = Convert.ToSingle(parameters[4]);
+
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            mine = baseAgent.GetClosestGoldMineNode(baseAgent.GetStartNode());
+
+            if (baseAgent == null)
+                Debug.Log("Agent is null in ReturnHomeState");
+
+            if (urbanCenter == null)
+                Debug.Log("Urban center is null in ReturnHomeState");
+
+            if (currentNode == null)
+                Debug.Log("Current node is null in ReturnHomeState");
+        });
+
+
+        behaviours.AddMainThreadBehaviour(0, () =>
+        {
+            if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
+            {
+                pathToUrbanCenter = baseAgent.GetAStarPathfinder()
+                    .FindPath(baseAgent.GetStartNode(), urbanCenter, distanceBetweenNodes);
+                Debug.Log("Path to urban center calculated From: " + baseAgent.GetStartNode().GetCoordinate());
+            }
+
+            if (pathToUrbanCenter != null && pathToUrbanCenter.Count > 0)
+            {
+                if (!isMoving)
+                {
+                    timeSinceLastMove = 0f;
+                    currentNodeIndex = 0;
+                    isMoving = true;
+                }
+
+                timeSinceLastMove += Time.deltaTime;
+
+                if (timeSinceLastMove >= travelTime)
+                {
+                    if (currentNodeIndex < pathToUrbanCenter.Count)
+                    {
+                        Node<Vec2Int> nextNode = pathToUrbanCenter[currentNodeIndex];
+                        baseAgent.transform.position =
+                            new Vector3(nextNode.GetCoordinate().x, nextNode.GetCoordinate().y);
+                        baseAgent.SetCurrentNode(nextNode);
+                        currentNodeIndex++;
+                        timeSinceLastMove = 0f;
+                    }
+                    else
+                    {
+                        isMoving = false;
+                        Debug.Log("Urban Center reached!");
+                    }
+                }
+            }
+        });
+
+
+        behaviours.SetTransitionBehavior(() =>
+        {
+            if (baseAgent.gameManager.GetAlarm())
+            {
+                OnFlag?.Invoke(Flags.OnAlarmTrigger);
+            }
+            else if (baseAgent.IsAtUrbanCenter())
+            {
+                baseAgent.SetStartNode(urbanCenter);
+                pathToUrbanCenter = null;
+                OnFlag?.Invoke(Flags.OnHome);
             }
         });
 

@@ -81,6 +81,9 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
 
     public void SetFoodAmount(int foodAmount)
     {
+        if(foodAmount > maxFoodAmount)
+            foodAmount = maxFoodAmount;
+        
         this.foodAmount = foodAmount;
     }
 
