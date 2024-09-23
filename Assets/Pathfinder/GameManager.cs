@@ -76,7 +76,7 @@ namespace Pathfinder
         {
             alarm = false;
             miner.SetStart(true);
-            //caravan.SetStart(true);
+            caravan.SetStart(true);
         }
 
         public bool GetDisableAlarm()

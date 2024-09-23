@@ -47,7 +47,8 @@ public class Caravan : BaseAgent
     
     private object[] AlarmTickParameters()
     {
-        return new object[] { this };
+        return new object[] { this, gameManager.GetUrbanCenterNode(), gameManager.GetDistanceBetweenNodes() };
+
     }
 
     public void GetMapInputValues()
@@ -62,6 +63,7 @@ public class Caravan : BaseAgent
         fsm.AddBehaviour<MoveToMineState>(States.MoveToMine, onEnterParameters: MoveToMineEnterParameters ,onTickParameters: MoveToMineTickParameters);
         fsm.AddBehaviour<DepositFoodState>(States.DepositFood, onTickParameters: DepositFoodTickParameters);
         fsm.AddBehaviour<ReturnHomeState>(States.ReturnHome, onTickParameters: ReturnHomeTickParameters);
+        fsm.AddBehaviour<AlarmState>(States.Alarm, onTickParameters: AlarmTickParameters);
     }
 
     public override void AddTransitions()
@@ -74,7 +76,8 @@ public class Caravan : BaseAgent
         fsm.SetTransition(States.DepositFood, Flags.OnNoMoreMines, States.ReturnHome);
         fsm.SetTransition(States.ReturnHome, Flags.OnHome, States.WaitMine);
         fsm.SetTransition(States.ReturnHome, Flags.OnAlarmTrigger, States.Alarm);
-
+        fsm.SetTransition(States.Alarm, Flags.OnHome, States.Idle);
+        fsm.SetTransition(States.Alarm, Flags.OnBackToWork, States.WaitMine);
     }
     
     public int GetFood()

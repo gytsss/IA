@@ -67,11 +67,6 @@ public class Miner : BaseAgent
         return new object[] { this, currentNode, gameManager.GetUrbanCenterNode(), travelTime, gameManager.GetDistanceBetweenNodes() };
     }
 
-    private object[] ReturnToUrbanCenterTickParameters()
-    {
-        return new object[] { this, gameManager.GetUrbanCenterNode() };
-    }
-
     private object[] RespondToAlarmTickParameters()
     {
         return new object[] { this, gameManager.GetUrbanCenterNode(), gameManager.GetDistanceBetweenNodes() };
@@ -112,8 +107,6 @@ public class Miner : BaseAgent
         fsm.SetTransition(States.WaitFood, Flags.OnAlarmTrigger, States.Alarm);
         fsm.SetTransition(States.Alarm, Flags.OnHome, States.Idle);
         fsm.SetTransition(States.Alarm, Flags.OnBackToWork, States.MoveToMine);
-        // fsm.SetTransition(MinerStates.ReturnHome, MinerFlags.OnAlarmTrigger, MinerStates.MoveToMine);
-
     }
     
     

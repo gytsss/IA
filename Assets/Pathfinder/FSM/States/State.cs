@@ -62,6 +62,11 @@ public sealed class IdleState : State
 
         bool start = Convert.ToBoolean(parameters[0]);
 
+        behaviours.AddMultithreadbleBehaviours(0, () =>
+        {
+            Debug.Log("Idle agent");
+        });
+        
         behaviours.SetTransitionBehavior(() =>
         {
             if (start)
