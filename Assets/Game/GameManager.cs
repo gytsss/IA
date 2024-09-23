@@ -1,13 +1,18 @@
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Pathfinder
 {
     public class GameManager : MonoBehaviour
     {
         public GraphView graphView;
-        public Miner miner;
-        public Caravan caravan;
+        //public Miner miner;
+        //public Miner miner1;
+       // public Caravan caravan;
+        public List<BaseAgent> agents;
         public GoldMineManager goldMineManager;
     
         public TMP_InputField heightInputField, widthInputField, goldMinesInputField, distanceBetweenNodesInputField;
@@ -18,6 +23,12 @@ namespace Pathfinder
         private bool alarm = false;
         private bool disableAlarm = false;
         private float distanceBetweenNodes;
+
+        private void OnEnable()
+        {
+           // agents = new List<BaseAgent>();
+        }
+
         public void GetMapInputValues()
         {
             string height = heightInputField.text;
@@ -40,15 +51,22 @@ namespace Pathfinder
             urbanCenter.SetCoordinate(new Vec2Int(Random.Range(0, graphView.size.x), Random.Range(0, graphView.size.y)));
             urbanCenterText.text = "Urban Center gold: " + urbanCenter.GetGold();
             
-            miner.InitAgent();
-            caravan.InitAgent();
+            // miner.InitAgent();
+            // miner1.InitAgent();
+            // caravan.InitAgent();
+
+            foreach (BaseAgent agent in agents)
+            {
+                agent.InitAgent();
+                agent.SetStart(true);
+            }
             
         }
 
         private void Update()
         {
-            currentGoldText.text = "Miner Gold: " + miner.GetGoldCollected();
-            currentEnergyText.text = "Miner Energy: " + miner.GetEnergy();
+            // currentGoldText.text = "Miner Gold: " + agents..GetGoldCollected();
+            // currentEnergyText.text = "Miner Energy: " + miner.GetEnergy();
         }
     
         public Vector2 GetMapSize()
@@ -75,8 +93,14 @@ namespace Pathfinder
         public void DisableAlarm()
         {
             alarm = false;
-            miner.SetStart(true);
-            caravan.SetStart(true);
+            // miner.SetStart(true);
+            // caravan.SetStart(true);
+            
+            foreach (BaseAgent agent in agents)
+            {
+                agent.SetStart(true);
+            }
+            
         }
 
         public bool GetDisableAlarm()

@@ -12,7 +12,7 @@ namespace Game.FSM.States
         private List<Node<Vec2Int>> path;
         GoldMineNode<Vec2Int> destinationNode;
         Node<Vec2Int> startNode;
-        private Transform minerTransform;
+        private Transform agentTransform;
         private float travelTime;
         private bool isMoving;
         private float distanceBetweenNodes;
@@ -21,7 +21,7 @@ namespace Game.FSM.States
         {
             BehavioursActions behaviours = new BehavioursActions();
 
-            minerTransform = parameters[0] as Transform;
+            agentTransform = parameters[0] as Transform;
             travelTime = Convert.ToSingle(parameters[1]);
 
 
@@ -54,7 +54,7 @@ namespace Game.FSM.States
                         if (currentNodeIndex < path.Count)
                         {
                             Node<Vec2Int> node = path[currentNodeIndex];
-                            minerTransform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
+                            agentTransform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
                             agent.SetCurrentNode(node);
                             currentNodeIndex++;
                             timeSinceLastMove = 0f;
