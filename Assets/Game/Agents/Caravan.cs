@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace;
+using Game.FSM.States;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;

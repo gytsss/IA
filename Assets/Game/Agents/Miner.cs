@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace;
+using Game.FSM.States;
 using Pathfinder;
 using TMPro;
 using UnityEngine;
