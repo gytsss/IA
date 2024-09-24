@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class DepthFirstPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode, INode<Vec2Int>, new()
 {
     
-    public DepthFirstPathfinder(Vector2IntGraph<NodeType> graph)
+    public DepthFirstPathfinder(Graph<NodeType> graph)
     {
         this.graph = graph;
     }

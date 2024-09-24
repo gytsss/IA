@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class BreadthPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode, INode<Vec2Int>, new()
 {
     
-    public BreadthPathfinder(Vector2IntGraph<NodeType> graph)
+    public BreadthPathfinder(Graph<NodeType> graph)
     {
         this.graph = graph;
     }

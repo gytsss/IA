@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using UnityEngine;
 
 
 struct Transition<NodeType>
@@ -8,22 +8,26 @@ struct Transition<NodeType>
     public NodeType to;
     public int cost;
     public float distance;
+    public NodeTypes nodeType;
 }
 
-public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode<Vec2Int>, INode, new()
+public class AStarPathfinder<NodeType> : Pathfinder<NodeType> 
+    where NodeType : INode<Vec2Int>, INode, new()
 {
     private Dictionary<NodeType, List<Transition<NodeType>>> transitions =
         new Dictionary<NodeType, List<Transition<NodeType>>>();
+    
+    private Dictionary<NodeTypes, int> agentNodeCosts;
 
 
-    public AStarPathfinder(Vector2IntGraph<NodeType> graph, float distanceBetweenNodes)
+    public AStarPathfinder(Graph<NodeType> graph, float distanceBetweenNodes, Dictionary<NodeTypes, int> agentNodeCosts)
     {
         this.graph = graph;
+        this.agentNodeCosts = agentNodeCosts;
 
         graph.nodes.ForEach(node =>
         {
             List<Transition<NodeType>> transitionsList = new List<Transition<NodeType>>();
-
             List<NodeType> neighbors = GetNeighbors(node, distanceBetweenNodes) as List<NodeType>;
 
             neighbors?.ForEach(neighbor =>
@@ -31,8 +35,9 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
                 transitionsList.Add(new Transition<NodeType>
                 {
                     to = neighbor,
-                    cost = 0,
-                    distance = Distance(node, neighbor)
+                    distance = Distance(node, neighbor),
+                    cost = CalculateTransitionCost(node, neighbor),
+                    nodeType = (node as Node<Vec2Int>).GetNodeType()
                 });
             });
 
@@ -42,9 +47,19 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
 
     public AStarPathfinder(int x, int y, float distance)
     {
-        graph = new Vector2IntGraph<NodeType>(x, y, distance);
+        graph = new Graph<NodeType>(x, y, distance);
     }
 
+    private int CalculateTransitionCost(NodeType fromNode, NodeType toNode)
+    {
+        NodeTypes nodeType = (toNode as Node<Vec2Int>).GetNodeType();
+        int cost = agentNodeCosts.ContainsKey(nodeType) ? agentNodeCosts[nodeType] : 1;
+
+        // Log the cost and node type
+       Debug.Log($"Moving to node of type: {nodeType}, cost: {cost}");
+        return cost;
+    }
+    
     protected override ICollection<NodeType> GetNeighbors(NodeType node)
     {
         throw new NotImplementedException();
@@ -97,7 +112,8 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
         if (!GetNeighbors(A, distanceBetweenNodes).Contains(B))
             throw new InvalidOperationException("B node has to be a neighbor of A node");
         
-        int cost = 0;
+        
+        int baseCost = 0;
 
         transitions.TryGetValue(A, out List<Transition<NodeType>> transition);
 
@@ -105,10 +121,12 @@ public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : I
         {
             if (t.to.EqualsTo(B))
             {
-                cost = t.cost;
+                baseCost = t.cost;
+                Debug.Log($"Moving from node {A.GetCoordinate()} to node {B.GetCoordinate()}, cost: {baseCost}, type: {t.nodeType}");
+
             }
         });
-        return cost;
+        return baseCost;
     }
 
     protected override bool NodesEquals(NodeType A, NodeType B)

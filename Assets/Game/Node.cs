@@ -8,7 +8,7 @@
 public class Node<Coordinate> : INode, INode<Coordinate>
 {
     private bool isBlocked = false;
-    private NodeTypes nodeType;
+    private NodeTypes nodeType = NodeTypes.Default;
     private Coordinate coordinate;
 
     public void SetCoordinate(Coordinate coordinate)

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-public class Vector2IntGraph<NodeType> 
+public class Graph<NodeType> 
     where NodeType : INode<Vec2Int>, INode, new()
 { 
     public List<NodeType> nodes = new List<NodeType>();
 
-    public Vector2IntGraph(int x, int y, float distance) 
+    public Graph(int x, int y, float distance) 
     {
         for (int i = 0; i < x; i++)
         {
