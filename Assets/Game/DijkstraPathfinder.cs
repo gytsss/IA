@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class DijkstraPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode, INode<Vec2Int>, new()
 {
     
-    public DijkstraPathfinder(Graph<NodeType> graph)
+    public DijkstraPathfinder(Vector2IntGraph<NodeType> graph)
     {
         this.graph = graph;
     }

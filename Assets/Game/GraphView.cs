@@ -5,7 +5,7 @@ using UnityEngine;
 public class GraphView : MonoBehaviour
 {
     public GameManager GameManager;
-    public Graph<Node<Vec2Int>> Graph;
+    public Vector2IntGraph<Node<Vec2Int>> Graph;
     public List<Node<Vec2Int>> goldMines = new List<Node<Vec2Int>>();
     
     public Vec2Int size = new Vec2Int(0,0);
@@ -51,7 +51,7 @@ public class GraphView : MonoBehaviour
 
     public void CreateGraph(int x, int y, float distance)
     {
-        Graph = new Graph<Node<Vec2Int>>(x, y, distance);
+        Graph = new Vector2IntGraph<Node<Vec2Int>>(x, y, distance);
         size.x = x;
         size.y = y;
 

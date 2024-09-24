@@ -5,7 +5,7 @@ using System.Linq;
 
 public abstract class Pathfinder<NodeType> where NodeType : INode<Vec2Int>, INode, new()
 {
-    protected Graph<NodeType> graph;
+    protected Vector2IntGraph<NodeType> graph;
     protected List<NodeType> goldMines;
 
     public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode, float distanceBetweenNodes)
