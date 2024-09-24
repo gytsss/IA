@@ -62,6 +62,8 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
     {
         foodAmount = maxFoodAmount;
         goldAmount = maxGoldAmount;
+        SetNodeType(NodeTypes.GoldMine);
+
     }
 
     public int GetGoldAmount()
@@ -150,6 +152,7 @@ public class UrbanCenterNode<Coordinate> : Node<Coordinate>
     public UrbanCenterNode()
     {
         gold = 0;
+        SetNodeType(NodeTypes.UrbanCenter);
     }
 
     public int GetGold()

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-
 
 public abstract class Pathfinder<NodeType> 
     where NodeType : INode<Vec2Int>, INode, new()
@@ -78,8 +76,6 @@ public abstract class Pathfinder<NodeType>
                     if (!openList.Contains(neighbor))
                     {
                         openList.Add(neighbor);
-                        Debug.Log("Cost " + tentativeNewAcumulatedCost + "from: " + currentNode.GetCoordinate() + "to: " + neighbor.GetCoordinate());
-
                     }
                 }
             }
