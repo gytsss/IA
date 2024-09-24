@@ -16,7 +16,7 @@ namespace Pathfinder
         public GoldMineManager goldMineManager;
     
         public TMP_InputField heightInputField, widthInputField, goldMinesInputField, distanceBetweenNodesInputField;
-        public TMP_Text urbanCenterText, currentGoldText, currentEnergyText;
+        public TMP_Text urbanCenterText;
 
         private UrbanCenterNode<Vec2Int> urbanCenter;
 

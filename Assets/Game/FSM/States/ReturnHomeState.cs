@@ -43,7 +43,7 @@ namespace Game.FSM.States
                 if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
                 {
                     pathToUrbanCenter = baseAgent.GetAStarPathfinder()
-                        .FindPath(baseAgent.GetStartNode(), urbanCenter, distanceBetweenNodes);
+                        .FindPath(baseAgent.GetStartNode(), urbanCenter, distanceBetweenNodes, baseAgent.GetTransitionCost);
                     Debug.Log("Path to urban center calculated From: " + baseAgent.GetStartNode().GetCoordinate());
                 }
 

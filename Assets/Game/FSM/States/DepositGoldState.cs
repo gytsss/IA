@@ -44,7 +44,7 @@ namespace Game.FSM.States
                 if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
                 {
                     pathToUrbanCenter = miner.GetAStarPathfinder()
-                        .FindPath(miner.GetStartNode(), urbanCenter, distanceBetweenNodes);
+                        .FindPath(miner.GetStartNode(), urbanCenter, distanceBetweenNodes, miner.GetTransitionCost);
                     Debug.Log("Path to urban center calculated From: " + miner.GetStartNode().GetCoordinate());
                 }
 

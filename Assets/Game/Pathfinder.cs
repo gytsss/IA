@@ -1,14 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 
-
-public abstract class Pathfinder<NodeType> where NodeType : INode<Vec2Int>, INode, new()
+public abstract class Pathfinder<NodeType> 
+    where NodeType : INode<Vec2Int>, INode, new()
 {
     protected Vector2IntGraph<NodeType> graph;
     protected List<NodeType> goldMines;
 
-    public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode, float distanceBetweenNodes)
+     public delegate int TransitionCostDelegate(Node<Vec2Int> node, Node<Vec2Int> toNode1);
+
+    public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode, float distanceBetweenNodes, TransitionCostDelegate costFunction)
     {
         Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)> nodes =
             new Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)>();
@@ -65,7 +68,8 @@ public abstract class Pathfinder<NodeType> where NodeType : INode<Vec2Int>, INod
                 int tentativeNewAcumulatedCost = 0;
 
                 tentativeNewAcumulatedCost += nodes[currentNode].AcumulativeCost;
-                tentativeNewAcumulatedCost += MoveToNeighborCost(currentNode, neighbor, distanceBetweenNodes);
+                // Utilizamos la función costFunction para calcular el costo entre los nodos
+                tentativeNewAcumulatedCost += costFunction(currentNode as Node<Vec2Int>, neighbor as Node<Vec2Int>);
 
                 if (!openList.Contains(neighbor) || tentativeNewAcumulatedCost < nodes[currentNode].AcumulativeCost)
                 {
@@ -74,6 +78,8 @@ public abstract class Pathfinder<NodeType> where NodeType : INode<Vec2Int>, INod
                     if (!openList.Contains(neighbor))
                     {
                         openList.Add(neighbor);
+                        Debug.Log("Cost " + tentativeNewAcumulatedCost + "from: " + currentNode.GetCoordinate() + "to: " + neighbor.GetCoordinate());
+
                     }
                 }
             }
@@ -101,6 +107,7 @@ public abstract class Pathfinder<NodeType> where NodeType : INode<Vec2Int>, INod
             return path;
         }
     }
+
 
     protected abstract ICollection<NodeType> GetNeighbors(NodeType node);
 

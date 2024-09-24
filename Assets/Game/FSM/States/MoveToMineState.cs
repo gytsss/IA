@@ -125,7 +125,7 @@ namespace Game.FSM.States
 
                 destinationNode = agent.GetDestinationNode() as GoldMineNode<Vec2Int>;
 
-                path = agent.GetAStarPathfinder().FindPath(startNode, destinationNode, distanceBetweenNodes);
+                path = agent.GetAStarPathfinder().FindPath(startNode, destinationNode, distanceBetweenNodes, agent.GetTransitionCost);
 
                 if (path == null)
                     Debug.Log("Path is null. No valid path found.");
