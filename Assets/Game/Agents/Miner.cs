@@ -18,15 +18,14 @@ public class Miner : BaseAgent
     public int energy = 3;
     public int maxEnergy = 3;
     
-
-
+    
     private void Start()
     {
         base.Start();
         
         SetIsMiner(true);
 
-        fsm.AddBehaviour<IdleState>(States.Idle, onTickParameters: () => { return new object[] {  GetStart() }; });
+        fsm.AddBehaviour<IdleState>(States.Idle, onTickParameters: () => { return new object[] {this,  GetStart() }; });
 
         fsm.SetTransition(States.Idle, Flags.OnStart, States.MoveToMine);
         
@@ -95,6 +94,7 @@ public class Miner : BaseAgent
     {
         fsm.SetTransition(States.MoveToMine, Flags.OnMineFind, States.MineGold);
         fsm.SetTransition(States.MoveToMine, Flags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.MoveToMine, Flags.OnNoMoreMines, States.DepositGold);
         fsm.SetTransition(States.MineGold, Flags.OnFoodNeed, States.EatFood);
         fsm.SetTransition(States.MineGold, Flags.OnFullInventory, States.DepositGold);
         fsm.SetTransition(States.MineGold, Flags.OnMineEmpty, States.MoveToMine);

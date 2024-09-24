@@ -16,6 +16,7 @@ namespace Game.FSM.States
         private float travelTime;
         private bool isMoving;
         private float distanceBetweenNodes;
+        private bool noDestination = false;
 
         public override BehavioursActions GetTickBehaviour(params object[] parameters)
         {
@@ -30,7 +31,10 @@ namespace Game.FSM.States
                 if (agent == null)
                     Debug.Log("Null agent in MoveToMineState");
                 if (destinationNode == null)
-                    Debug.Log("Null mine in MoveToMineState");
+                {
+                    Debug.Log("Null destinationNode in MoveToMineState");
+                    noDestination = true;
+                }
                 if (startNode == null)
                     Debug.Log("Null startNode in MoveToMineState");
             });
@@ -38,7 +42,7 @@ namespace Game.FSM.States
 
             behaviours.AddMainThreadBehaviour(0, () =>
             {
-                if (path != null && path.Count > 0)
+                if (path != null && path.Count > 0 && !noDestination)
                 {
                     if (!isMoving)
                     {
@@ -77,6 +81,12 @@ namespace Game.FSM.States
                     Debug.Log("Alarm when moving to mine!");
                     OnFlag?.Invoke(Flags.OnAlarmTrigger);
                 }
+                else if (noDestination)
+                {
+                    agent.SetStartNode(agent.GetCurrentNode());
+                    noDestination = false;
+                    OnFlag?.Invoke(Flags.OnNoMoreMines);
+                }
                 else if (agent.IsAtMine(destinationNode))
                 {
                     //miner.SetCurrentMine(destinationNode);
@@ -86,6 +96,7 @@ namespace Game.FSM.States
                     OnFlag?.Invoke(Flags.OnMineFind);
                     OnFlag?.Invoke(Flags.OnFoodDeposit);
                 }
+               
             });
 
             return behaviours;

@@ -9,7 +9,8 @@ namespace Game.FSM.States
         {
             BehavioursActions behaviours = new BehavioursActions();
 
-            bool start = Convert.ToBoolean(parameters[0]);
+            BaseAgent agent = parameters[0] as BaseAgent;
+            bool start = Convert.ToBoolean(parameters[1]);
 
             behaviours.AddMultithreadbleBehaviours(0, () =>
             {
@@ -18,7 +19,7 @@ namespace Game.FSM.States
         
             behaviours.SetTransitionBehavior(() =>
             {
-                if (start)
+                if (start && agent.gameManager.GetGoldMineManager().FindClosestGoldMine(agent.GetCurrentNode()) != null)
                 {
                     OnFlag?.Invoke(Flags.OnStart);
                 }

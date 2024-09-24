@@ -51,9 +51,6 @@ namespace Pathfinder
             urbanCenter.SetCoordinate(new Vec2Int(Random.Range(0, graphView.size.x), Random.Range(0, graphView.size.y)));
             urbanCenterText.text = "Urban Center gold: " + urbanCenter.GetGold();
             
-            // miner.InitAgent();
-            // miner1.InitAgent();
-            // caravan.InitAgent();
 
             foreach (BaseAgent agent in agents)
             {
@@ -93,9 +90,7 @@ namespace Pathfinder
         public void DisableAlarm()
         {
             alarm = false;
-            // miner.SetStart(true);
-            // caravan.SetStart(true);
-            
+
             foreach (BaseAgent agent in agents)
             {
                 agent.SetStart(true);

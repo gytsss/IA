@@ -19,7 +19,7 @@ public class Caravan : BaseAgent
 
         SetIsMiner(false);
         
-        fsm.AddBehaviour<IdleState>(States.Idle, onTickParameters: () => { return new object[] {  GetStart() }; });
+        fsm.AddBehaviour<IdleState>(States.Idle, onTickParameters: () => { return new object[] { this, GetStart() }; });
 
         fsm.SetTransition(States.Idle, Flags.OnStart, States.WaitMine);
 
