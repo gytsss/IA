@@ -42,15 +42,15 @@ public abstract class BaseAgent : MonoBehaviour
     public GameManager gameManager;
     public GraphView graphView;
 
-    protected AStarPathfinder<Node<Vec2Int>> Pathfinder;
-    protected GoldMineNode<Vec2Int> currentMine;
+    protected AStarPathfinder<Node<Vector2>, Vector2, NodeVoronoi> Pathfinder;
+    protected GoldMineNode<Vector2> currentMine;
 
     protected FSM<States, Flags> fsm;
-    protected Node<Vec2Int> startNode;
-    protected Node<Vec2Int> destinationNode;
+    protected Node<Vector2> startNode;
+    protected Node<Vector2> destinationNode;
 
-    protected Node<Vec2Int> currentNode;
-    protected List<Node<Vec2Int>> path;
+    protected Node<Vector2> currentNode;
+    protected List<Node<Vector2>> path;
     protected float distanceBetweenNodes = 0;
 
     public float travelTime = 0.70f;
@@ -66,7 +66,7 @@ public abstract class BaseAgent : MonoBehaviour
     {
         distanceBetweenNodes = gameManager.GetDistanceBetweenNodes();
 
-        Pathfinder = new AStarPathfinder<Node<Vec2Int>>(graphView.Graph, distanceBetweenNodes);
+        Pathfinder = new AStarPathfinder<Node<Vector2>, Vector2, NodeVoronoi>(graphView.Graph, distanceBetweenNodes);
 
         currentNode = gameManager.GetUrbanCenterNode();
         startNode = gameManager.GetUrbanCenterNode();
@@ -107,37 +107,37 @@ public abstract class BaseAgent : MonoBehaviour
     }
 
 
-    public Node<Vec2Int> GetCurrentNode()
+    public Node<Vector2> GetCurrentNode()
     {
         return currentNode;
     }
 
-    public void SetCurrentNode(Node<Vec2Int> node)
+    public void SetCurrentNode(Node<Vector2> node)
     {
         currentNode = node;
     }
 
-    public Node<Vec2Int> GetStartNode()
+    public Node<Vector2> GetStartNode()
     {
         return startNode;
     }
 
-    public void SetStartNode(Node<Vec2Int> node)
+    public void SetStartNode(Node<Vector2> node)
     {
         startNode = node;
     }
 
-    public Node<Vec2Int> GetDestinationNode()
+    public Node<Vector2> GetDestinationNode()
     {
         return destinationNode;
     }
 
-    public void SetDestinationNode(Node<Vec2Int> node)
+    public void SetDestinationNode(Node<Vector2> node)
     {
         destinationNode = node;
     }
 
-    public void SetPathfinder(AStarPathfinder<Node<Vec2Int>> pathfinder)
+    public void SetPathfinder(AStarPathfinder<Node<Vector2>, Vector2, NodeVoronoi> pathfinder)
     {
         Pathfinder = pathfinder;
     }
@@ -147,27 +147,27 @@ public abstract class BaseAgent : MonoBehaviour
         return distanceBetweenNodes;
     }
 
-    public GoldMineNode<Vec2Int> GetClosestGoldMineNode(Node<Vec2Int> startNode)
+    public GoldMineNode<Vector2> GetClosestGoldMineNode(Node<Vector2> startNode)
     {
         return gameManager.GetGoldMineManager().FindClosestGoldMine(startNode);
     }
 
-    public GoldMineNode<Vec2Int> GetClosestGoldMineNodeBeingMined(Node<Vec2Int> startNode)
+    public GoldMineNode<Vector2> GetClosestGoldMineNodeBeingMined(Node<Vector2> startNode)
     {
         return gameManager.GetGoldMineManager().FindClosestGoldMineBeingMined(startNode);
     }
 
-    public void SetPath(List<Node<Vec2Int>> path)
+    public void SetPath(List<Node<Vector2>> path)
     {
         this.path = path;
     }
 
-    public AStarPathfinder<Node<Vec2Int>> GetAStarPathfinder()
+    public AStarPathfinder<Node<Vector2>, Vector2, NodeVoronoi> GetAStarPathfinder()
     {
         return Pathfinder;
     }
 
-    public bool IsAtMine(Node<Vec2Int> mine)
+    public bool IsAtMine(Node<Vector2> mine)
     {
         return transform.position.x == mine.GetCoordinate().x && transform.position.y == mine.GetCoordinate().y;
     }
@@ -178,14 +178,14 @@ public abstract class BaseAgent : MonoBehaviour
                transform.position.y == gameManager.GetUrbanCenterNode().GetCoordinate().y;
     }
 
-    public void SetCurrentMine(GoldMineNode<Vec2Int> mine)
+    public void SetCurrentMine(GoldMineNode<Vector2> mine)
     {
         currentMine = mine;
     }
 
-    public GoldMineNode<Vec2Int> GetCurrentMine()
+    public GoldMineNode<Vector2> GetCurrentMine()
     {
-        return currentNode as GoldMineNode<Vec2Int>;
+        return currentNode as GoldMineNode<Vector2>;
     }
 
     public float GetTravelTime()

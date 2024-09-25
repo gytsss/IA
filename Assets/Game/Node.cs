@@ -1,4 +1,6 @@
-﻿public enum NodeTypes
+﻿using System.Collections.Generic;
+
+public enum NodeTypes
 {
     Default,
     UrbanCenter,
@@ -7,6 +9,7 @@
 
 public class Node<Coordinate> : INode, INode<Coordinate>
 {
+    private List<INode<Coordinate>> neighbors = new List<INode<Coordinate>>();
     private bool isBlocked = false;
     private NodeTypes nodeType;
     private Coordinate coordinate;
@@ -14,6 +17,21 @@ public class Node<Coordinate> : INode, INode<Coordinate>
     public void SetCoordinate(Coordinate coordinate)
     {
         this.coordinate = coordinate;
+    }
+
+    public void AddNeighbor(INode<Coordinate> neighbor)
+    {
+        neighbors.Add(neighbor);
+    }
+
+    public List<INode<Coordinate>> GetNeighbors()
+    {
+        return neighbors;
+    }
+
+    public void SetNeighbors(List<INode<Coordinate>> neighbors)
+    {
+        this.neighbors = neighbors;
     }
 
     public Coordinate GetCoordinate()

@@ -9,9 +9,9 @@ namespace Game.FSM.States
         private BaseAgent agent;
         private float timeSinceLastMove;
         private int currentNodeIndex;
-        private List<Node<Vec2Int>> path;
-        GoldMineNode<Vec2Int> destinationNode;
-        Node<Vec2Int> startNode;
+        private List<Node<Vector2>> path;
+        GoldMineNode<Vector2> destinationNode;
+        Node<Vector2> startNode;
         private Transform agentTransform;
         private float travelTime;
         private bool isMoving;
@@ -57,7 +57,7 @@ namespace Game.FSM.States
                     {
                         if (currentNodeIndex < path.Count)
                         {
-                            Node<Vec2Int> node = path[currentNodeIndex];
+                            Node<Vector2> node = path[currentNodeIndex];
                             agentTransform.position = new Vector3(node.GetCoordinate().x, node.GetCoordinate().y);
                             agent.SetCurrentNode(node);
                             currentNodeIndex++;
@@ -108,7 +108,7 @@ namespace Game.FSM.States
 
             agent = parameters[0] as BaseAgent;
             distanceBetweenNodes = Convert.ToSingle(parameters[1]);
-            startNode = parameters[2] as Node<Vec2Int>;
+            startNode = parameters[2] as Node<Vector2>;
 
             behaviours.AddMultithreadbleBehaviours(0, () =>
             {
@@ -123,7 +123,7 @@ namespace Game.FSM.States
                 else
                     agent.SetDestinationNode(agent.GetClosestGoldMineNodeBeingMined(startNode));
 
-                destinationNode = agent.GetDestinationNode() as GoldMineNode<Vec2Int>;
+                destinationNode = agent.GetDestinationNode() as GoldMineNode<Vector2>;
 
                 path = agent.GetAStarPathfinder().FindPath(startNode, destinationNode, distanceBetweenNodes, agent.GetTransitionCost);
 

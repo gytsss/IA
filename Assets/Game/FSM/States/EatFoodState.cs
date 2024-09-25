@@ -4,7 +4,7 @@ namespace Game.FSM.States
 {
    public sealed class EatFoodState : State
    {
-       private GoldMineNode<Vec2Int> mine;
+       private GoldMineNode<Vector2> mine;
    
        public override BehavioursActions GetTickBehaviour(params object[] parameters)
        {

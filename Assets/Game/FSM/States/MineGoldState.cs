@@ -5,7 +5,7 @@ namespace Game.FSM.States
 {
    public sealed class MineGoldState : State
 {
-    private GoldMineNode<Vec2Int> mine;
+    private GoldMineNode<Vector2> mine;
     private Miner miner;
     private float timeSinceLastExtraction = 0f;
     private int goldCount = 0;

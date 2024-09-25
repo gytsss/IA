@@ -6,7 +6,7 @@ namespace Game.FSM.States
 {
    public sealed class DepositFoodState : State
 {
-    private GoldMineNode<Vec2Int> mine;
+    private GoldMineNode<Vector2> mine;
     private bool alreadyDeposited = false;
     private bool backToUrbanCenter = false;
 

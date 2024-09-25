@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public abstract class Pathfinder<NodeType> 
-    where NodeType : INode<Vec2Int>, INode, new()
+public abstract class Pathfinder<NodeType, CoordinateType,TCoordinate> 
+    where NodeType : INode<CoordinateType>, INode, new()
+   where CoordinateType : IEquatable<CoordinateType>
+where TCoordinate : ICoordinate<CoordinateType>, new()
 {
-    protected Vector2IntGraph<NodeType> graph;
+    public Graph<NodeType, CoordinateType> graph;
     protected List<NodeType> goldMines;
 
     public delegate int TransitionCostDelegate(Node<Vec2Int> node, Node<Vec2Int> toNode1);
@@ -71,7 +74,13 @@ public abstract class Pathfinder<NodeType>
 
                 if (!openList.Contains(neighbor) || tentativeNewAcumulatedCost < nodes[currentNode].AcumulativeCost)
                 {
-                    nodes[neighbor] = (currentNode, tentativeNewAcumulatedCost, Distance(neighbor, destinationNode));
+                    TCoordinate neighborCoordinate = new TCoordinate();
+                    neighborCoordinate.SetCoordinate(neighborCoordinate.GetCoordinate());
+                    
+                    TCoordinate destinationNodeCoordinate = new TCoordinate();
+                    destinationNodeCoordinate.SetCoordinate(destinationNodeCoordinate.GetCoordinate());
+                    
+                    nodes[neighbor] = (currentNode, tentativeNewAcumulatedCost, Distance(neighborCoordinate, destinationNodeCoordinate));
 
                     if (!openList.Contains(neighbor))
                     {
@@ -107,7 +116,7 @@ public abstract class Pathfinder<NodeType>
 
     protected abstract ICollection<NodeType> GetNeighbors(NodeType node);
 
-    protected abstract int Distance(NodeType A, NodeType B);
+    protected abstract int Distance(TCoordinate A, TCoordinate B);
 
     protected abstract bool NodesEquals(NodeType A, NodeType B);
 

@@ -6,8 +6,8 @@ namespace Game.FSM.States
 {
     public sealed class DepositGoldState : State
     {
-        private List<Node<Vec2Int>> pathToUrbanCenter;
-        private GoldMineNode<Vec2Int> mine;
+        private List<Node<Vector2>> pathToUrbanCenter;
+        private GoldMineNode<Vector2> mine;
         private bool alreadyDeposited = false;
         private float timeSinceLastMove;
         private int currentNodeIndex;
@@ -19,8 +19,8 @@ namespace Game.FSM.States
             BehavioursActions behaviours = new BehavioursActions();
 
             Miner miner = parameters[0] as Miner;
-            Node<Vec2Int> currentNode = parameters[1] as Node<Vec2Int>;
-            UrbanCenterNode<Vec2Int> urbanCenter = parameters[2] as UrbanCenterNode<Vec2Int>;
+            Node<Vector2> currentNode = parameters[1] as Node<Vector2>;
+            UrbanCenterNode<Vector2> urbanCenter = parameters[2] as UrbanCenterNode<Vector2>;
             float travelTime = Convert.ToSingle(parameters[3]);
             float distanceBetweenNodes = Convert.ToSingle(parameters[4]);
 
@@ -63,7 +63,7 @@ namespace Game.FSM.States
                     {
                         if (currentNodeIndex < pathToUrbanCenter.Count)
                         {
-                            Node<Vec2Int> nextNode = pathToUrbanCenter[currentNodeIndex];
+                            Node<Vector2> nextNode = pathToUrbanCenter[currentNodeIndex];
                             miner.transform.position =
                                 new Vector3(nextNode.GetCoordinate().x, nextNode.GetCoordinate().y);
                             miner.SetCurrentNode(nextNode);

@@ -6,7 +6,7 @@ namespace Game.FSM.States
 {
    public sealed class AlarmState : State
 {
-    private List<Node<Vec2Int>> pathToUrbanCenter;
+    private List<Node<Vector2>> pathToUrbanCenter;
     private float timeSinceLastMove;
     private int currentNodeIndex;
     private bool isMoving;
@@ -16,7 +16,7 @@ namespace Game.FSM.States
         BehavioursActions behaviours = new BehavioursActions();
 
         BaseAgent agent = parameters[0] as BaseAgent;
-        UrbanCenterNode<Vec2Int> urbanCenter = parameters[1] as UrbanCenterNode<Vec2Int>;
+        UrbanCenterNode<Vector2> urbanCenter = parameters[1] as UrbanCenterNode<Vector2>;
         float distanceBetweenNodes = Convert.ToSingle(parameters[2]);
 
         behaviours.AddMultithreadbleBehaviours(0, () =>
@@ -53,7 +53,7 @@ namespace Game.FSM.States
                 {
                     if (currentNodeIndex < pathToUrbanCenter.Count)
                     {
-                        Node<Vec2Int> nextNode = pathToUrbanCenter[currentNodeIndex];
+                        Node<Vector2> nextNode = pathToUrbanCenter[currentNodeIndex];
                         agent.transform.position = new Vector3(nextNode.GetCoordinate().x, nextNode.GetCoordinate().y);
                         agent.SetCurrentNode(nextNode);
                         currentNodeIndex++;

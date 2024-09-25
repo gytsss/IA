@@ -6,7 +6,8 @@ using Vector2 = System.Numerics.Vector2;
     {
         private int m_X;
         private int m_Y;
-        
+        public static Vec2Int zero = new Vec2Int(0,0);
+
         public int x
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)] get => this.m_X;
@@ -28,7 +29,13 @@ using Vector2 = System.Numerics.Vector2;
             this.m_X = x;
             this.m_Y = y;
         }
-        
+
+        public Vec2Int(float x, float y)
+        {
+            this.m_X = (int)x;
+            this.m_Y = (int)y;
+        }
+
 
         public float magnitude
         {
@@ -52,7 +59,7 @@ using Vector2 = System.Numerics.Vector2;
         /// <param name="a"></param>
         /// <param name="b"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Distance(Vec2Int a, Vec2Int b)
+        public static float Distance(UnityEngine.Vector2 a, UnityEngine.Vector2 b)
         {
             float num1 = (float) (a.x - b.x);
             float num2 = (float) (a.y - b.y);
