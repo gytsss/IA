@@ -1860,7 +1860,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &551867019
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2367,7 +2367,7 @@ PrefabInstance:
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: currentGoldText
       value: 
-      objectReference: {fileID: 551867020}
+      objectReference: {fileID: 0}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: goldMineManager
       value: 
@@ -2375,7 +2375,7 @@ PrefabInstance:
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: urbanCenterText
       value: 
-      objectReference: {fileID: 178156431}
+      objectReference: {fileID: 0}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: widthInputField
       value: 
@@ -2387,7 +2387,7 @@ PrefabInstance:
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: currentEnergyText
       value: 
-      objectReference: {fileID: 1241880804}
+      objectReference: {fileID: 0}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: goldMinesInputField
       value: 
@@ -2439,6 +2439,10 @@ PrefabInstance:
     - target: {fileID: 8349111562637978962, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: m_Name
       value: Miner (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8349111562637978962, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3234,8 +3238,6 @@ MonoBehaviour:
   goldMinesInputField: {fileID: 1148216371}
   distanceBetweenNodesInputField: {fileID: 541396603}
   urbanCenterText: {fileID: 178156431}
-  currentGoldText: {fileID: 551867020}
-  currentEnergyText: {fileID: 1241880804}
 --- !u!4 &1154729529
 Transform:
   m_ObjectHideFlags: 0
@@ -3268,7 +3270,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1241880803
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4707,7 +4709,7 @@ PrefabInstance:
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: currentGoldText
       value: 
-      objectReference: {fileID: 551867020}
+      objectReference: {fileID: 0}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: goldMineManager
       value: 
@@ -4715,7 +4717,7 @@ PrefabInstance:
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: urbanCenterText
       value: 
-      objectReference: {fileID: 178156431}
+      objectReference: {fileID: 0}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: widthInputField
       value: 
@@ -4727,7 +4729,7 @@ PrefabInstance:
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: currentEnergyText
       value: 
-      objectReference: {fileID: 1241880804}
+      objectReference: {fileID: 0}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: goldMinesInputField
       value: 

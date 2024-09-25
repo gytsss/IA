@@ -99,9 +99,7 @@ public abstract class BaseAgent : MonoBehaviour
                 cost = isMiner ? 3 : 1; // Caravanas prefieren moverse a centros urbanos, costo menor
                 break;
             case NodeTypes.GoldMine:
-                cost = isMiner
-                    ? 2
-                    : 4; // Mineros prefieren moverse a minas de oro, pero las caravanas evitan estas áreas
+                cost = isMiner ? 2 : 4; // Mineros prefieren moverse a minas de oro, pero las caravanas evitan estas áreas
                 break;
         }
 

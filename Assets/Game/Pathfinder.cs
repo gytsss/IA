@@ -7,7 +7,7 @@ public abstract class Pathfinder<NodeType>
     protected Vector2IntGraph<NodeType> graph;
     protected List<NodeType> goldMines;
 
-     public delegate int TransitionCostDelegate(Node<Vec2Int> node, Node<Vec2Int> toNode1);
+    public delegate int TransitionCostDelegate(Node<Vec2Int> node, Node<Vec2Int> toNode1);
 
     public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode, float distanceBetweenNodes, TransitionCostDelegate costFunction)
     {
