@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using TreeEditor;
 using UnityEngine;
 
@@ -26,12 +27,15 @@ namespace Pathfinder
 
         public override void GetNeighbors(float distance)
         {
-            foreach (var node in nodes)
+            for (int i = 0; i < nodes.Count; i++)
             {
+                var node = nodes[i];
                 var nodeCoordinate = node.GetCoordinate();
 
-                nodes.ForEach(neighbor =>
+                for (int j = 0; j < nodes.Count; j++)
                 {
+                    if (i == j) continue;
+                    var neighbor = nodes[j];
                     var neighborCoordinate = neighbor.GetCoordinate();
                     if ((neighborCoordinate.x == nodeCoordinate.x &&
                          Math.Abs(neighborCoordinate.y - nodeCoordinate.y) <= distance) ||
@@ -42,10 +46,8 @@ namespace Pathfinder
                     {
                         node.AddNeighbor(neighbor);
                     }
-                });
-                
+                }
             }
-            
         }
 
         public List<INode<Vector2>> GetNeighborsNode(Vector2 nodeCoordinate)

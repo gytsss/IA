@@ -18,7 +18,7 @@ public class GoldMineManager : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             GoldMineNode<Vector2> goldMine = new GoldMineNode<Vector2>();
-            Node<Vector2> randomNode = graphView.Graph.nodes[Random.Range(0, graphView.Graph.nodes.Count)];
+            Node<Vector2> randomNode = graphView.Graph.nodes[1];
 
             goldMine.SetCoordinate(randomNode.GetCoordinate());
             goldMine.SetMaxFoodAmount(100);

@@ -54,7 +54,7 @@ namespace Pathfinder
         private void InitGame()
         {
             urbanCenter = new UrbanCenterNode<Vector2>();
-            urbanCenter.SetCoordinate(new Vector2(Random.Range(0, graphView.size.x), Random.Range(0, graphView.size.y)));
+            urbanCenter.SetCoordinate(new Vector2(0,0));
             urbanCenter.SetNeighbors(graphView.Graph.GetNeighborsNode(urbanCenter.GetCoordinate()));
             urbanCenterText.text = "Urban Center gold: " + urbanCenter.GetGold();
             voronoi = new Voronoi<NodeVoronoi, Vector2>();
@@ -65,7 +65,6 @@ namespace Pathfinder
             {
                 agent.InitAgent();
                 agent.SetStart(true);
-                //agent.GetAStarPathfinder().graph.
             }
         }
 

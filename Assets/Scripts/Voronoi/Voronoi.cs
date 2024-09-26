@@ -13,7 +13,7 @@ namespace Voronoi
         where TCoordinateType : IEquatable<TCoordinateType>
     {
         private readonly List<Limit<TCoordinate, TCoordinateType>> limits = new();
-        private readonly List<Sector<TCoordinate,TCoordinateType>> sectors = new();
+        private readonly List<Sector<TCoordinate, TCoordinateType>> sectors = new();
 
         public void Init(TCoordinateType size, float distanceBetweenNodes, TCoordinateType origin)
         {
@@ -29,22 +29,22 @@ namespace Voronoi
             TCoordinate offset = new TCoordinate();
             offset.SetCoordinate(origin);
 
-            
+
             TCoordinate coordinateUp = new TCoordinate();
             coordinateUp.SetCoordinate(0, mapSize.GetY());
             coordinateUp.Add(offset.GetCoordinate());
             limits.Add(new Limit<TCoordinate, TCoordinateType>(coordinateUp, Direction.Up));
-            
+
             TCoordinate coordinateDown = new TCoordinate();
             coordinateDown.SetCoordinate(mapSize.GetX(), 0);
             coordinateDown.Add(offset.GetCoordinate());
             limits.Add(new Limit<TCoordinate, TCoordinateType>(coordinateDown, Direction.Down));
-            
+
             TCoordinate coordinateRight = new TCoordinate();
             coordinateRight.SetCoordinate(mapSize.GetX(), mapSize.GetY());
             coordinateRight.Add(offset.GetCoordinate());
             limits.Add(new Limit<TCoordinate, TCoordinateType>(coordinateRight, Direction.Right));
-            
+
             TCoordinate coordinateLeft = new TCoordinate();
             coordinateLeft.SetCoordinate(0, 0);
             coordinateLeft.Add(offset.GetCoordinate());
@@ -90,11 +90,14 @@ namespace Voronoi
         public Node<TCoordinateType> GetMineCloser(TCoordinate agentPosition)
         {
             // Calculo que mina esta mas cerca a x position
-            return sectors != null ? (from sector in sectors 
-                where sector.CheckPointInSector(agentPosition) select sector.Mine).FirstOrDefault() : null;
+            return sectors != null
+                ? (from sector in sectors
+                    where sector.CheckPointInSector(agentPosition)
+                    select sector.Mine).FirstOrDefault()
+                : null;
         }
 
-        public List<Sector<TCoordinate,TCoordinateType>> SectorsToDraw()
+        public List<Sector<TCoordinate, TCoordinateType>> SectorsToDraw()
         {
             return sectors;
         }

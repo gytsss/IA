@@ -70,7 +70,9 @@ public abstract class BaseAgent : MonoBehaviour
 
         currentNode = gameManager.GetUrbanCenterNode();
         startNode = gameManager.GetUrbanCenterNode();
-        destinationNode = gameManager.GetGoldMineManager().FindClosestGoldMine(startNode);
+        NodeVoronoi startNodeVoronoi = new NodeVoronoi();
+        startNodeVoronoi.SetCoordinate(startNode.GetCoordinate());
+        destinationNode = gameManager.voronoi.GetMineCloser(startNodeVoronoi);
 
         transform.position = new Vector3(startNode.GetCoordinate().x, startNode.GetCoordinate().y);
 
@@ -84,7 +86,7 @@ public abstract class BaseAgent : MonoBehaviour
 
     public abstract void AddTransitions();
 
-    public int GetTransitionCost(Node<Vec2Int> fromNode, Node<Vec2Int> toNode)
+    public int GetTransitionCost(Node<Vector2> fromNode, Node<Vector2> toNode)
     {
         // Ejemplo de cómo establecer costos en función del tipo de nodo y del agente
         int cost = 0; // Valor por defecto

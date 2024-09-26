@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 public enum NodeTypes
 {
@@ -7,7 +8,8 @@ public enum NodeTypes
     GoldMine
 }
 
-public class Node<Coordinate> : INode, INode<Coordinate>
+public class Node<Coordinate> : INode, INode<Coordinate>, IEquatable<Node<Coordinate>>
+where Coordinate : IEquatable<Coordinate>
 {
     private List<INode<Coordinate>> neighbors = new List<INode<Coordinate>>();
     private bool isBlocked = false;
@@ -58,9 +60,17 @@ public class Node<Coordinate> : INode, INode<Coordinate>
     {
         this.nodeType = nodeType;
     }
+
+    public bool Equals(Node<Coordinate> other)
+    {
+        if (other == null) return false;
+        return coordinate.Equals(other.coordinate);
+    }
+    
 }
 
-public class GoldMineNode<Coordinate> : Node<Coordinate>
+public class GoldMineNode<Coordinate> : Node<Coordinate> 
+    where Coordinate : IEquatable<Coordinate>
 {
     private int goldAmount;
     private int foodAmount;
@@ -73,14 +83,14 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
         SetCoordinate(coordinate);
         goldAmount = initialGoldAmount;
         foodAmount = initialFoodAmount;
-        SetNodeType(NodeTypes.GoldMine);
+        //SetNodeType(NodeTypes.GoldMine);
     }
 
     public GoldMineNode()
     {
         foodAmount = maxFoodAmount;
         goldAmount = maxGoldAmount;
-        SetNodeType(NodeTypes.GoldMine);
+        //SetNodeType(NodeTypes.GoldMine);
 
     }
 
@@ -155,7 +165,8 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
     }
 }
 
-public class UrbanCenterNode<Coordinate> : Node<Coordinate>
+public class UrbanCenterNode<Coordinate> : Node<Coordinate> 
+    where Coordinate : IEquatable<Coordinate>
 {
     private int gold = 0;
     private int agentCapacity = 10;

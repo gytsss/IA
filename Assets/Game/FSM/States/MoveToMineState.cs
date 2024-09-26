@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Game.FSM.States
@@ -125,6 +126,9 @@ namespace Game.FSM.States
 
                 destinationNode = agent.GetDestinationNode() as GoldMineNode<Vector2>;
 
+                Debug.Log("Start node coordinate: " + startNode.GetCoordinate());
+                Debug.Log("Destination node coordinate: " + destinationNode.GetCoordinate());
+                
                 path = agent.GetAStarPathfinder().FindPath(startNode, destinationNode, distanceBetweenNodes, agent.GetTransitionCost);
 
                 if (path == null)

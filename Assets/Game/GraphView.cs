@@ -65,7 +65,7 @@ public class GraphView : MonoBehaviour
                 List<Vector3> list = new List<Vector3>();
                 foreach (var nodeVoronoi in sector.PointsToDraw())
                 {
-                    Debug.Log($"Point: {nodeVoronoi.GetX()}, {nodeVoronoi.GetY()}");
+//                    Debug.Log($"Point: {nodeVoronoi.GetX()}, {nodeVoronoi.GetY()}");
                     list.Add(new Vector3(nodeVoronoi.GetX(), nodeVoronoi.GetY()));
                     Gizmos.DrawSphere(new Vector3(nodeVoronoi.GetX(), nodeVoronoi.GetY()), 0.1f);
                 }

@@ -52,11 +52,6 @@ public class AStarPathfinder<NodeType, CoordinateType, TCoordinate> : Pathfinder
     // {
     //     graph = new Graph<NodeType,CoordinateType>(x, y, distance);
     // }
-
-    protected override ICollection<NodeType> GetNeighbors(NodeType node)
-    {
-        throw new NotImplementedException();
-    }
     
 
     protected override int Distance(TCoordinate A, TCoordinate B)
@@ -69,19 +64,14 @@ public class AStarPathfinder<NodeType, CoordinateType, TCoordinate> : Pathfinder
         return (int)distance;
     }
 
-    protected override ICollection<NodeType> GetNeighbors(NodeType node, float distance)
-    {
-        return node.GetNeighbors() as ICollection<NodeType>;
-    }
-
-    protected override int MoveToNeighborCost(NodeType A, NodeType B)
-    {
-        throw new NotImplementedException();
-    }
-
     protected override bool IsBlocked(NodeType node)
     {
         return node.IsBlocked();
+    }
+
+    protected override ICollection<INode<CoordinateType>> GetNeighbors(NodeType node, float distance)
+    {
+        return node.GetNeighbors();
     }
 
     protected override int MoveToNeighborCost(NodeType A, NodeType B, float distanceBetweenNodes)
@@ -105,6 +95,11 @@ public class AStarPathfinder<NodeType, CoordinateType, TCoordinate> : Pathfinder
 
     protected override bool NodesEquals(NodeType A, NodeType B)
     {
+        if (A == null || B == null)
+        {
+            return false;
+        }
+        
         return A.EqualsTo(B);
     }
 }

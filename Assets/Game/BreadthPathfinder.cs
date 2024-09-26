@@ -2,7 +2,10 @@
 // using System.Collections.Generic;
 //
 //
-// public class BreadthPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode, INode<Vec2Int>, new()
+// public class BreadthPathfinder<NodeType,CoordinateType,TCoordinate> : Pathfinder<NodeType, CoordinateType,TCoordinate> 
+//     where NodeType :  INode<CoordinateType>,INode, new()
+// where CoordinateType : IEquatable<CoordinateType>
+// where TCoordinate : ICoordinate<CoordinateType>, new()
 // {
 //     
 //     public BreadthPathfinder(Graph<NodeType> graph)
@@ -67,10 +70,11 @@
 //     {
 //         return 0;
 //     }
+//     
 //
-//     protected override int MoveToNeighborCost(NodeType A, NodeType B)
+//     protected override int Distance(TCoordinate A, TCoordinate B)
 //     {
-//         return 0;
+//         throw new NotImplementedException();
 //     }
 //
 //     protected override bool NodesEquals(NodeType A, NodeType B)

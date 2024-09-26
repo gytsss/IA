@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-public interface INode
+public interface INode 
 {
     public bool EqualsTo(INode other);
     public bool IsBlocked();
