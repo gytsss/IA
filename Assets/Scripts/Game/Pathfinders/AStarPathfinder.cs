@@ -1,118 +1,121 @@
 ﻿using System;
 using System.Collections.Generic;
+using Game.Graphs;
+using Game.Nodes;
 
-
-
-struct Transition<NodeType>
+namespace Game.Pathfinders
 {
-    public NodeType to;
-    public int cost;
-    public float distance;
-}
-
-public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode<Vec2Int>, INode, new()
-{
-    private Dictionary<NodeType, List<Transition<NodeType>>> transitions =
-        new Dictionary<NodeType, List<Transition<NodeType>>>();
-
-
-    public AStarPathfinder(Vector2IntGraph<NodeType> graph, float distanceBetweenNodes)
+    struct Transition<NodeType>
     {
-        this.graph = graph;
+        public NodeType to;
+        public int cost;
+        public float distance;
+    }
 
-        graph.nodes.ForEach(node =>
+    public class AStarPathfinder<NodeType> : Pathfinder<NodeType> where NodeType : INode<Vec2Int>, INode, new()
+    {
+        private Dictionary<NodeType, List<Transition<NodeType>>> transitions =
+            new Dictionary<NodeType, List<Transition<NodeType>>>();
+
+
+        public AStarPathfinder(Vector2IntGraph<NodeType> graph, float distanceBetweenNodes)
         {
-            List<Transition<NodeType>> transitionsList = new List<Transition<NodeType>>();
+            this.graph = graph;
 
-            List<NodeType> neighbors = GetNeighbors(node, distanceBetweenNodes) as List<NodeType>;
-
-            neighbors?.ForEach(neighbor =>
+            graph.nodes.ForEach(node =>
             {
-                transitionsList.Add(new Transition<NodeType>
+                List<Transition<NodeType>> transitionsList = new List<Transition<NodeType>>();
+
+                List<NodeType> neighbors = GetNeighbors(node, distanceBetweenNodes) as List<NodeType>;
+
+                neighbors?.ForEach(neighbor =>
                 {
-                    to = neighbor,
-                    cost = 0,
-                    distance = Distance(node, neighbor)
+                    transitionsList.Add(new Transition<NodeType>
+                    {
+                        to = neighbor,
+                        cost = 0,
+                        distance = Distance(node, neighbor)
+                    });
                 });
+
+                transitions.Add(node, transitionsList);
+            });
+        }
+
+        public AStarPathfinder(int x, int y, float distance)
+        {
+            graph = new Vector2IntGraph<NodeType>(x, y, distance);
+        }
+
+        protected override ICollection<NodeType> GetNeighbors(NodeType node)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override int Distance(NodeType A, NodeType B)
+        {
+            int distance = 0;
+
+            distance += Math.Abs(A.GetCoordinate().x - B.GetCoordinate().x);
+            distance += Math.Abs(A.GetCoordinate().y - B.GetCoordinate().y);
+
+            return distance;
+        }
+
+        protected override ICollection<NodeType> GetNeighbors(NodeType node, float distance)
+        {
+            List<NodeType> neighbors = new List<NodeType>();
+            var nodeCoordinate = node.GetCoordinate();
+
+            graph.nodes.ForEach(neighbor =>
+            {
+                var neighborCoordinate = neighbor.GetCoordinate();
+                if ((neighborCoordinate.x == nodeCoordinate.x &&
+                     Math.Abs(neighborCoordinate.y - nodeCoordinate.y) <= distance) ||
+                    (neighborCoordinate.y == nodeCoordinate.y &&
+                     Math.Abs(neighborCoordinate.x - nodeCoordinate.x) <= distance) ||
+                    (Math.Abs(neighborCoordinate.x - nodeCoordinate.x) <= distance &&
+                     Math.Abs(neighborCoordinate.y - nodeCoordinate.y) <= distance))
+                {
+                    neighbors.Add(neighbor);
+                }
             });
 
-            transitions.Add(node, transitionsList);
-        });
-    }
+            return neighbors;
+        }
 
-    public AStarPathfinder(int x, int y, float distance)
-    {
-        graph = new Vector2IntGraph<NodeType>(x, y, distance);
-    }
-
-    protected override ICollection<NodeType> GetNeighbors(NodeType node)
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override int Distance(NodeType A, NodeType B)
-    {
-        int distance = 0;
-
-        distance += Math.Abs(A.GetCoordinate().x - B.GetCoordinate().x);
-        distance += Math.Abs(A.GetCoordinate().y - B.GetCoordinate().y);
-
-        return distance;
-    }
-
-    protected override ICollection<NodeType> GetNeighbors(NodeType node, float distance)
-    {
-        List<NodeType> neighbors = new List<NodeType>();
-        var nodeCoordinate = node.GetCoordinate();
-
-        graph.nodes.ForEach(neighbor =>
+        protected override int MoveToNeighborCost(NodeType A, NodeType B)
         {
-            var neighborCoordinate = neighbor.GetCoordinate();
-            if ((neighborCoordinate.x == nodeCoordinate.x &&
-                 Math.Abs(neighborCoordinate.y - nodeCoordinate.y) <= distance) ||
-                (neighborCoordinate.y == nodeCoordinate.y &&
-                 Math.Abs(neighborCoordinate.x - nodeCoordinate.x) <= distance) ||
-                (Math.Abs(neighborCoordinate.x - nodeCoordinate.x) <= distance &&
-                 Math.Abs(neighborCoordinate.y - nodeCoordinate.y) <= distance))
-            {
-                neighbors.Add(neighbor);
-            }
-        });
+            throw new NotImplementedException();
+        }
 
-        return neighbors;
-    }
+        protected override bool IsBlocked(NodeType node)
+        {
+            return node.IsBlocked();
+        }
 
-    protected override int MoveToNeighborCost(NodeType A, NodeType B)
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override bool IsBlocked(NodeType node)
-    {
-        return node.IsBlocked();
-    }
-
-    protected override int MoveToNeighborCost(NodeType A, NodeType B, float distanceBetweenNodes)
-    {
-        if (!GetNeighbors(A, distanceBetweenNodes).Contains(B))
-            throw new InvalidOperationException("B node has to be a neighbor of A node");
+        protected override int MoveToNeighborCost(NodeType A, NodeType B, float distanceBetweenNodes)
+        {
+            if (!GetNeighbors(A, distanceBetweenNodes).Contains(B))
+                throw new InvalidOperationException("B node has to be a neighbor of A node");
         
-        int cost = 0;
+            int cost = 0;
 
-        transitions.TryGetValue(A, out List<Transition<NodeType>> transition);
+            transitions.TryGetValue(A, out List<Transition<NodeType>> transition);
 
-        transition?.ForEach(t =>
-        {
-            if (t.to.EqualsTo(B))
+            transition?.ForEach(t =>
             {
-                cost = t.cost;
-            }
-        });
-        return cost;
-    }
+                if (t.to.EqualsTo(B))
+                {
+                    cost = t.cost;
+                }
+            });
+            return cost;
+        }
 
-    protected override bool NodesEquals(NodeType A, NodeType B)
-    {
-        return A.EqualsTo(B);
+        protected override bool NodesEquals(NodeType A, NodeType B)
+        {
+            return A.EqualsTo(B);
+        }
     }
 }

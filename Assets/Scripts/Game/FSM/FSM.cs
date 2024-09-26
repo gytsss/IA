@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DefaultNamespace
+namespace Game.FSM
 {
     public class FSM<EnumState, EnumFlag>
         where EnumState : Enum

@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using DefaultNamespace;
-using Pathfinder;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 

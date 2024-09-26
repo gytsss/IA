@@ -1,10 +1,12 @@
-using System;
 using System.Collections.Generic;
+using Game.Agents;
+using Game.Graphs;
+using Game.Nodes;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Pathfinder
+namespace Game.Managers
 {
     public class GameManager : MonoBehaviour
     {

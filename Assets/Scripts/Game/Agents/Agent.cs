@@ -1,8 +1,7 @@
-﻿using System;
-using Unity.IO.LowLevel.Unsafe;
+﻿using Game.FSM;
 using UnityEngine;
 
-namespace DefaultNamespace
+namespace Game.Agents
 {
     public enum FLags
     {

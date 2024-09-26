@@ -1,4 +1,6 @@
-﻿using Pathfinder;
+﻿using Game.Agents;
+using Game.Managers;
+using Game.Nodes;
 using UnityEngine;
 
 namespace Game.FSM.States

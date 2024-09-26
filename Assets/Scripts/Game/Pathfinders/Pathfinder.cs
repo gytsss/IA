@@ -1,119 +1,124 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Graphs;
+using Game.Nodes;
 
-public abstract class Pathfinder<NodeType> 
-    where NodeType : INode<Vec2Int>, INode, new()
+namespace Game.Pathfinders
 {
-    protected Vector2IntGraph<NodeType> graph;
-    protected List<NodeType> goldMines;
-
-    public delegate int TransitionCostDelegate(Node<Vec2Int> node, Node<Vec2Int> toNode1);
-
-    public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode, float distanceBetweenNodes, TransitionCostDelegate costFunction)
+    public abstract class Pathfinder<NodeType> 
+        where NodeType : INode<Vec2Int>, INode, new()
     {
-        Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)> nodes =
-            new Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)>();
+        protected Vector2IntGraph<NodeType> graph;
+        protected List<NodeType> goldMines;
 
-        foreach (NodeType node in graph.nodes)
+        public delegate int TransitionCostDelegate(Node<Vec2Int> node, Node<Vec2Int> toNode1);
+
+        public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode, float distanceBetweenNodes, TransitionCostDelegate costFunction)
         {
-            nodes.Add(node, (default, 0, 0));
-        }
+            Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)> nodes =
+                new Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)>();
 
-        List<NodeType> openList = new List<NodeType>();
-        List<NodeType> closedList = new List<NodeType>();
-
-        openList.Add(startNode);
-
-        foreach (var node in nodes.Keys.ToList())
-        {
-            if (NodesEquals(startNode, node)) continue;
-
-            var nodeData = nodes[node];
-            nodes.Remove(node);
-            nodes[startNode] = nodeData;
-            break;
-        }
-
-        while (openList.Count > 0)
-        {
-            NodeType currentNode = openList[0];
-            int currentIndex = 0;
-
-            for (int i = 1; i < openList.Count; i++)
+            foreach (NodeType node in graph.nodes)
             {
-                if (nodes[openList[i]].AcumulativeCost + nodes[openList[i]].Heuristic >=
-                    nodes[currentNode].AcumulativeCost + nodes[currentNode].Heuristic) continue;
-
-                currentNode = openList[i];
-                currentIndex = i;
+                nodes.Add(node, (default, 0, 0));
             }
 
-            openList.RemoveAt(currentIndex);
-            closedList.Add(currentNode);
+            List<NodeType> openList = new List<NodeType>();
+            List<NodeType> closedList = new List<NodeType>();
 
-            if (NodesEquals(currentNode, destinationNode))
+            openList.Add(startNode);
+
+            foreach (var node in nodes.Keys.ToList())
             {
-                return GeneratePath(startNode, destinationNode);
+                if (NodesEquals(startNode, node)) continue;
+
+                var nodeData = nodes[node];
+                nodes.Remove(node);
+                nodes[startNode] = nodeData;
+                break;
             }
 
-            foreach (NodeType neighbor in GetNeighbors(currentNode, distanceBetweenNodes))
+            while (openList.Count > 0)
             {
-                if (!nodes.ContainsKey(neighbor) || IsBlocked(neighbor) || closedList.Contains(neighbor))
+                NodeType currentNode = openList[0];
+                int currentIndex = 0;
+
+                for (int i = 1; i < openList.Count; i++)
                 {
-                    continue;
+                    if (nodes[openList[i]].AcumulativeCost + nodes[openList[i]].Heuristic >=
+                        nodes[currentNode].AcumulativeCost + nodes[currentNode].Heuristic) continue;
+
+                    currentNode = openList[i];
+                    currentIndex = i;
                 }
 
-                int tentativeNewAcumulatedCost = 0;
+                openList.RemoveAt(currentIndex);
+                closedList.Add(currentNode);
 
-                tentativeNewAcumulatedCost += nodes[currentNode].AcumulativeCost;
-                // Utilizo la función costFunction para calcular el costo entre los nodos
-                tentativeNewAcumulatedCost += costFunction(currentNode as Node<Vec2Int>, neighbor as Node<Vec2Int>);
-
-                if (!openList.Contains(neighbor) || tentativeNewAcumulatedCost < nodes[currentNode].AcumulativeCost)
+                if (NodesEquals(currentNode, destinationNode))
                 {
-                    nodes[neighbor] = (currentNode, tentativeNewAcumulatedCost, Distance(neighbor, destinationNode));
+                    return GeneratePath(startNode, destinationNode);
+                }
 
-                    if (!openList.Contains(neighbor))
+                foreach (NodeType neighbor in GetNeighbors(currentNode, distanceBetweenNodes))
+                {
+                    if (!nodes.ContainsKey(neighbor) || IsBlocked(neighbor) || closedList.Contains(neighbor))
                     {
-                        openList.Add(neighbor);
+                        continue;
+                    }
+
+                    int tentativeNewAcumulatedCost = 0;
+
+                    tentativeNewAcumulatedCost += nodes[currentNode].AcumulativeCost;
+                    // Utilizo la función costFunction para calcular el costo entre los nodos
+                    tentativeNewAcumulatedCost += costFunction(currentNode as Node<Vec2Int>, neighbor as Node<Vec2Int>);
+
+                    if (!openList.Contains(neighbor) || tentativeNewAcumulatedCost < nodes[currentNode].AcumulativeCost)
+                    {
+                        nodes[neighbor] = (currentNode, tentativeNewAcumulatedCost, Distance(neighbor, destinationNode));
+
+                        if (!openList.Contains(neighbor))
+                        {
+                            openList.Add(neighbor);
+                        }
                     }
                 }
             }
-        }
 
-        return null;
+            return null;
 
-        List<NodeType> GeneratePath(NodeType startNode, NodeType goalNode)
-        {
-            List<NodeType> path = new List<NodeType>();
-            NodeType currentNode = goalNode;
-
-            while (!NodesEquals(currentNode, startNode))
+            List<NodeType> GeneratePath(NodeType startNode, NodeType goalNode)
             {
-                path.Add(currentNode);
-                
-                foreach (var node in nodes.Keys.ToList().Where(node => NodesEquals(currentNode, node)))
+                List<NodeType> path = new List<NodeType>();
+                NodeType currentNode = goalNode;
+
+                while (!NodesEquals(currentNode, startNode))
                 {
-                    currentNode = nodes[node].Parent;
-                    break;
+                    path.Add(currentNode);
+                
+                    foreach (var node in nodes.Keys.ToList().Where(node => NodesEquals(currentNode, node)))
+                    {
+                        currentNode = nodes[node].Parent;
+                        break;
+                    }
                 }
+
+                path.Reverse();
+                return path;
             }
-
-            path.Reverse();
-            return path;
         }
+
+
+        protected abstract ICollection<NodeType> GetNeighbors(NodeType node);
+
+        protected abstract int Distance(NodeType A, NodeType B);
+
+        protected abstract bool NodesEquals(NodeType A, NodeType B);
+
+        protected abstract int MoveToNeighborCost(NodeType A, NodeType B);
+
+        protected abstract bool IsBlocked(NodeType node);
+        protected abstract ICollection<NodeType> GetNeighbors(NodeType node, float distance);
+        protected abstract int MoveToNeighborCost(NodeType A, NodeType B, float distanceBetweenNodes);
     }
-
-
-    protected abstract ICollection<NodeType> GetNeighbors(NodeType node);
-
-    protected abstract int Distance(NodeType A, NodeType B);
-
-    protected abstract bool NodesEquals(NodeType A, NodeType B);
-
-    protected abstract int MoveToNeighborCost(NodeType A, NodeType B);
-
-    protected abstract bool IsBlocked(NodeType node);
-    protected abstract ICollection<NodeType> GetNeighbors(NodeType node, float distance);
-    protected abstract int MoveToNeighborCost(NodeType A, NodeType B, float distanceBetweenNodes);
 }

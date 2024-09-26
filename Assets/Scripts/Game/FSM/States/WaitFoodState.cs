@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Game.Agents;
+using UnityEngine;
 
 namespace Game.FSM.States
 {
