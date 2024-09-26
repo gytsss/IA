@@ -1,56 +1,54 @@
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 
-
-public struct BehavioursActions
+namespace Game.FSM.States
 {
-    private Dictionary<int, List<Action>> mainThreadBehaviours;
-    private ConcurrentDictionary<int, ConcurrentBag<Action>> multithreadablesBehaviours;
-    private Action transitionBehavior;
-
-    public void AddMainThreadBehaviour(int executionOrder, Action behaviour)
+    public struct BehavioursActions
     {
-        if (mainThreadBehaviours == null)
-            mainThreadBehaviours = new Dictionary<int, List<Action>>();
+        private Dictionary<int, List<Action>> mainThreadBehaviours;
+        private ConcurrentDictionary<int, ConcurrentBag<Action>> multithreadablesBehaviours;
+        private Action transitionBehavior;
 
-        if (!mainThreadBehaviours.ContainsKey(executionOrder))
-            mainThreadBehaviours.Add(executionOrder, new List<Action>());
+        public void AddMainThreadBehaviour(int executionOrder, Action behaviour)
+        {
+            if (mainThreadBehaviours == null)
+                mainThreadBehaviours = new Dictionary<int, List<Action>>();
 
-        mainThreadBehaviours[executionOrder].Add(behaviour);
+            if (!mainThreadBehaviours.ContainsKey(executionOrder))
+                mainThreadBehaviours.Add(executionOrder, new List<Action>());
+
+            mainThreadBehaviours[executionOrder].Add(behaviour);
+        }
+
+        public void AddMultithreadbleBehaviours(int executionOrder, Action behaviour)
+        {
+            if (multithreadablesBehaviours == null)
+                multithreadablesBehaviours = new ConcurrentDictionary<int, ConcurrentBag<Action>>();
+
+            if (!multithreadablesBehaviours.ContainsKey(executionOrder))
+                multithreadablesBehaviours.TryAdd(executionOrder, new ConcurrentBag<Action>());
+
+            multithreadablesBehaviours[executionOrder].Add(behaviour);
+        }
+
+        public void SetTransitionBehavior(Action behaviour)
+        {
+            transitionBehavior = behaviour;
+        }
+
+        public Dictionary<int, List<Action>> MainThreadBehaviours => mainThreadBehaviours;
+        public ConcurrentDictionary<int, ConcurrentBag<Action>> MultithreadblesBehaviours => multithreadablesBehaviours;
+        public Action TransitionBehavior => transitionBehavior;
     }
 
-    public void AddMultithreadbleBehaviours(int executionOrder, Action behaviour)
+    public abstract class State
     {
-        if (multithreadablesBehaviours == null)
-            multithreadablesBehaviours = new ConcurrentDictionary<int, ConcurrentBag<Action>>();
-
-        if (!multithreadablesBehaviours.ContainsKey(executionOrder))
-            multithreadablesBehaviours.TryAdd(executionOrder, new ConcurrentBag<Action>());
-
-        multithreadablesBehaviours[executionOrder].Add(behaviour);
+        public Action<Enum> OnFlag;
+        public abstract BehavioursActions GetTickBehaviour(params object[] parameters);
+        public abstract BehavioursActions GetOnEnterBehaviour(params object[] parameters);
+        public abstract BehavioursActions GetOnExitBehaviour(params object[] parameters);
     }
-
-    public void SetTransitionBehavior(Action behaviour)
-    {
-        transitionBehavior = behaviour;
-    }
-
-    public Dictionary<int, List<Action>> MainThreadBehaviours => mainThreadBehaviours;
-    public ConcurrentDictionary<int, ConcurrentBag<Action>> MultithreadblesBehaviours => multithreadablesBehaviours;
-    public Action TransitionBehavior => transitionBehavior;
-}
-
-public abstract class State
-{
-    public Action<Enum> OnFlag;
-    public abstract BehavioursActions GetTickBehaviour(params object[] parameters);
-    public abstract BehavioursActions GetOnEnterBehaviour(params object[] parameters);
-    public abstract BehavioursActions GetOnExitBehaviour(params object[] parameters);
-}
 
 // public sealed class ChaseState : State
 // {
@@ -239,3 +237,4 @@ public abstract class State
 //         return default;
 //     }
 // }
+}
