@@ -42,9 +42,7 @@ public class NodeVoronoi : ICoordinate<Vector2>, IEquatable<NodeVoronoi>
     {
         coordinate += a;
     }
-
-
-
+    
     public Vector2 Multiply(float b)
     {
         return coordinate * (int)b;

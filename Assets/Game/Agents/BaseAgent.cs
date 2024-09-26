@@ -76,7 +76,7 @@ public abstract class BaseAgent : MonoBehaviour
 
         transform.position = new Vector3(startNode.GetCoordinate().x, startNode.GetCoordinate().y);
 
-        path = Pathfinder.FindPath(startNode, destinationNode, distanceBetweenNodes,GetTransitionCost);
+        path = Pathfinder.FindPath(startNode, destinationNode, distanceBetweenNodes);
 
         AddStates();
         AddTransitions();

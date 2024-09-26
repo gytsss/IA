@@ -128,8 +128,7 @@ namespace Game.FSM.States
 
                 Debug.Log("Start node coordinate: " + startNode.GetCoordinate());
                 Debug.Log("Destination node coordinate: " + destinationNode.GetCoordinate());
-                
-                path = agent.GetAStarPathfinder().FindPath(startNode, destinationNode, distanceBetweenNodes, agent.GetTransitionCost);
+                path = agent.GetAStarPathfinder().FindPath(startNode, destinationNode, distanceBetweenNodes);
 
                 if (path == null)
                     Debug.Log("Path is null. No valid path found.");

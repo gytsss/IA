@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 //NodeType es la info que necesitas del nodo, si es mina, etc, tipo de nodo
 //CoordinateType es el tipo de coordenada, float, int, Vector2, Vector2Int etc. identificar el tipo del nodo para hacer chequeos
@@ -14,10 +13,9 @@ public abstract class Pathfinder<NodeType, CoordinateType, TCoordinate>
     public Graph<NodeType, CoordinateType> graph;
     protected List<NodeType> goldMines;
 
-    public delegate int TransitionCostDelegate(Node<Vector2> fromNode, Node<Vector2> toNode);
+    //public delegate int TransitionCostDelegate(Node<Vector2> fromNode, Node<Vector2> toNode);
 
-    public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode, float distanceBetweenNodes,
-        TransitionCostDelegate costFunction)
+    public List<NodeType> FindPath(NodeType startNode, NodeType destinationNode, float distanceBetweenNodes)
     {
         Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)> nodes =
             new Dictionary<NodeType, (NodeType Parent, int AcumulativeCost, int Heuristic)>();
@@ -63,9 +61,7 @@ public abstract class Pathfinder<NodeType, CoordinateType, TCoordinate>
             //
             // TCoordinate destinationNodeTCoordinate = new TCoordinate();
             // destinationNodeTCoordinate.SetCoordinate(destinationNode.GetCoordinate());
-
-            Debug.Log("Current node: " + currentNode.GetCoordinate() + " Destination node: " +
-                      destinationNode.GetCoordinate());
+            
             if (NodesEquals(currentNode, destinationNode))
             {
                 return GeneratePath(startNode, destinationNode);
