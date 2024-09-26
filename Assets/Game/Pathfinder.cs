@@ -66,7 +66,7 @@ public abstract class Pathfinder<NodeType>
                 int tentativeNewAcumulatedCost = 0;
 
                 tentativeNewAcumulatedCost += nodes[currentNode].AcumulativeCost;
-                // Utilizamos la función costFunction para calcular el costo entre los nodos
+                // Utilizo la función costFunction para calcular el costo entre los nodos
                 tentativeNewAcumulatedCost += costFunction(currentNode as Node<Vec2Int>, neighbor as Node<Vec2Int>);
 
                 if (!openList.Contains(neighbor) || tentativeNewAcumulatedCost < nodes[currentNode].AcumulativeCost)
