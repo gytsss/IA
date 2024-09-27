@@ -6,23 +6,25 @@ namespace Game.FSM.States
 {
     public sealed class DepositGoldState : State
     {
+        Miner miner;
         private List<Node<Vector2>> pathToUrbanCenter;
         private GoldMineNode<Vector2> mine;
+        UrbanCenterNode<Vector2> urbanCenter;
         private bool alreadyDeposited = false;
         private float timeSinceLastMove;
         private int currentNodeIndex;
         private bool isMoving;
         private bool noMoreMines = false;
+        float distanceBetweenNodes;
 
         public override BehavioursActions GetTickBehaviour(params object[] parameters)
         {
             BehavioursActions behaviours = new BehavioursActions();
 
-            Miner miner = parameters[0] as Miner;
-            Node<Vector2> currentNode = parameters[1] as Node<Vector2>;
-            UrbanCenterNode<Vector2> urbanCenter = parameters[2] as UrbanCenterNode<Vector2>;
-            float travelTime = Convert.ToSingle(parameters[3]);
-            float distanceBetweenNodes = Convert.ToSingle(parameters[4]);
+            
+            Node<Vector2> currentNode = parameters[0] as Node<Vector2>;
+            float travelTime = Convert.ToSingle(parameters[1]);
+           
 
             behaviours.AddMultithreadbleBehaviours(0, () =>
             {
@@ -43,8 +45,7 @@ namespace Game.FSM.States
             {
                 if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
                 {
-                    pathToUrbanCenter = miner.GetAStarPathfinder()
-                        .FindPath(miner.GetStartNode(), urbanCenter, distanceBetweenNodes);
+                    
                     Debug.Log("Path to urban center calculated From: " + miner.GetStartNode().GetCoordinate());
                 }
 
@@ -126,7 +127,23 @@ namespace Game.FSM.States
 
         public override BehavioursActions GetOnEnterBehaviour(params object[] parameters)
         {
-            return default;
+            BehavioursActions behaviours = new BehavioursActions();
+            
+            miner = parameters[0] as Miner;
+            urbanCenter = parameters[1] as UrbanCenterNode<Vector2>;
+            distanceBetweenNodes = Convert.ToSingle(parameters[2]);
+
+            behaviours.AddMultithreadbleBehaviours(0, () =>
+            {
+                pathToUrbanCenter = miner.GetAStarPathfinder()
+                    .FindPath(miner.GetStartNode(), urbanCenter, distanceBetweenNodes);
+                
+                if(pathToUrbanCenter != null)
+                    Debug.Log("Path to urban center calculated From: " + miner.GetStartNode().GetCoordinate());
+
+            });
+                
+            return behaviours;
         }
 
         public override BehavioursActions GetOnExitBehaviour(params object[] parameters)

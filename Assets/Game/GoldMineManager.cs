@@ -18,17 +18,19 @@ public class GoldMineManager : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             GoldMineNode<Vector2> goldMine = new GoldMineNode<Vector2>();
-            Node<Vector2> randomNode = graphView.Graph.nodes[1];
+            int randomNode = Random.Range(0, graphView.Graph.nodes.Count);
+           //int randomNode = 1;
+           
 
-            goldMine.SetCoordinate(randomNode.GetCoordinate());
+            goldMine.SetCoordinate(graphView.Graph.nodes[randomNode].GetCoordinate());
             goldMine.SetMaxFoodAmount(100);
             goldMine.SetMaxGoldAmount(100);
             goldMine.SetFoodAmount(foodAmount);
             goldMine.SetGoldAmount(goldAmount);
-            goldMine.SetNeighbors(randomNode.GetNeighbors());
+            goldMine.SetNeighbors(graphView.Graph.nodes[randomNode].PassNeighbors());
             goldMines.Add(goldMine);
 
-            graphView.Graph.nodes.Remove(randomNode);
+            graphView.Graph.nodes.Remove(graphView.Graph.nodes[randomNode]);
             graphView.Graph.nodes.Add(goldMine);
             goldMinesVoronois.Add(new NodeVoronoi(goldMine.GetCoordinate()));
         }

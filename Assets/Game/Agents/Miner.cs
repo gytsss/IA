@@ -64,7 +64,11 @@ public class Miner : BaseAgent
 
     private object[] DepositGoldTickParameters()
     {
-        return new object[] { this, currentNode, gameManager.GetUrbanCenterNode(), travelTime, gameManager.GetDistanceBetweenNodes() };
+        return new object[] { currentNode, travelTime };
+    }
+    private object[] DepositGoldEnterParameters()
+    {
+        return new object[] { this, gameManager.GetUrbanCenterNode(), gameManager.GetDistanceBetweenNodes() };
     }
 
     private object[] RespondToAlarmTickParameters()
@@ -83,7 +87,7 @@ public class Miner : BaseAgent
         fsm.AddBehaviour<MoveToMineState>(States.MoveToMine, onEnterParameters: MoveToMineEnterParameters,onTickParameters: MoveToMineTickParameters);
         fsm.AddBehaviour<MineGoldState>(States.MineGold,onEnterParameters: MineGoldEnterParameters, onTickParameters: MineGoldTickParameters);
         fsm.AddBehaviour<EatFoodState>(States.EatFood, onTickParameters: EatFoodTickParameters);
-        fsm.AddBehaviour<DepositGoldState>(States.DepositGold, onTickParameters: DepositGoldTickParameters);
+        fsm.AddBehaviour<DepositGoldState>(States.DepositGold, onEnterParameters: DepositGoldEnterParameters,onTickParameters: DepositGoldTickParameters);
         fsm.AddBehaviour<WaitFoodState>(States.WaitFood, onTickParameters: WaitForFoodTickParameters);
         fsm.AddBehaviour<AlarmState>(States.Alarm, onTickParameters: RespondToAlarmTickParameters);
         // fsm.AddBehaviour<ReturnHomeState>(MinerStates.ReturnHome, onTickParameters: ReturnToUrbanCenterTickParameters);

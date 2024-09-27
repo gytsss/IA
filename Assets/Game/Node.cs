@@ -9,7 +9,7 @@ public enum NodeTypes
 }
 
 public class Node<Coordinate> : INode, INode<Coordinate>, IEquatable<Node<Coordinate>>
-where Coordinate : IEquatable<Coordinate>
+    where Coordinate : IEquatable<Coordinate>
 {
     private List<INode<Coordinate>> neighbors = new List<INode<Coordinate>>();
     private bool isBlocked = false;
@@ -31,8 +31,29 @@ where Coordinate : IEquatable<Coordinate>
         return neighbors;
     }
 
+    public List<INode<Coordinate>> PassNeighbors()
+    {
+        foreach (var neighbor in neighbors)
+        {
+            neighbor.QuitNeighbor(this, neighbor.GetNeighbors());
+        }
+
+        return neighbors;
+    }
+
+    public void QuitNeighbor(INode<Coordinate> neighborToQuit, List<INode<Coordinate>> neighborsList)
+    {
+        neighborsList.Remove(neighborToQuit);
+    }
+
     public void SetNeighbors(List<INode<Coordinate>> neighbors)
     {
+        foreach (INode<Coordinate> neighbor in neighbors)
+        {
+            neighbor.AddNeighbor(this);
+        }
+
+
         this.neighbors = neighbors;
     }
 
@@ -66,10 +87,9 @@ where Coordinate : IEquatable<Coordinate>
         if (other == null) return false;
         return coordinate.Equals(other.coordinate);
     }
-    
 }
 
-public class GoldMineNode<Coordinate> : Node<Coordinate> 
+public class GoldMineNode<Coordinate> : Node<Coordinate>
     where Coordinate : IEquatable<Coordinate>
 {
     private int goldAmount;
@@ -91,7 +111,6 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
         foodAmount = maxFoodAmount;
         goldAmount = maxGoldAmount;
         //SetNodeType(NodeTypes.GoldMine);
-
     }
 
     public int GetGoldAmount()
@@ -111,9 +130,9 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
 
     public void SetFoodAmount(int foodAmount)
     {
-        if(foodAmount > maxFoodAmount)
+        if (foodAmount > maxFoodAmount)
             foodAmount = maxFoodAmount;
-        
+
         this.foodAmount = foodAmount;
     }
 
@@ -126,7 +145,7 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
     {
         this.maxFoodAmount = maxFoodAmount;
     }
-    
+
     public void SetMaxGoldAmount(int maxGoldAmount)
     {
         this.maxGoldAmount = maxGoldAmount;
@@ -153,19 +172,19 @@ public class GoldMineNode<Coordinate> : Node<Coordinate>
         goldAmount -= amount;
         if (goldAmount < 0) goldAmount = 0;
     }
-    
+
     public bool IsBeingMined()
     {
         return beingMined;
     }
-    
+
     public void SetBeingMined(bool beingMined)
     {
         this.beingMined = beingMined;
     }
 }
 
-public class UrbanCenterNode<Coordinate> : Node<Coordinate> 
+public class UrbanCenterNode<Coordinate> : Node<Coordinate>
     where Coordinate : IEquatable<Coordinate>
 {
     private int gold = 0;
@@ -198,17 +217,17 @@ public class UrbanCenterNode<Coordinate> : Node<Coordinate>
     {
         gold += amount;
     }
-    
+
     public int GetAgentCapacity()
     {
         return agentCapacity;
     }
-    
+
     public bool CanGenerateAgent()
     {
         return agentCapacity > 0;
     }
-    
+
     public void GenerateAgent()
     {
         if (CanGenerateAgent())

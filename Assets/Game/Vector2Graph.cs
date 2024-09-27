@@ -55,7 +55,7 @@ namespace Pathfinder
             for (int i = 0; i < nodes.Count; i++)
             {
                 if(nodes[i].GetCoordinate() == nodeCoordinate)
-                    return nodes[i].GetNeighbors();
+                    return nodes[i].PassNeighbors();
             }
             
             return null;

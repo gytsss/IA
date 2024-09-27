@@ -56,11 +56,7 @@ public abstract class Pathfinder<NodeType, CoordinateType, TCoordinate>
 
             openList.RemoveAt(currentIndex);
             closedList.Add(currentNode);
-            // TCoordinate currentNodeCoordinate = new TCoordinate();
-            // currentNodeCoordinate.SetCoordinate(currentNode.GetCoordinate());
-            //
-            // TCoordinate destinationNodeTCoordinate = new TCoordinate();
-            // destinationNodeTCoordinate.SetCoordinate(destinationNode.GetCoordinate());
+            
             
             if (NodesEquals(currentNode, destinationNode))
             {
@@ -75,20 +71,11 @@ public abstract class Pathfinder<NodeType, CoordinateType, TCoordinate>
                     continue;
                 if (!nodes.ContainsKey(neighbor))
                     continue;
-                
-                // if (closedList.Any(node => node.GetCoordinate().Equals(neighbor.GetCoordinate())))
-                //     continue;
-                //
-                // bool nodeExists = nodes.Keys.Any(node => node.GetCoordinate().Equals(neighbor.GetCoordinate()));
-                // if (!nodeExists)
-                //     continue;
 
                 
                 int tentativeNewAcumulatedCost = 0;
 
                 tentativeNewAcumulatedCost += nodes[currentNode].AcumulativeCost;
-                // Utilizamos la función costFunction para calcular el costo entre los nodos
-                // tentativeNewAcumulatedCost += costFunction(currentNode as Node<Vector2>, neighbor as Node<Vector2>);
                 tentativeNewAcumulatedCost += MoveToNeighborCost(currentNode, neighbor, distanceBetweenNodes);
 
                 if (!openList.Contains(neighbor) || tentativeNewAcumulatedCost < nodes[currentNode].AcumulativeCost)
