@@ -12,8 +12,7 @@ namespace Game.FSM.States
 
 
             behaviours.AddMultithreadbleBehaviours(0, () => { Debug.Log("Waiting for food..."); });
-
-            behaviours.AddMainThreadBehaviour(0, () => { });
+            
 
             behaviours.SetTransitionBehavior(() =>
             {

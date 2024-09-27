@@ -36,9 +36,8 @@ namespace Game.FSM.States
                 if (currentNode == null)
                     Debug.Log("Current node is null in ReturnHomeState");
             });
-
-
-            behaviours.AddMainThreadBehaviour(0, () =>
+            
+            behaviours.AddMultithreadbleBehaviours(0, () =>
             {
                 if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
                 {
@@ -46,7 +45,11 @@ namespace Game.FSM.States
                         .FindPath(baseAgent.GetStartNode(), urbanCenter, distanceBetweenNodes);
                     Debug.Log("Path to urban center calculated From: " + baseAgent.GetStartNode().GetCoordinate());
                 }
+            });
 
+
+            behaviours.AddMainThreadBehaviour(1, () =>
+            {
                 if (pathToUrbanCenter != null && pathToUrbanCenter.Count > 0)
                 {
                     if (!isMoving)

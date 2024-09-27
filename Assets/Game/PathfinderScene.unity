@@ -2605,7 +2605,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &898476058
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4455,11 +4455,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: energy
-      value: 100
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: maxGold
-      value: 15
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4805784923343157461, guid: 589864f9c4d0b0d47ab6b4d6f306fbeb, type: 3}
       propertyPath: graphView

@@ -38,17 +38,13 @@ namespace Game.FSM.States
 
                 if (currentNode == null)
                     Debug.Log("Current node is null in DepositGoldState");
+                
             });
 
+            
 
             behaviours.AddMainThreadBehaviour(0, () =>
             {
-                if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
-                {
-                    
-                    Debug.Log("Path to urban center calculated From: " + miner.GetStartNode().GetCoordinate());
-                }
-
                 if (pathToUrbanCenter != null && pathToUrbanCenter.Count > 0)
                 {
                     if (!isMoving)

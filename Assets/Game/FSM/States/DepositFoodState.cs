@@ -31,7 +31,7 @@ namespace Game.FSM.States
                 Debug.Log("Agent is null in DepositFoodState.");
         });
 
-        behaviours.AddMainThreadBehaviour(0, () =>
+        behaviours.AddMultithreadbleBehaviours(0,(() =>
         {
             mine = gameManager.goldMineManager.FindClosestGoldMineBeingMined(gameManager.GetUrbanCenterNode());
 
@@ -41,7 +41,8 @@ namespace Game.FSM.States
                 Debug.Log("Food deposited! Food amount: " + mine.GetFoodAmount());
                 alreadyDeposited = true;
             }
-        });
+        }));
+        
 
         behaviours.SetTransitionBehavior(() =>
         {

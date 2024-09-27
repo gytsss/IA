@@ -21,7 +21,7 @@ namespace Game.FSM.States
                    Debug.Log("Miner or mine is null in EatFoodState");
            });
    
-           behaviours.AddMainThreadBehaviour(0, () =>
+           behaviours.AddMultithreadbleBehaviours(0, () =>
            {
                if (mine != null && mine.HasFood())
                {

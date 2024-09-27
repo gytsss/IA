@@ -11,11 +11,7 @@ namespace Game.FSM.States
 
             BaseAgent agent = parameters[0] as BaseAgent;
             bool start = Convert.ToBoolean(parameters[1]);
-
-            behaviours.AddMultithreadbleBehaviours(0, () =>
-            {
-                Debug.Log("Idle agent");
-            });
+            
         
             behaviours.SetTransitionBehavior(() =>
             {

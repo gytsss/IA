@@ -19,11 +19,11 @@ namespace Game.FSM.States
                     Debug.Log("No mines being mined");
             });
 
-            behaviours.AddMainThreadBehaviour(0,
-                () =>
-                {
-                    mine = gameManager.goldMineManager.FindClosestGoldMineBeingMined(gameManager.GetUrbanCenterNode());
-                });
+
+            behaviours.AddMultithreadbleBehaviours(0, () =>
+            {
+                mine = gameManager.goldMineManager.FindClosestGoldMineBeingMined(gameManager.GetUrbanCenterNode());
+            });
 
             behaviours.SetTransitionBehavior(() =>
             {

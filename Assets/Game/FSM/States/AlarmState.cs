@@ -29,7 +29,7 @@ namespace Game.FSM.States
                 Debug.Log("Urban center is null in AlarmState.");
         });
 
-        behaviours.AddMainThreadBehaviour(0, () =>
+        behaviours.AddMultithreadbleBehaviours(0, () =>
         {
             if (pathToUrbanCenter == null || pathToUrbanCenter.Count == 0)
             {
@@ -37,6 +37,10 @@ namespace Game.FSM.States
                     .FindPath(agent.GetStartNode(), urbanCenter, distanceBetweenNodes);
                 Debug.Log("Path to urban center calculated for agent during alarm!");
             }
+        });
+
+        behaviours.AddMainThreadBehaviour(1, () =>
+        {
 
             if (pathToUrbanCenter != null && pathToUrbanCenter.Count > 0)
             {
