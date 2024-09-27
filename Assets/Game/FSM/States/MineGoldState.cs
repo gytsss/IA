@@ -79,6 +79,13 @@ namespace Game.FSM.States
             }
             else if (miner.goldCollected >= maxGold)
             {
+                if (!mine.HasGold())
+                {
+                    miner.gameManager.goldMineManager.goldMinesVoronois.Remove(new NodeVoronoi(mine.GetCoordinate()));
+                    miner.gameManager.voronoi.SetVoronoi(miner.gameManager.goldMineManager.goldMinesVoronois, miner.gameManager.GetNodeVoronoiMapSize());
+                    mine.SetBeingMined(false);
+                }
+                
                 mine.SetBeingMined(false);
                 Debug.Log("Full inventory!");
                 goldCount = 0;

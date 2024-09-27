@@ -54,10 +54,12 @@ namespace Pathfinder
         private void InitGame()
         {
             urbanCenter = new UrbanCenterNode<Vector2>();
-            urbanCenter.SetCoordinate(new Vector2(Random.Range(0, graphView.size.x),Random.Range(0, graphView.size.y)));
+            int randomNode = Random.Range(0, graphView.Graph.nodes.Count);
+            urbanCenter.SetCoordinate(graphView.Graph.nodes[randomNode].GetCoordinate());
             //urbanCenter.SetCoordinate(new Vector2(0,0));
             urbanCenter.SetNeighbors(graphView.Graph.GetNeighborsNode(urbanCenter.GetCoordinate()));
-            graphView.Graph.nodes.Remove(graphView.Graph.nodes[0]);
+            //graphView.Graph.nodes.Remove(graphView.Graph.nodes[0]);
+            graphView.Graph.nodes.Remove(graphView.Graph.nodes[randomNode]);
             graphView.Graph.nodes.Add(urbanCenter);
             urbanCenterText.text = "Urban Center gold: " + urbanCenter.GetGold();
             voronoi = new Voronoi<NodeVoronoi, Vector2>();
