@@ -82,6 +82,7 @@ namespace Game.FSM.States
                 if (!mine.HasGold())
                 {
                     miner.gameManager.goldMineManager.goldMinesVoronois.Remove(new NodeVoronoi(mine.GetCoordinate()));
+                    miner.gameManager.goldMineManager.goldMines.Remove(mine);
                     miner.gameManager.voronoi.SetVoronoi(miner.gameManager.goldMineManager.goldMinesVoronois, miner.gameManager.GetNodeVoronoiMapSize());
                     mine.SetBeingMined(false);
                 }
@@ -94,6 +95,7 @@ namespace Game.FSM.States
             else if (!mine.HasGold())
             {
                 miner.gameManager.goldMineManager.goldMinesVoronois.Remove(new NodeVoronoi(mine.GetCoordinate()));
+                miner.gameManager.goldMineManager.goldMines.Remove(mine);
                 miner.gameManager.voronoi.SetVoronoi(miner.gameManager.goldMineManager.goldMinesVoronois, miner.gameManager.GetNodeVoronoiMapSize());
                 mine.SetBeingMined(false);
                 Debug.Log("Mine empty!");

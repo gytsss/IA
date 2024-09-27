@@ -117,7 +117,7 @@ namespace Game.FSM.States
                     Debug.Log("Agent is null in MoveToMineState");
             });
 
-            behaviours.AddMainThreadBehaviour(0, () =>
+            behaviours.AddMultithreadbleBehaviours(0, () =>
             {
                 if (agent.GetIsMiner())
                     agent.SetDestinationNode(agent.GetClosestGoldMineNode(startNode));
@@ -128,6 +128,10 @@ namespace Game.FSM.States
 
                 Debug.Log("Start node coordinate: " + startNode.GetCoordinate());
                 Debug.Log("Destination node coordinate: " + destinationNode.GetCoordinate());
+            });
+
+            behaviours.AddMainThreadBehaviour(1, () =>
+            {
                 path = agent.GetAStarPathfinder().FindPath(startNode, destinationNode, distanceBetweenNodes);
 
                 if (path == null)
