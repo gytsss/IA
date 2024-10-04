@@ -1418,6 +1418,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 7503251877049065454, guid: 8909d7b8482468b4a91f773f1bb86b76, type: 3}
+  prefabCoin: {fileID: 8446914281006973178, guid: 7cb4d59d50db50c4aa3da9a2310cd78a, type: 3}
 --- !u!4 &1326559231
 Transform:
   m_ObjectHideFlags: 0

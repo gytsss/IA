@@ -21,6 +21,7 @@ public class BirdAI : BirdBase
         {
             genome.fitness *= 2;
         }
+        
 
         if (Vector3.Distance(coin.transform.position, birdBehaviour.transform.position) <= .5f)
         {
