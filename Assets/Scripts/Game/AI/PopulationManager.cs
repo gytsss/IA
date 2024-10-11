@@ -29,7 +29,7 @@ public class PopulationManager : MonoBehaviour
 
     GeneticAlgorithm genAlg;
 
-    List<Tank> populationGOs = new List<Tank>();
+    List<Tank.Tank> populationGOs = new List<Tank.Tank>();
     List<Genome> population = new List<Genome>();
     List<NeuralNetwork> brains = new List<NeuralNetwork>();
     List<GameObject> mines = new List<GameObject>();
@@ -231,7 +231,7 @@ public class PopulationManager : MonoBehaviour
 
         for (int i = 0; i < Mathf.Clamp((float)(IterationCount / 100.0f) * 50, 1, 50); i++)
         {
-            foreach (Tank t in populationGOs)
+            foreach (Tank.Tank t in populationGOs)
             {
                 // Get the nearest mine
                 GameObject mine = GetNearestMine(t.transform.position);
@@ -280,11 +280,11 @@ public class PopulationManager : MonoBehaviour
 	}
 
 #region Helpers
-    Tank CreateTank(Genome genome, NeuralNetwork brain)
+    Tank.Tank CreateTank(Genome genome, NeuralNetwork brain)
     {
         Vector3 position = GetRandomPos();
         GameObject go = Instantiate<GameObject>(TankPrefab, position, GetRandomRot());
-        Tank t = go.GetComponent<Tank>();
+        Tank.Tank t = go.GetComponent<Tank.Tank>();
         t.SetBrain(genome, brain);
         return t;
     }
@@ -301,7 +301,7 @@ public class PopulationManager : MonoBehaviour
 
     void DestroyTanks()
     {
-        foreach (Tank go in populationGOs)
+        foreach (Tank.Tank go in populationGOs)
             Destroy(go.gameObject);
 
         populationGOs.Clear();
@@ -321,13 +321,13 @@ public class PopulationManager : MonoBehaviour
 
             bool good = Random.Range(-1.0f, 1.0f) >= 0;
 
-            SetMineGood(good, go);
+            SetMineType(good, go);
 
             mines.Add(go);
         }
     }
 
-    void SetMineGood(bool good, GameObject go)
+    void SetMineType(bool good, GameObject go)
     {
         if (good)
         {
@@ -351,7 +351,7 @@ public class PopulationManager : MonoBehaviour
 
         bool good = Random.Range(-1.0f, 1.0f) >= 0;
 
-        SetMineGood(good, mine);
+        SetMineType(good, mine);
 
         mine.transform.position = GetRandomPos();
     }

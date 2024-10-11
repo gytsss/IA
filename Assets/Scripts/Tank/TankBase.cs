@@ -6,8 +6,10 @@ public class TankBase : MonoBehaviour
     public float Speed = 10.0f;
     public float RotSpeed = 20.0f;
 
-    protected Genome genome;
-	protected NeuralNetwork brain;
+    protected Genome movementGenome;
+    protected Genome shootGenome;
+	protected NeuralNetwork movementBrain;
+	protected NeuralNetwork shootBrain;
     protected GameObject nearMine;
     protected GameObject goodMine;
     protected GameObject badMine;
@@ -15,8 +17,8 @@ public class TankBase : MonoBehaviour
 
     public void SetBrain(Genome genome, NeuralNetwork brain)
     {
-        this.genome = genome;
-        this.brain = brain;
+        this.movementGenome = genome;
+        this.movementBrain = brain;
         inputs = new float[brain.InputsCount];
         OnReset();
     }
@@ -73,7 +75,6 @@ public class TankBase : MonoBehaviour
 
     protected virtual void OnThink(float dt)
     {
-
     }
 
     protected virtual void OnTakeMine(GameObject mine)
