@@ -17,13 +17,16 @@ namespace Pathfinder
     
         public TMP_InputField heightInputField, widthInputField, goldMinesInputField, distanceBetweenNodesInputField;
         public TMP_Text urbanCenterText, currentGoldText, currentEnergyText;
-
+        public GameObject alarmButtons;
         private UrbanCenterNode<Vec2Int> urbanCenter;
 
         private bool alarm = false;
         private bool disableAlarm = false;
         private float distanceBetweenNodes;
 
+        private int height;
+        private int width;
+        private int goldMines;
         private void OnEnable()
         {
            // agents = new List<BaseAgent>();
@@ -31,17 +34,17 @@ namespace Pathfinder
 
         public void GetMapInputValues()
         {
-            string height = heightInputField.text;
-            string width = widthInputField.text;
-            string goldMines = goldMinesInputField.text;
+            height = int.Parse(heightInputField.text);
+            width = int.Parse(widthInputField.text);
+            goldMines = int.Parse(goldMinesInputField.text);
             distanceBetweenNodes = float.Parse(distanceBetweenNodesInputField.text.Replace(',', '.'));
 
             Debug.Log("Height: " + height + " Width: " + width + " GoldMines: " + goldMines + " Distance: " +
                       distanceBetweenNodes);
         
-           graphView.CreateGraph(int.Parse(height), int.Parse(width), distanceBetweenNodes);
-            goldMineManager.SetGoldMines(int.Parse(goldMines), distanceBetweenNodes);
+            graphView.CreateGraph(height, width, distanceBetweenNodes);
 
+            alarmButtons.SetActive(true);
             InitGame();
         }
 
@@ -49,8 +52,8 @@ namespace Pathfinder
         {
             urbanCenter = new UrbanCenterNode<Vec2Int>();
             urbanCenter.SetCoordinate(new Vec2Int(Random.Range(0, graphView.size.x), Random.Range(0, graphView.size.y)));
-            urbanCenterText.text = "Urban Center gold: " + urbanCenter.GetGold();
-            
+            urbanCenterText.text = "Gold: " + urbanCenter.GetGold();
+            goldMineManager.SetGoldMines(goldMines, distanceBetweenNodes, urbanCenter);
 
             foreach (BaseAgent agent in agents)
             {

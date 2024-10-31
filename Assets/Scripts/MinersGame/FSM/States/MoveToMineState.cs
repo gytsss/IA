@@ -129,6 +129,9 @@ namespace Game.FSM.States
 
                 if (path == null)
                     Debug.Log("Path is null. No valid path found.");
+                
+                if(destinationNode == null)
+                    Debug.Log("Destination node is null onEnter");
             });
 
             return behaviours;
