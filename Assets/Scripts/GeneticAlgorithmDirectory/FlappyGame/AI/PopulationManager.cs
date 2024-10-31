@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.AI
+namespace GeneticAlgorithmDirectory.FlappyGame.AI
 {
     public class PopulationManager : MonoBehaviour
     {
