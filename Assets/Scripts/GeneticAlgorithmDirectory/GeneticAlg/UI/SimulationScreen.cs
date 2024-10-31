@@ -15,45 +15,62 @@ namespace GeneticAlgorithmDirectory.GeneticAlg.UI
         public Button pauseBtn;
         public Button stopBtn;
         public GameObject startConfigurationScreen;
+        public PopulationManager populationManager1;
+        public PopulationManager populationManager2;
+        private string avgFitnessText;
+        private string bestFitnessText;
 
-        string generationsCountText;
-        string bestFitnessText;
-        string avgFitnessText;
-        string worstFitnessText;
-        string timerText;
-        int lastGeneration = 0;
+        private string generationsCountText;
+        private int lastGeneration;
+        private string timerText;
+        private string worstFitnessText;
 
         // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
+            var populations = FindObjectsOfType<PopulationManager>();
+            populationManager1 = populations[0];
+            populationManager2 = populations[1];
             timerSlider.onValueChanged.AddListener(OnTimerChange);
             timerText = timerTxt.text;
 
-            timerTxt.text = string.Format(timerText, PopulationManager.Instance.IterationCount);
+            timerTxt.text = string.Format(timerText, populationManager1.IterationCount);
 
             if (string.IsNullOrEmpty(generationsCountText))
-                generationsCountText = generationsCountTxt.text;   
+                generationsCountText = generationsCountTxt.text;
             if (string.IsNullOrEmpty(bestFitnessText))
-                bestFitnessText = bestFitnessTxt.text;   
+                bestFitnessText = bestFitnessTxt.text;
             if (string.IsNullOrEmpty(avgFitnessText))
-                avgFitnessText = avgFitnessTxt.text;   
+                avgFitnessText = avgFitnessTxt.text;
             if (string.IsNullOrEmpty(worstFitnessText))
-                worstFitnessText = worstFitnessTxt.text;   
+                worstFitnessText = worstFitnessTxt.text;
 
             pauseBtn.onClick.AddListener(OnPauseButtonClick);
             stopBtn.onClick.AddListener(OnStopButtonClick);
         }
 
-        void OnEnable()
+        private void LateUpdate()
+        {
+            if (lastGeneration != populationManager1.Generation)
+            {
+                lastGeneration = populationManager1.Generation;
+                generationsCountTxt.text = string.Format(generationsCountText, populationManager1.Generation);
+                bestFitnessTxt.text = string.Format(bestFitnessText, populationManager1.BestFitness);
+                avgFitnessTxt.text = string.Format(avgFitnessText, populationManager1.AvgFitness);
+                worstFitnessTxt.text = string.Format(worstFitnessText, populationManager1.WorstFitness);
+            }
+        }
+
+        private void OnEnable()
         {
             if (string.IsNullOrEmpty(generationsCountText))
-                generationsCountText = generationsCountTxt.text;   
+                generationsCountText = generationsCountTxt.text;
             if (string.IsNullOrEmpty(bestFitnessText))
-                bestFitnessText = bestFitnessTxt.text;   
+                bestFitnessText = bestFitnessTxt.text;
             if (string.IsNullOrEmpty(avgFitnessText))
-                avgFitnessText = avgFitnessTxt.text;   
+                avgFitnessText = avgFitnessTxt.text;
             if (string.IsNullOrEmpty(worstFitnessText))
-                worstFitnessText = worstFitnessTxt.text;   
+                worstFitnessText = worstFitnessTxt.text;
 
             generationsCountTxt.text = string.Format(generationsCountText, 0);
             bestFitnessTxt.text = string.Format(bestFitnessText, 0);
@@ -61,35 +78,25 @@ namespace GeneticAlgorithmDirectory.GeneticAlg.UI
             worstFitnessTxt.text = string.Format(worstFitnessText, 0);
         }
 
-        void OnTimerChange(float value)
+        private void OnTimerChange(float value)
         {
-            PopulationManager.Instance.IterationCount = (int)value;
-            timerTxt.text = string.Format(timerText, PopulationManager.Instance.IterationCount);
+            populationManager1.IterationCount = (int)value;
+            populationManager2.IterationCount = (int)value;
+            timerTxt.text = string.Format(timerText, populationManager1.IterationCount);
         }
 
-        void OnPauseButtonClick()
+        private void OnPauseButtonClick()
         {
-            PopulationManager.Instance.PauseSimulation();
+            populationManager1.PauseSimulation();
         }
 
-        void OnStopButtonClick()
+        private void OnStopButtonClick()
         {
-            PopulationManager.Instance.StopSimulation();
-            this.gameObject.SetActive(false);
+            populationManager1.StopSimulation();
+            populationManager2.StopSimulation();
+            gameObject.SetActive(false);
             startConfigurationScreen.SetActive(true);
             lastGeneration = 0;
-        }
-
-        void LateUpdate()
-        {
-            if (lastGeneration != PopulationManager.Instance.generation)
-            {
-                lastGeneration = PopulationManager.Instance.generation;
-                generationsCountTxt.text = string.Format(generationsCountText, PopulationManager.Instance.generation);
-                bestFitnessTxt.text = string.Format(bestFitnessText, PopulationManager.Instance.bestFitness);
-                avgFitnessTxt.text = string.Format(avgFitnessText, PopulationManager.Instance.avgFitness);
-                worstFitnessTxt.text = string.Format(worstFitnessText, PopulationManager.Instance.worstFitness);
-            }
         }
     }
 }

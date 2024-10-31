@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using FlappyIa.GeneticAlg;
+using NeuralNetworkDirectory.NeuralNet;
 using UnityEngine;
 
 namespace GeneticAlgorithmDirectory.FlappyGame.AI

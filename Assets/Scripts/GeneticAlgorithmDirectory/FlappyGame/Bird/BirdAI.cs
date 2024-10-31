@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using GeneticAlgorithmDirectory.FlappyGame.Bird;
+using UnityEngine;
 
 public class BirdAI : BirdBase
 {
