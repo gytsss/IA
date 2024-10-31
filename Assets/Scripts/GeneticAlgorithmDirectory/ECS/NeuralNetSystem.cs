@@ -1,8 +1,7 @@
-﻿using ECS.Patron;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace NeuralNetworkDirectory.ECS
+namespace GeneticAlgorithmDirectory.ECS
 {
     public sealed class NeuralNetSystem : ECSSystem
     {

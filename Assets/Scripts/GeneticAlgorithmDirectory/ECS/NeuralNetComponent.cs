@@ -1,8 +1,6 @@
-﻿using ECS.Patron;
-using System.Collections.Generic;
-using NeuralNetworkDirectory.NeuralNet;
+﻿using System.Collections.Generic;
 
-namespace NeuralNetworkDirectory.ECS
+namespace GeneticAlgorithmDirectory.ECS
 {
     public class NeuralNetComponent : ECSComponent
     {

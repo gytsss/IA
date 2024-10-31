@@ -1,11 +1,9 @@
-﻿using ECS.Patron;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace NeuralNetworkDirectory.ECS
+namespace GeneticAlgorithmDirectory.ECS
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-
     namespace NeuralNetworkDirectory.ECS
     {
         public sealed class NeuronSystem : ECSSystem

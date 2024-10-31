@@ -1,6 +1,4 @@
-﻿using ECS.Patron;
-
-namespace NeuralNetworkDirectory.ECS
+﻿namespace GeneticAlgorithmDirectory.ECS
 {
     public class OutputComponent : ECSComponent
     {

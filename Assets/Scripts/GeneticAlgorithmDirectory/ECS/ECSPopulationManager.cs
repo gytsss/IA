@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using Pathfinder;
-using StateMachine.Agents.Simulation;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-namespace NeuralNetworkDirectory.ECS
+namespace GeneticAlgorithmDirectory.ECS
 {
     public class EcsPopulationManager : MonoBehaviour
     {
