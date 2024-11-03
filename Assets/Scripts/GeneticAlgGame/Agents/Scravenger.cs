@@ -1,4 +1,6 @@
 ﻿using GeneticAlgorithmDirectory.ECS;
+using NeuralNetworkDirectory.ECS;
+using NeuralNetworkDirectory.NeuralNet;
 using UnityEngine;
 
 namespace GeneticAlgGame.Agents
@@ -16,7 +18,7 @@ namespace GeneticAlgGame.Agents
             foodTarget = SimNodeType.Carrion;
             FoodLimit = 20;
             movement = 5;
-            Speed = movement * Graph<SimNode<Vector2>, NodeVoronoi, Vector2>.CellSize;
+            Speed = movement * Graph<SimulationNode<Vector2>, NodeVoronoi, Vector2>.CellSize;
             brainTypes = new[] {BrainType.Movement, BrainType.Eat};
 
         }
@@ -32,7 +34,7 @@ namespace GeneticAlgGame.Agents
             input[brain][2] = target.CurrentNode.GetCoordinate().x;
             input[brain][3] = target.CurrentNode.GetCoordinate().y;
             
-            SimNode<Vector2> nodeTarget = GetTarget(foodTarget);
+            SimulationNode<Vector2> nodeTarget = GetTarget(foodTarget);
             input[brain][4] = nodeTarget.GetCoordinate().x;
             input[brain][5] = nodeTarget.GetCoordinate().y;
             

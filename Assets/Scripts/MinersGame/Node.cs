@@ -246,7 +246,7 @@ public class UrbanCenterNode<Coordinate> : Node<Coordinate>
     }
 }
 
-public class SimulationNode<Coordinate> : Node<Coordinate>
+public class SimulationNode<Coordinate> : INode<Coordinate>
     where Coordinate : IEquatable<Coordinate>
     {
         private Coordinate coordinate;
@@ -284,6 +284,31 @@ public class SimulationNode<Coordinate> : Node<Coordinate>
         public Coordinate GetCoordinate()
         {
             return coordinate;
+        }
+
+        public void AddNeighbor(INode<Coordinate> neighbor)
+        {
+            throw new NotImplementedException();
+        }
+
+        List<INode<Coordinate>> INode<Coordinate>.GetNeighbors()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<INode<Coordinate>> PassNeighbors()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QuitNeighbor(INode<Coordinate> neighborToQuit, List<INode<Coordinate>> neighborsList)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetNeighbors(List<INode<Coordinate>> neighbors)
+        {
+            throw new NotImplementedException();
         }
 
         public void SetNeighbors(ICollection<INode<Coordinate>> neighbors)

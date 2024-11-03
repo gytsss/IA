@@ -1,5 +1,6 @@
 ﻿using System;
 using DefaultNamespace;
+using NeuralNetworkDirectory.NeuralNet;
 using UnityEngine;
 
 namespace GeneticAlgGame.Agents
@@ -30,7 +31,7 @@ namespace GeneticAlgGame.Agents
             OnAttack
         }
 
-        public static Graph<SimNode<Vector2>, NodeVoronoi, Vector2> graph;
+        public static Graph<SimulationNode<Vector2>, NodeVoronoi, Vector2> graph;
         public NodeVoronoi CurrentNode;
         public bool CanReproduce() => Food >= FoodLimit;
         public SimulationAgentTypes agentType { get; protected set; }
@@ -44,13 +45,13 @@ namespace GeneticAlgGame.Agents
         protected Action OnMove;
         protected Action OnEat;
 
-        protected SimNode<Vector2> TargetNode
+        protected SimulationNode<Vector2> TargetNode
         {
             get => targetNode;
             set => targetNode = value;
         }
 
-        private SimNode<Vector2> targetNode;
+        private SimulationNode<Vector2> targetNode;
         public float[][] output;
         public float[][] input;
         public BrainType[] brainTypes;
@@ -94,7 +95,7 @@ namespace GeneticAlgGame.Agents
             int brain = (int)BrainType.Eat;
             input[brain][0] = CurrentNode.GetCoordinate().x;
             input[brain][1] = CurrentNode.GetCoordinate().y;
-            SimNode<Vector2> target = GetTarget(foodTarget);
+            SimulationNode<Vector2> target = GetTarget(foodTarget);
             input[brain][2] = target.GetCoordinate().x;
             input[brain][3] = target.GetCoordinate().y;
         }
@@ -212,10 +213,10 @@ namespace GeneticAlgGame.Agents
 
             return targetPos;
         }
-        protected virtual SimNode<Vector2> GetTarget(SimNodeType nodeType = SimNodeType.Empty)
+        protected virtual SimulationNode<Vector2> GetTarget(SimNodeType nodeType = SimNodeType.Empty)
         {
             Vector2 position = transform.position;
-            SimNode<Vector2> nearestNode = null;
+            SimulationNode<Vector2> nearestNode = null;
             float minDistance = float.MaxValue;
 
             foreach (var node in graph.NodesType)

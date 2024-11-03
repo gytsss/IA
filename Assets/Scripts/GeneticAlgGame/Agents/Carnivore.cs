@@ -1,5 +1,8 @@
 ﻿using System;
 using GeneticAlgorithmDirectory.ECS;
+using NeuralNetworkDirectory.ECS;
+using NeuralNetworkDirectory.NeuralNet;
+using UnityEngine;
 
 namespace GeneticAlgGame.Agents
 {
@@ -43,7 +46,7 @@ namespace GeneticAlgGame.Agents
             SimulationAgent target = EcsPopulationManager.GetNearestEntity(SimulationAgentTypes.Herbivore, CurrentNode);
             input[brain][2] = target.CurrentNode.GetCoordinate().x;
             input[brain][3] = target.CurrentNode.GetCoordinate().y;
-            SimNode<Vector2> nodeTarget = GetTarget(foodTarget);
+            SimulationNode<Vector2> nodeTarget = GetTarget(foodTarget);
             input[brain][4] = nodeTarget.GetCoordinate().x;
             input[brain][5] = nodeTarget.GetCoordinate().y;
             input[brain][6] = Food;
