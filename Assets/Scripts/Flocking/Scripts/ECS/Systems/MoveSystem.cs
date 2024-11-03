@@ -18,7 +18,7 @@ public sealed class MoveSystem : ECSSystem
     protected override void PreExecute(float deltaTime)
     {
         flockingComponents??= ECSManager.GetComponents<FlockingComponent>();
-        queryedEntities??= ECSManager.GetEntitiesWhitComponentTypes(typeof(FlockingComponent));
+        queryedEntities??= ECSManager.GetEntitiesWithComponentTypes(typeof(FlockingComponent));
     }
 
     protected override void Execute(float deltaTime)

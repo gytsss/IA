@@ -1,17 +1,12 @@
-﻿using System.Threading.Tasks;
-using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ECS.Patron;
-using Flocking;
 using GeneticAlgGame.Agents;
-using GeneticAlgorithmDirectory.ECS;
-using NeuralNetworkDirectory.DataManagement;
+using GeneticAlgorithmDirectory.DataManagement;
 using NeuralNetworkDirectory.NeuralNet;
-using Pathfinder;
-using StateMachine.Agents.Simulation;
+using UnityEngine;
 
-namespace NeuralNetworkDirectory.ECS
+namespace GeneticAlgorithmDirectory.ECS
 {
     public class EcsPopulationManager : MonoBehaviour
     {
@@ -135,6 +130,7 @@ namespace NeuralNetworkDirectory.ECS
                 }
             });
         }
+
         public static SimulationAgent GetNearestEntity(SimulationAgentTypes entityType, NodeVoronoi position)
         {
             SimulationAgent nearestAgent = null;
@@ -155,7 +151,7 @@ namespace NeuralNetworkDirectory.ECS
             return nearestAgent;
         }
 
-        public static SimulationAgent GetEntity(SimulationAgentTypes entityType, SimNode<Vector2> position)
+        public static SimulationAgent GetEntity(SimulationAgentTypes entityType, SimulationNode<Vector2> position)
         {
             SimulationAgent target = null;
 
@@ -189,7 +185,7 @@ namespace NeuralNetworkDirectory.ECS
             return target;
         }
 
-        public static SimNode<Vector2> CoordinateToNode(NodeVoronoi coordinate)
+        public static SimulationNode<Vector2> CoordinateToNode(NodeVoronoi coordinate)
         {
             return SimulationAgent.graph.NodesType
                 .FirstOrDefault(node => node.GetCoordinate().Equals(coordinate.GetCoordinate()));

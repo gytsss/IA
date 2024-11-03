@@ -20,7 +20,7 @@ public sealed class MovementSystem : ECSSystem
     {
         positionComponents??= ECSManager.GetComponents<PositionComponent>();
         velocityComponents??= ECSManager.GetComponents<VelocityComponent>();
-        queryedEntities??= ECSManager.GetEntitiesWhitComponentTypes(typeof(PositionComponent), typeof(VelocityComponent));
+        queryedEntities??= ECSManager.GetEntitiesWithComponentTypes(typeof(PositionComponent), typeof(VelocityComponent));
     }
 
     protected override void Execute(float deltaTime)

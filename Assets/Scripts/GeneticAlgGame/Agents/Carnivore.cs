@@ -1,6 +1,5 @@
 ﻿using System;
 using GeneticAlgorithmDirectory.ECS;
-using NeuralNetworkDirectory.ECS;
 using NeuralNetworkDirectory.NeuralNet;
 using UnityEngine;
 

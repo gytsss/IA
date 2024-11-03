@@ -1,4 +1,4 @@
-﻿using NeuralNetworkDirectory.ECS;
+﻿using GeneticAlgorithmDirectory.ECS;
 using NeuralNetworkDirectory.NeuralNet;
 using UnityEngine;
 

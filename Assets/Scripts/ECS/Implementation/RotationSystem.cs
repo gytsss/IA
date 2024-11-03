@@ -20,7 +20,7 @@ public sealed class RotationSystem : ECSSystem
     {
         rotationComponents??= ECSManager.GetComponents<RotationComponent>();
         velocityRotComponents??= ECSManager.GetComponents<VelocityRotComponent>();
-        queryedEntities??= ECSManager.GetEntitiesWhitComponentTypes(typeof(RotationComponent), typeof(VelocityRotComponent));
+        queryedEntities??= ECSManager.GetEntitiesWithComponentTypes(typeof(RotationComponent), typeof(VelocityRotComponent));
     }
 
     protected override void Execute(float deltaTime)
