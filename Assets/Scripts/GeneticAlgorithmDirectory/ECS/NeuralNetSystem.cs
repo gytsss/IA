@@ -21,8 +21,8 @@ namespace GeneticAlgorithmDirectory.ECS
             neuralNetworkComponents ??= ECSManager.GetComponents<NeuralNetComponent>();
             outputComponents ??= ECSManager.GetComponents<OutputComponent>();
             inputComponents ??= ECSManager.GetComponents<InputComponent>();
-            queriedEntities ??= ECSManager.GetEntitiesWithComponentTypes(typeof(NeuralNetComponent),
-                typeof(NeuronComponent), typeof(OutputComponent), typeof(InputComponent));
+            queriedEntities ??= ECSManager.GetEntitiesWithComponentTypes(
+                typeof(NeuralNetComponent), typeof(OutputComponent), typeof(InputComponent));
         }
 
         protected override void Execute(float deltaTime)
@@ -33,16 +33,16 @@ namespace GeneticAlgorithmDirectory.ECS
                 float[][] inputs = inputComponents[entityId].inputs;
                 float[][] outputs = new float[][outputComponents[entityId].outputsQty];
 
-                for (int i = 0; i < outputs.Length; i++)
+                Parallel.For(0, outputs.Length, i =>
                 {
                     for (int j = 0; j < neuralNetwork.Layers[i].Count; j++)
                     {
                         outputs[i] = neuralNetwork.Layers[i][j].Synapsis(inputs[i]);
-                        inputs = outputs;
+                        inputs[i] = outputs[i];
                     }
 
                     outputComponents[entityId].outputs[i] = outputs[i];
-                }
+                });
             });
         }
 

@@ -1,6 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
+public enum SimNodeType
+{
+    Empty,
+    Blocked,
+    Bush,
+    Corpse,
+    Carrion
+}
 public enum NodeTypes
 {
     Default,
@@ -237,3 +245,102 @@ public class UrbanCenterNode<Coordinate> : Node<Coordinate>
         }
     }
 }
+
+public class SimulationNode<Coordinate> : Node<Coordinate>
+    where Coordinate : IEquatable<Coordinate>
+    {
+        private Coordinate coordinate;
+        private int cost;
+        public int food;
+
+        private ICollection<INode<Coordinate>> neighbors;
+
+        public SimulationNode()
+        {
+        }
+
+        public SimulationNode(Coordinate coord)
+        {
+            coordinate = coord;
+        }
+
+        public SimNodeType NodeType { get; set; }
+
+        public bool Equals(INode<Coordinate> other)
+        {
+            return other != null && coordinate.Equals(other.GetCoordinate());
+        }
+
+        public bool IsBlocked()
+        {
+            return false;
+        }
+
+        public void SetCoordinate(Coordinate coordinate)
+        {
+            this.coordinate = coordinate;
+        }
+
+        public Coordinate GetCoordinate()
+        {
+            return coordinate;
+        }
+
+        public void SetNeighbors(ICollection<INode<Coordinate>> neighbors)
+        {
+            this.neighbors = neighbors;
+        }
+
+        public ICollection<INode<Coordinate>> GetNeighbors()
+        {
+            return neighbors;
+        }
+
+        public NodeTypes GetNodeType()
+        {
+            return NodeTypes.Default;
+        }
+
+        public SimNodeType GetSimNodeType()
+        {
+            return NodeType;
+        }
+
+        public int GetCost()
+        {
+            return cost;
+        }
+
+        public void SetCost(int newCost)
+        {
+            cost = newCost;
+        }
+
+        public bool Equals(Coordinate other)
+        {
+            return coordinate.Equals(other);
+        }
+
+        public bool EqualsTo(INode<Coordinate> other)
+        {
+            return coordinate.Equals(other.GetCoordinate());
+        }
+
+        protected bool Equals(SimulationNode<Coordinate> other)
+        {
+            return coordinate.Equals(other.coordinate);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((SimulationNode<Coordinate>)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return EqualityComparer<Coordinate>.Default.GetHashCode(coordinate);
+        }
+    }
