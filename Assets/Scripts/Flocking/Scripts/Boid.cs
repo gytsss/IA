@@ -6,39 +6,40 @@ public class Boid : MonoBehaviour
     public float speed = 2.5f;
     public float turnSpeed = 5f;
     public float detectionRadious = 3.0f;
-    public float alignmentMultiplier = 2.0f;
-    public float cohesionMultiplier = 2.0f;
-    public float separationMultiplier = 2.0f;
-    public float directionMultiplier = 2.0f;
+    public float alignmentOffset;
+    public float cohesionOffset;
+    public float separationOffset;
+    public float directionOffset;
 
-    private Func<Boid, Vector3> Alignment;
-    private Func<Boid, Vector3> Cohesion;
-    private Func<Boid, Vector3> Separation;
-    private Func<Boid, Vector3> Direction;
+    private Func<Boid, Vector2> alignment;
+    private Func<Boid, Vector2> cohesion;
+    private Func<Boid, Vector2> separation;
+    private Func<Boid, Vector2> direction;
 
-    public void Init(Func<Boid, Vector3> Alignment,
-        Func<Boid, Vector3> Cohesion,
-        Func<Boid, Vector3> Separation,
-        Func<Boid, Vector3> Direction)
+    public void Init(Func<Boid, Vector2> Alignment,
+        Func<Boid, Vector2> Cohesion,
+        Func<Boid, Vector2> Separation,
+        Func<Boid, Vector2> Direction)
     {
-        this.Alignment = Alignment;
-        this.Cohesion = Cohesion;
-        this.Separation = Separation;
-        this.Direction = Direction;
+        this.alignment = Alignment;
+        this.cohesion = Cohesion;
+        this.separation = Separation;
+        this.direction = Direction;
     }
 
     private void Update()
     {
-        Vector3 acs = ACS();
-        transform.forward = Vector3.Lerp(transform.forward, acs, turnSpeed * Time.deltaTime);
-        transform.position += transform.forward * speed * Time.deltaTime;
+        Vector2 desiredDirection = ACS();
+        transform.forward = Vector2.Lerp(transform.forward, desiredDirection, turnSpeed * Time.deltaTime);
+        transform.position += transform.forward * (speed * Time.deltaTime);
     }
 
-
-    public Vector3 ACS()
+    public Vector2 ACS()
     {
-        Vector3 ACS = Alignment(this) * alignmentMultiplier + Cohesion(this) * cohesionMultiplier +
-                      Separation(this) * separationMultiplier + Direction(this) * directionMultiplier;
+        Vector2 ACS = (alignment(this) * alignmentOffset) +
+                      (cohesion(this) * cohesionOffset) +
+                      (separation(this) * separationOffset) +
+                      (direction(this) * directionOffset);
         return ACS.normalized;
     }
 }

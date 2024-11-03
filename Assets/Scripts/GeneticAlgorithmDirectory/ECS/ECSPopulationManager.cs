@@ -5,6 +5,7 @@ using System.Linq;
 using ECS.Patron;
 using Flocking;
 using GeneticAlgGame.Agents;
+using GeneticAlgorithmDirectory.ECS;
 using NeuralNetworkDirectory.DataManagement;
 using NeuralNetworkDirectory.NeuralNet;
 using Pathfinder;

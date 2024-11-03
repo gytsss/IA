@@ -7,9 +7,11 @@ public abstract class Graph<NodeType, CoordinateType>
 
 {
     public List<NodeType> nodes = new List<NodeType>();
-
+    public static float Distance;
+    
     public Graph(int x, int y, float distance)
     {
+        Distance = distance;
         GenerateGraph(x, y, distance);
         GetNeighbors(distance);
     }

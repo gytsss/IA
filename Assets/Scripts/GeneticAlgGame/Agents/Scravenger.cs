@@ -18,7 +18,7 @@ namespace GeneticAlgGame.Agents
             foodTarget = SimNodeType.Carrion;
             FoodLimit = 20;
             movement = 5;
-            Speed = movement * Graph<SimulationNode<Vector2>, NodeVoronoi, Vector2>.CellSize;
+            Speed = movement * Graph<SimulationNode<Vector2>, NodeVoronoi, Vector2>.Distance;
             brainTypes = new[] {BrainType.Movement, BrainType.Eat};
 
         }
