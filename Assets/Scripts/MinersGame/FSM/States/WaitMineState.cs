@@ -1,4 +1,5 @@
-﻿using Pathfinder;
+﻿using MinersGame.FSM.States;
+using Pathfinder;
 using UnityEngine;
 
 namespace Game.FSM.States

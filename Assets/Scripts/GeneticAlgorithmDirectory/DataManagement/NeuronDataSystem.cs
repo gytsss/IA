@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using GeneticAlgGame.Agents;
 using NeuralNetworkDirectory.NeuralNet;
-
+using StateMachine.Agents.Simulation;
 
 namespace GeneticAlgorithmDirectory.DataManagement
 {
-    public class NeuronDataSystem
+    public static class NeuronDataSystem
     {
         public static void SaveNeurons(List<AgentNeuronData> agentsData, string directoryPath, int generation)
         {
@@ -22,24 +21,22 @@ namespace GeneticAlgorithmDirectory.DataManagement
             {
                 string agentTypeDirectory = Path.Combine(directoryPath, group.Key.AgentType.ToString());
                 Directory.CreateDirectory(agentTypeDirectory);
-
+            
                 string fileName = $"gen{generation}{group.Key.BrainType}.json";
                 string filePath = Path.Combine(agentTypeDirectory, fileName);
-                string json = JsonSerializer.Serialize(group.Value);
+                string json = "";// = JsonSerializer.Serialize(group.Value);
                 File.WriteAllText(filePath, json);
-                Console.WriteLine("Saving in path: " + filePath);
-
             }
         }
         
-        public static Dictionary<SimulationAgentTypes, Dictionary<BrainType, List<AgentNeuronData>>> LoadLatestNeurons(string directoryPath)
+        public static Dictionary<SimAgentTypes, Dictionary<BrainType, List<AgentNeuronData>>> LoadLatestNeurons(string directoryPath)
         {
-            var agentsData = new Dictionary<SimulationAgentTypes, Dictionary<BrainType, List<AgentNeuronData>>>();
+            var agentsData = new Dictionary<SimAgentTypes, Dictionary<BrainType, List<AgentNeuronData>>>();
             var directories = Directory.GetDirectories(directoryPath);
 
             foreach (var agentTypeDirectory in directories)
             {
-                var agentType = Enum.Parse<SimulationAgentTypes>(Path.GetFileName(agentTypeDirectory));
+                var agentType = Enum.Parse<SimAgentTypes>(Path.GetFileName(agentTypeDirectory));
                 agentsData[agentType] = new Dictionary<BrainType, List<AgentNeuronData>>();
 
                 var files = Directory.GetFiles(agentTypeDirectory, "gen*.json");
@@ -58,7 +55,7 @@ namespace GeneticAlgorithmDirectory.DataManagement
                 }).First();
 
                 var json = File.ReadAllText(latestFile);
-                var agentDataList = JsonSerializer.Deserialize<List<AgentNeuronData>>(json);
+                var agentDataList = new AgentNeuronData[0];//  JsonSerializer.Deserialize<List<AgentNeuronData>>(json);
 
                 foreach (var agentData in agentDataList)
                 {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Flocking.Scripts;
 using UnityEngine;
 
 public class FlockingManager : MonoBehaviour

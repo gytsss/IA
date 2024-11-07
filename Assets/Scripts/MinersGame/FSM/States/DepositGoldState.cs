@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MinersGame.FSM.States;
 using UnityEngine;
 
 namespace Game.FSM.States

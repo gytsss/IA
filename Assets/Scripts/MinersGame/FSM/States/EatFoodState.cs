@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using MinersGame.FSM.States;
+using UnityEngine;
 
 namespace Game.FSM.States
 {

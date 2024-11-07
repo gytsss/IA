@@ -1,19 +1,22 @@
 ﻿using System;
 using DefaultNamespace;
+using FlappyIa.GeneticAlg;
+using GeneticAlgGame.FSMStates;
+using NeuralNetworkDirectory.ECS;
 using NeuralNetworkDirectory.NeuralNet;
 using UnityEngine;
 
 namespace GeneticAlgGame.Agents
 {
-    public enum SimulationAgentTypes
+    public enum SimAgentTypes
     {
         Carnivorous,
         Herbivore,
         Scavenger
     }
-    public class SimulationAgent : MonoBehaviour
+
+    public class SimAgent : MonoBehaviour
     {
-        
         public enum Behaviours
         {
             Walk,
@@ -31,11 +34,9 @@ namespace GeneticAlgGame.Agents
             OnAttack
         }
 
-        public static Graph<SimulationNode<Vector2>, NodeVoronoi, Vector2> graph;
         public NodeVoronoi CurrentNode;
         public bool CanReproduce() => Food >= FoodLimit;
-        public SimulationAgentTypes agentType { get; protected set; }
-        public Boid boid;
+        public SimAgentTypes agentType { get; protected set; }
 
         protected int movement = 3;
         protected SimNodeType foodTarget;
@@ -44,20 +45,43 @@ namespace GeneticAlgGame.Agents
         protected FSM<Behaviours, Flags> Fsm;
         protected Action OnMove;
         protected Action OnEat;
+        protected float dt;
 
-        protected SimulationNode<Vector2> TargetNode
+        protected SimNode<Vector2> TargetNode
         {
             get => targetNode;
             set => targetNode = value;
         }
 
-        private SimulationNode<Vector2> targetNode;
+        private SimNode<Vector2> targetNode;
+        Genome[] genomes;
         public float[][] output;
         public float[][] input;
         public BrainType[] brainTypes;
 
+        public SimAgent()
+        {
+        }
+
+        public SimAgent(SimAgentTypes agentType)
+        {
+            this.agentType = agentType;
+        }
+
         public virtual void Init()
         {
+            int brainTypesCount = Enum.GetValues(typeof(BrainType)).Length;
+            input = new float[brainTypesCount][];
+            output = new float[brainTypesCount][];
+            brainTypes = new BrainType[brainTypesCount];
+
+            const int MaxInputs = 8;
+            for (int i = 0; i < brainTypesCount; i++)
+            {
+                input[i] = new float[MaxInputs]; // Assuming each brain type requires 4 inputs
+                output[i] = new float[MaxInputs]; // Assuming each brain type produces 4 outputs
+            }           
+            
             Fsm = new FSM<Behaviours, Flags>();
 
             OnMove += Move;
@@ -67,7 +91,7 @@ namespace GeneticAlgGame.Agents
 
             FsmTransitions();
 
-            UpdateInputs();
+            //UpdateInputs();
         }
 
         public virtual void Uninit()
@@ -76,17 +100,18 @@ namespace GeneticAlgGame.Agents
             OnEat -= Eat;
         }
 
-        public void Tick()
+        public void Tick(float deltaTime)
         {
-            Fsm.Tick();
+            dt = deltaTime;
             UpdateInputs();
+            Fsm.Tick();
         }
 
         protected virtual void UpdateInputs()
         {
             FindFoodInputs();
-            ExtraInputs();
             MovementInputs();
+            ExtraInputs();
         }
 
 
@@ -95,7 +120,7 @@ namespace GeneticAlgGame.Agents
             int brain = (int)BrainType.Eat;
             input[brain][0] = CurrentNode.GetCoordinate().x;
             input[brain][1] = CurrentNode.GetCoordinate().y;
-            SimulationNode<Vector2> target = GetTarget(foodTarget);
+            SimNode<Vector2> target = GetTarget(foodTarget);
             input[brain][2] = target.GetCoordinate().x;
             input[brain][3] = target.GetCoordinate().y;
         }
@@ -129,7 +154,7 @@ namespace GeneticAlgGame.Agents
 
         protected virtual void FsmBehaviours()
         {
-            Fsm.AddBehaviour<SimWalkState>(Behaviours.Walk, WalkTickParameters);
+            Fsm.AddBehaviour<SimulationWalkState>(Behaviours.Walk, WalkTickParameters);
             ExtraBehaviours();
         }
 
@@ -139,7 +164,7 @@ namespace GeneticAlgGame.Agents
 
         protected virtual object[] WalkTickParameters()
         {
-            int extraBrain = agentType == SimulationAgentTypes.Carnivorous ? (int)BrainType.Attack : (int)BrainType.Escape;
+            int extraBrain = agentType == SimAgentTypes.Carnivorous ? (int)BrainType.Attack : (int)BrainType.Escape;
             object[] objects =
             {
                 CurrentNode, TargetNode, transform, foodTarget, OnMove, output[(int)BrainType.Movement],
@@ -213,13 +238,14 @@ namespace GeneticAlgGame.Agents
 
             return targetPos;
         }
-        protected virtual SimulationNode<Vector2> GetTarget(SimNodeType nodeType = SimNodeType.Empty)
+
+        protected virtual SimNode<Vector2> GetTarget(SimNodeType nodeType = SimNodeType.Empty)
         {
             Vector2 position = transform.position;
-            SimulationNode<Vector2> nearestNode = null;
+            SimNode<Vector2> nearestNode = null;
             float minDistance = float.MaxValue;
 
-            foreach (var node in graph.NodesType)
+            foreach (var node in EcsPopulationManager.graph.NodesType)
             {
                 if (node.NodeType != nodeType) continue;
                 float distance = Vector2.Distance(position, node.GetCoordinate());
@@ -229,13 +255,18 @@ namespace GeneticAlgGame.Agents
                 nearestNode = node;
             }
 
+            if (nodeType != SimNodeType.Corpse || nearestNode != null) return nearestNode;
+
+            var nodeVoronoi = EcsPopulationManager.GetNearestEntity(SimAgentTypes.Herbivore, CurrentNode).CurrentNode;
+            nearestNode = EcsPopulationManager.CoordinateToNode(nodeVoronoi);
+
+
             return nearestNode;
         }
 
         protected virtual NodeVoronoi GetNode(Vector2 position)
         {
-            return graph.CoordNodes[(int)position.x, (int)position.y];
+            return EcsPopulationManager.graph.CoordNodes[(int)position.x, (int)position.y];
         }
-    
     }
 }

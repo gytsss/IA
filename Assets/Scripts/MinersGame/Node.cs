@@ -246,7 +246,7 @@ public class UrbanCenterNode<Coordinate> : Node<Coordinate>
     }
 }
 
-public class SimulationNode<Coordinate> : INode<Coordinate>
+public class SimNode<Coordinate> : INode<Coordinate>
     where Coordinate : IEquatable<Coordinate>
     {
         private Coordinate coordinate;
@@ -255,11 +255,11 @@ public class SimulationNode<Coordinate> : INode<Coordinate>
 
         private ICollection<INode<Coordinate>> neighbors;
 
-        public SimulationNode()
+        public SimNode()
         {
         }
 
-        public SimulationNode(Coordinate coord)
+        public SimNode(Coordinate coord)
         {
             coordinate = coord;
         }
@@ -351,7 +351,7 @@ public class SimulationNode<Coordinate> : INode<Coordinate>
             return coordinate.Equals(other.GetCoordinate());
         }
 
-        protected bool Equals(SimulationNode<Coordinate> other)
+        protected bool Equals(SimNode<Coordinate> other)
         {
             return coordinate.Equals(other.coordinate);
         }
@@ -361,7 +361,7 @@ public class SimulationNode<Coordinate> : INode<Coordinate>
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((SimulationNode<Coordinate>)obj);
+            return Equals((SimNode<Coordinate>)obj);
         }
 
         public override int GetHashCode()

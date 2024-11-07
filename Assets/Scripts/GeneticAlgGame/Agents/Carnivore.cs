@@ -1,17 +1,19 @@
 ﻿using System;
+using GeneticAlgGame.FSMStates;
 using GeneticAlgorithmDirectory.ECS;
+using NeuralNetworkDirectory.ECS;
 using NeuralNetworkDirectory.NeuralNet;
 using UnityEngine;
 
 namespace GeneticAlgGame.Agents
 {
-    public class Carnivore : SimulationAgent
+    public class Carnivore : SimAgent
     {
          public Action OnAttack { get; set; }
         public override void Init()
         {
             base.Init();
-            agentType = SimulationAgentTypes.Carnivorous;
+            agentType = SimAgentTypes.Carnivorous;
             foodTarget = SimNodeType.Corpse;
             FoodLimit = 1;
             movement = 2;
@@ -19,7 +21,7 @@ namespace GeneticAlgGame.Agents
             brainTypes = new[] {BrainType.Movement, BrainType.Attack, BrainType.Eat};
             OnAttack = () =>
             {
-                SimulationAgent target = EcsPopulationManager.GetEntity(SimulationAgentTypes.Herbivore, CurrentNode);
+                SimAgent target = EcsPopulationManager.GetEntity(SimAgentTypes.Herbivore, CurrentNode);
                 if (target == null) return;
                 Herbivore herbivore = target as Herbivore;
                 if (herbivore != null) herbivore.Hp--;
@@ -31,7 +33,7 @@ namespace GeneticAlgGame.Agents
             int brain = (int)BrainType.Attack;
             input[brain][0] = CurrentNode.GetCoordinate().x;
             input[brain][1] = CurrentNode.GetCoordinate().y;
-            SimulationAgent target = EcsPopulationManager.GetNearestEntity(SimulationAgentTypes.Herbivore, CurrentNode);
+            SimAgent target = EcsPopulationManager.GetNearestEntity(SimAgentTypes.Herbivore, CurrentNode);
             input[brain][2] = target.CurrentNode.GetCoordinate().x;
             input[brain][3] = target.CurrentNode.GetCoordinate().y;
         }
@@ -42,10 +44,10 @@ namespace GeneticAlgGame.Agents
             
             input[brain][0] = CurrentNode.GetCoordinate().x;
             input[brain][1] = CurrentNode.GetCoordinate().y;
-            SimulationAgent target = EcsPopulationManager.GetNearestEntity(SimulationAgentTypes.Herbivore, CurrentNode);
+            SimAgent target = EcsPopulationManager.GetNearestEntity(SimAgentTypes.Herbivore, CurrentNode);
             input[brain][2] = target.CurrentNode.GetCoordinate().x;
             input[brain][3] = target.CurrentNode.GetCoordinate().y;
-            SimulationNode<Vector2> nodeTarget = GetTarget(foodTarget);
+            SimNode<Vector2> nodeTarget = GetTarget(foodTarget);
             input[brain][4] = nodeTarget.GetCoordinate().x;
             input[brain][5] = nodeTarget.GetCoordinate().y;
             input[brain][6] = Food;
@@ -54,11 +56,11 @@ namespace GeneticAlgGame.Agents
 
         protected override void ExtraBehaviours()
         {
-            Fsm.AddBehaviour<SimEatCarnState>(Behaviours.Eat, EatTickParameters);
+            Fsm.AddBehaviour<SimulationEatCarnState>(Behaviours.Eat, EatTickParameters);
 
-            Fsm.AddBehaviour<SimWalkCarnState>(Behaviours.Walk, AttackEnterParameters);
+            Fsm.AddBehaviour<SimulationWalkCarnState>(Behaviours.Walk, AttackEnterParameters);
             
-            Fsm.AddBehaviour<SimAttackState>(Behaviours.Attack, AttackEnterParameters);
+            Fsm.AddBehaviour<SimulationAttackState>(Behaviours.Attack, AttackEnterParameters);
         }
         
         private object[] AttackEnterParameters()
