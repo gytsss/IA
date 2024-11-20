@@ -1,13 +1,11 @@
-public class PositionComponent : ECSComponent
-{
-    public float X;
-    public float Y;
-    public float Z;
+using ECS.Patron;
 
-    public PositionComponent(float X, float Y, float Z) 
+public class PositionComponent<T> : ECSComponent
+{
+    public T Position;
+
+    public PositionComponent(T position)
     {
-        this.X = X;
-        this.Y = Y;
-        this.Z = Z;
+        Position = position;
     }
 }

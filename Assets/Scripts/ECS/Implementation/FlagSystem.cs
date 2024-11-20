@@ -7,7 +7,7 @@ public sealed class FlagSystem
     private ParallelOptions parallelOptions;
     
     private IDictionary<uint, RotationComponent> rotationComponents;
-    private IDictionary<uint, VelocityRotComponent> velocityRotComponents;
+    private IDictionary<uint, VelRotationComponent> velocityRotComponents;
     private IEnumerable<uint> queryedEntities;
 
    

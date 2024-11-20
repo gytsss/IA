@@ -7,46 +7,40 @@ public class ECSExample_ECSWithGOs : MonoBehaviour
 {
     public int entityCount = 100;
     public float velocity = 10.0f;
-    public float rotVelocity = 10.0f;
     public GameObject prefab;
 
     private Dictionary<uint, GameObject> entities;
 
-    void Start()
+    private void Start()
     {
         ECSManager.Init();
         entities = new Dictionary<uint, GameObject>();
-        for (int i = 0; i < entityCount; i++)
+        for (var i = 0; i < entityCount; i++)
         {
-            uint entityID = ECSManager.CreateEntity();
-            ECSManager.AddComponent<PositionComponent>(entityID,
-                new PositionComponent(0, -i, 0));
-            ECSManager.AddComponent<VelocityComponent>(entityID,
-                new VelocityComponent(velocity, Vector3.right.x, Vector3.right.y, Vector3.right.z));
-
-            ECSManager.AddComponent<RotationComponent>(entityID, new RotationComponent(0, 0, 0));
-            
-            ECSManager.AddComponent<VelocityRotComponent>(entityID, new VelocityRotComponent(rotVelocity, Vector3.right.x, Vector3.right.y, Vector3.right.z));
-
+            var entityID = ECSManager.CreateEntity();
+            ECSManager.AddComponent(entityID, new PositionComponent<Vector3>(new Vector3(0, -i, 0)));
+            ECSManager.AddComponent(entityID, new VelocityComponent<Vector3>(velocity, Vector3.right));
+            ECSManager.AddComponent(entityID, new RotationComponent(0, 0, 0));
+            ECSManager.AddComponent(entityID, new VelRotationComponent(10, Vector3.up.x, Vector3.up.y, Vector3.up.z));
             entities.Add(entityID, Instantiate(prefab, new Vector3(0, -i, 0), Quaternion.identity));
         }
     }
 
-    void Update()
+    private void Update()
     {
         ECSManager.Tick(Time.deltaTime);
     }
 
-    void LateUpdate()
+    private void LateUpdate()
     {
-        foreach (KeyValuePair<uint, GameObject> entity in entities)
+        foreach (var entity in entities)
         {
-            PositionComponent position = ECSManager.GetComponent<PositionComponent>(entity.Key);
-            entity.Value.transform.SetPositionAndRotation(new Vector3(position.X, position.Y, position.Z),
-                Quaternion.identity);
-            
-            RotationComponent rotation = ECSManager.GetComponent<RotationComponent>(entity.Key);
-            entity.Value.transform.rotation = Quaternion.Euler(rotation.X, rotation.Y, rotation.Z);
+            var position = ECSManager.GetComponent<PositionComponent<Vector3>>(entity.Key);
+            entity.Value.transform.SetPositionAndRotation(
+                new Vector3(position.Position.x, position.Position.y, position.Position.z), Quaternion.identity);
+            var rotationComponent = ECSManager.GetComponent<RotationComponent>(entity.Key);
+            entity.Value.transform.rotation =
+                Quaternion.Euler(rotationComponent.X, rotationComponent.Y, rotationComponent.Z);
         }
     }
 }

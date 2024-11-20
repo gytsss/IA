@@ -1,4 +1,6 @@
-﻿namespace ECS.Implementation
+﻿using ECS.Patron;
+
+namespace ECS.Implementation
 {
     public class RotationComponent : ECSComponent
     {
@@ -6,11 +8,11 @@
         public float Y;
         public float Z;
 
-        public RotationComponent(float X, float Y, float Z) 
+        public RotationComponent(float x, float y, float z)
         {
-            this.X = X;
-            this.Y = Y;
-            this.Z = Z;
+            X = x;
+            Y = y;
+            Z = z;
         }
     }
 }
