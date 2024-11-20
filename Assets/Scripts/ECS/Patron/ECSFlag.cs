@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DefaultNamespace.ECS.Patron
+namespace ECS.Patron
 {
     [Flags]
     public enum FlagType

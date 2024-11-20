@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DefaultNamespace.ECS.Patron;
 using GeneticAlgorithmDirectory.ECS;
 using NeuralNetworkDirectory.ECS;
 
@@ -170,6 +169,20 @@ namespace ECS.Patron
         public static void RemoveFlag<TFlagType>(uint entityID) where TFlagType : ECSFlag
         {
             flags[typeof(TFlagType)].TryRemove(entityID, out _);
+        }
+
+        public static void RemoveEntity(uint agentId)
+        {
+            entities.TryRemove(agentId, out _);
+            foreach (var component in components)
+                component.Value.TryRemove(agentId, out _);
+            foreach (var flag in flags)
+                flag.Value.TryRemove(agentId, out _);
+        }
+
+        public static ECSSystem GetSystem<T>()
+        {
+            return systems[typeof(T)];
         }
     }
 }

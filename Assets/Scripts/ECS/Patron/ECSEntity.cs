@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using DefaultNamespace.ECS.Patron;
 
 namespace ECS.Patron
 {
@@ -100,4 +99,3 @@ namespace ECS.Patron
         }
     }
 }
-
