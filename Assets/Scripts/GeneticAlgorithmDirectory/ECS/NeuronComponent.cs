@@ -1,4 +1,6 @@
-﻿namespace GeneticAlgorithmDirectory.ECS
+﻿using ECS.Patron;
+
+namespace GeneticAlgorithmDirectory.ECS
 {
     public class NeuronComponent : ECSComponent
     {

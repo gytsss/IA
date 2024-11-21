@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace NeuralNetworkDirectory.NeuralNet
+namespace GeneticAlgorithmDirectory.NeuralNet
 {
     public class NeuralNetwork
     {

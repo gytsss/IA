@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using Pathfinder;
+using UnityEngine;
+using Voronoi;
 
-namespace Pathfinder.Graph
+namespace GeneticAlgGame.Graph
 {
     public class Vector2Graph : Graph<RTSNode<Vector2>, NodeVoronoi, Vector2>
     {

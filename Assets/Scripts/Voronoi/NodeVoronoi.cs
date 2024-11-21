@@ -2,7 +2,7 @@
 using UnityEngine;
 using Utils;
 
-namespace Pathfinder
+namespace Voronoi
 {
     public interface ICoordinate<T> : IEquatable<T>
         where T : IEquatable<T>

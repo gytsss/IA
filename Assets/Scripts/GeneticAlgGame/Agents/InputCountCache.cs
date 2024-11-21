@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NeuralNetworkDirectory.ECS;
-using NeuralNetworkDirectory.NeuralNet;
+using GeneticAlgorithmDirectory.ECS;
+using GeneticAlgorithmDirectory.NeuralNet;
 
-namespace StateMachine.Agents.Simulation
+namespace GeneticAlgGame.Agents
 {
     public static class InputCountCache
     {

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Pathfinder;
 
-namespace Pathfinder
+namespace GeneticAlgGame.Graph
 {
     public interface INode
     {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Pathfinder;
+using Voronoi;
 
-namespace Pathfinder.Graph
+namespace GeneticAlgGame.Graph
 {
     public abstract class Graph<TNodeType, TCoordinateNode, TCoordinateType>
         where TNodeType : INode<TCoordinateType>, new()

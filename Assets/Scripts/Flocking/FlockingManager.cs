@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using NeuralNetworkDirectory.ECS;
+using GeneticAlgorithmDirectory.ECS;
 using Utils;
 
 namespace Flocking

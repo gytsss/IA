@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using GeneticAlgGame.Agents;
-using NeuralNetworkDirectory.NeuralNet;
-using StateMachine.Agents.Simulation;
+using GeneticAlgorithmDirectory.NeuralNet;
 
-namespace NeuralNetworkDirectory.DataManagement
+namespace GeneticAlgorithmDirectory.DataManagement
 {
     public static class NeuronDataSystem
     {

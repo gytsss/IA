@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Linq;
 using GeneticAlgGame.FSMStates;
-using NeuralNetworkDirectory.ECS;
-using NeuralNetworkDirectory.NeuralNet;
+using GeneticAlgGame.Graph;
+using GeneticAlgorithmDirectory.ECS;
+using GeneticAlgorithmDirectory.NeuralNet;
 using Pathfinder;
 using Utils;
 
-namespace StateMachine.Agents.Simulation
+namespace GeneticAlgGame.Agents
 {
     public class Herbivore<TVector, TTransform> : SimAgent<TVector, TTransform>
         where TTransform : ITransform<IVector>, new()

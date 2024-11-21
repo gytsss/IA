@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using FlappyIa.GeneticAlg;
 using FSM;
 using GeneticAlgGame.FSMStates;
-using NeuralNetworkDirectory.ECS;
-using NeuralNetworkDirectory.NeuralNet;
+using GeneticAlgGame.Graph;
+using GeneticAlgorithmDirectory.ECS;
+using GeneticAlgorithmDirectory.GeneticAlg;
+using GeneticAlgorithmDirectory.NeuralNet;
 using Pathfinder;
 using Utils;
 
-namespace StateMachine.Agents.Simulation
+namespace GeneticAlgGame.Agents
 {
     public enum SimAgentTypes
     {
@@ -64,13 +65,13 @@ namespace StateMachine.Agents.Simulation
         protected float dt;
         protected const int NoTarget = -1;
 
-        protected SimNode<TVector> TargetNode
+        protected Graph.SimNode<TVector> TargetNode
         {
             get => targetNode;
             set => targetNode = value;
         }
 
-        private SimNode<TVector> targetNode;
+        private Graph.SimNode<TVector> targetNode;
         Genome[] genomes;
         public float[][] output;
         public float[][] input;

@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using ECS.Patron;
 using GeneticAlgGame.Agents;
+using GeneticAlgGame.Graph;
 using GeneticAlgorithmDirectory.ECS;
-using NeuralNetworkDirectory.ECS;
-using NeuralNetworkDirectory.NeuralNet;
-using Pathfinder;
-using StateMachine.Agents.Simulation;
+using GeneticAlgorithmDirectory.NeuralNet;
 using Utils;
 
-namespace NeuralNetworkDirectory.AI
+namespace GeneticAlgorithmDirectory.AI
 {
     public class FitnessManager<TVector, TTransform>
         where TTransform : ITransform<IVector>, new()

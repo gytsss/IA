@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using Agent;
-using FlappyIa.GeneticAlg;
-using NeuralNetworkDirectory.NeuralNet;
+using GeneticAlgorithmDirectory.GeneticAlg;
+using GeneticAlgorithmDirectory.NeuralNet;
 using UnityEngine;
 
-namespace NeuralNetworkDirectory.AI
+namespace GeneticAlgorithmDirectory.AI
 {
     public class PopulationManager : MonoBehaviour
     {
@@ -43,7 +42,7 @@ namespace NeuralNetworkDirectory.AI
         private bool isRunning;
         private readonly List<Genome> population = new();
 
-        private readonly List<Tank> populationGOs = new();
+        private readonly List<Tank.Tank> populationGOs = new();
 
         public int Generation { get; private set; }
 
@@ -252,14 +251,14 @@ namespace NeuralNetworkDirectory.AI
 
         #region Helpers
 
-        private Tank CreateTank(Genome genome, NeuralNetwork brain)
+        private Tank.Tank CreateTank(Genome genome, NeuralNetwork brain)
         {
             var position = GetRandomPos();
             var go = Instantiate(TankPrefab, position, GetRandomRot());
 
             foreach (var renderer in go.GetComponentsInChildren<Renderer>()) renderer.material.color = tankColor;
 
-            var t = go.GetComponent<Tank>();
+            var t = go.GetComponent<Tank.Tank>();
             t.team = teamId;
             t.id = populationGOs.Count;
             t.SetBrain(genome, brain);

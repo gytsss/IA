@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Linq;
 using Flocking;
 using GeneticAlgGame.FSMStates;
-using NeuralNetworkDirectory.ECS;
-using NeuralNetworkDirectory.NeuralNet;
+using GeneticAlgGame.Graph;
+using GeneticAlgorithmDirectory.ECS;
+using GeneticAlgorithmDirectory.NeuralNet;
 using Pathfinder;
-using StateMachine.States.SimStates;
 using Utils;
 
-namespace StateMachine.Agents.Simulation
+namespace GeneticAlgGame.Agents
 {
     public class Scavenger<TVector, TTransform> : SimAgent<TVector, TTransform>
         where TTransform : ITransform<IVector>, new()

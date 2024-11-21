@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Numerics;
-using NeuralNetworkDirectory.ECS;
+using GeneticAlgorithmDirectory.ECS;
+using Pathfinder;
 using Utils;
+using Voronoi;
 using Vector3 = UnityEngine.Vector3;
 
-namespace Pathfinder.Graph
+namespace GeneticAlgGame.Graph
 {
     public class GraphManager<TVector, TTransform>
         where TTransform : ITransform<TVector> 

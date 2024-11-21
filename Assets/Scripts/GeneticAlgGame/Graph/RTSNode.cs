@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Utils;
 
-namespace Pathfinder
+namespace GeneticAlgGame.Graph
 {
     public enum SimNodeType
     {

@@ -1,9 +1,8 @@
 ﻿using System;
-using MinersGame.FSM.States;
-using StateMachine.Agents.Simulation;
-using States;
+using FSM;
+using GeneticAlgGame.Agents;
 
-namespace StateMachine.States.SimStates
+namespace GeneticAlgGame.FSMStates
 {
     public class SimAttackState : State
     {

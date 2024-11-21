@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NeuralNetworkDirectory.NeuralNet
+namespace GeneticAlgorithmDirectory.NeuralNet
 {
     public class Neuron
     {

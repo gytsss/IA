@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GeneticAlgorithmDirectory.ECS;
-using NeuralNetworkDirectory.ECS;
 
 namespace ECS.Patron
 {

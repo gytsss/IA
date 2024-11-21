@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ECS.Patron;
 using GeneticAlgGame.Agents;
-using NeuralNetworkDirectory.NeuralNet;
-using StateMachine.Agents.Simulation;
+using GeneticAlgorithmDirectory.NeuralNet;
 
-namespace NeuralNetworkDirectory.ECS
+namespace GeneticAlgorithmDirectory.ECS
 {
     public class OutputComponent : ECSComponent
     {

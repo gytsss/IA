@@ -1,10 +1,12 @@
 ﻿using System;
-using MinersGame.FSM.States;
-using StateMachine.Agents.Simulation;
+using FSM;
+using GeneticAlgGame.Agents;
+using GeneticAlgGame.Graph;
+using Pathfinder;
 using UnityEngine;
 using Utils;
 
-namespace StateMachine.States.SimStates
+namespace GeneticAlgGame.FSMStates
 {
     public class SimWalkState : State
     {
@@ -12,7 +14,7 @@ namespace StateMachine.States.SimStates
         {
             var behaviours = new BehaviourActions();
 
-            var currentNode = parameters[0] as SimNode<IVector>;
+            var currentNode = parameters[0] as Graph.SimNode<IVector>;
             var foodTarget = (SimNodeType)parameters[1];
             var onMove = parameters[2] as Action;
             var outputBrain1 = (float[])parameters[3];
@@ -85,7 +87,7 @@ namespace StateMachine.States.SimStates
         {
             var behaviours = new BehaviourActions();
 
-            var currentNode = parameters[0] as SimNode<IVector>;
+            var currentNode = parameters[0] as Graph.SimNode<IVector>;
             var foodTarget = (SimNodeType)parameters[1];
             var onMove = parameters[2] as Action;
             var outputBrain1 = (float[])parameters[3];
@@ -126,7 +128,7 @@ namespace StateMachine.States.SimStates
         {
             var behaviours = new BehaviourActions();
 
-            var currentNode = parameters[0] as SimNode<IVector>;
+            var currentNode = parameters[0] as Graph.SimNode<IVector>;
             var foodTarget = (SimNodeType)parameters[1];
             var onMove = parameters[2] as Action;
             var outputBrain1 = (float[])parameters[3];

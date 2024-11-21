@@ -1,6 +1,6 @@
 ﻿using System;
-using FlappyIa.GeneticAlg;
-using NeuralNetworkDirectory.NeuralNet;
+using GeneticAlgorithmDirectory.GeneticAlg;
+using GeneticAlgorithmDirectory.NeuralNet;
 using UnityEngine;
 
 namespace Tank

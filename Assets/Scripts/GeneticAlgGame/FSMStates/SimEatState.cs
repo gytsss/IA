@@ -1,7 +1,10 @@
 ﻿using System;
-using MinersGame.FSM.States;
-using StateMachine.Agents.Simulation;
+using FSM;
+using GeneticAlgGame.Agents;
+using GeneticAlgGame.Graph;
+using Pathfinder;
 using Utils;
+
 
 namespace GeneticAlgGame.FSMStates
 {
@@ -10,7 +13,7 @@ namespace GeneticAlgGame.FSMStates
         public override BehaviourActions GetTickBehaviour(params object[] parameters)
         {
             var behaviours = new BehaviourActions();
-            var currentNode = parameters[0] as SimNode<IVector>;
+            var currentNode = parameters[0] as Graph.SimNode<IVector>;
             var foodTarget = (SimNodeType)parameters[1];
             var onEat = parameters[2] as Action;
             var outputBrain1 = (float[])parameters[3];
@@ -58,7 +61,7 @@ namespace GeneticAlgGame.FSMStates
         {
             var behaviours = new BehaviourActions();
             var currentPos = parameters[0] as IVector;
-            var foodNode = parameters[1] as SimNode<IVector>;
+            var foodNode = parameters[1] as Graph.SimNode<IVector>;
             var onEat = parameters[2] as Action;
             var outputBrain1 = (float[])parameters[3];
 

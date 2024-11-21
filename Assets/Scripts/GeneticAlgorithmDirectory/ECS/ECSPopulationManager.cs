@@ -1,24 +1,21 @@
 ﻿using System;
-using System.Threading.Tasks;
-using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ECS.Patron;
-using FlappyIa.GeneticAlg;
 using Flocking;
 using GeneticAlgGame.Agents;
 using GeneticAlgGame.Graph;
-using GeneticAlgorithmDirectory.ECS;
-using NeuralNetworkDirectory.AI;
-using NeuralNetworkDirectory.DataManagement;
-using NeuralNetworkDirectory.NeuralNet;
+using GeneticAlgorithmDirectory.AI;
+using GeneticAlgorithmDirectory.DataManagement;
+using GeneticAlgorithmDirectory.GeneticAlg;
+using GeneticAlgorithmDirectory.NeuralNet;
 using Pathfinder;
-using Pathfinder.Graph;
-using StateMachine.Agents.Simulation;
+using UnityEngine;
 using Utils;
+using Voronoi;
 
-
-namespace NeuralNetworkDirectory.ECS
+namespace GeneticAlgorithmDirectory.ECS
 {
     using SimAgentType = SimAgent<IVector, ITransform<IVector>>;
     using SimBoid = Boid<IVector, ITransform<IVector>>;

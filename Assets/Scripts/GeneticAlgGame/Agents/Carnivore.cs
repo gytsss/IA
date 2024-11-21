@@ -1,10 +1,9 @@
 ﻿using System;
 using GeneticAlgGame.FSMStates;
-using NeuralNetworkDirectory.ECS;
-using NeuralNetworkDirectory.NeuralNet;
+using GeneticAlgGame.Graph;
+using GeneticAlgorithmDirectory.ECS;
+using GeneticAlgorithmDirectory.NeuralNet;
 using Pathfinder;
-using StateMachine.Agents.Simulation;
-using StateMachine.States.SimStates;
 using Utils;
 
 namespace GeneticAlgGame.Agents

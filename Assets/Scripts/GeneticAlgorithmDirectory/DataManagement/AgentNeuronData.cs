@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using GeneticAlgGame.Agents;
-using NeuralNetworkDirectory.NeuralNet;
-using StateMachine.Agents.Simulation;
+﻿using GeneticAlgGame.Agents;
+using GeneticAlgorithmDirectory.NeuralNet;
 
-namespace NeuralNetworkDirectory.DataManagement
+namespace GeneticAlgorithmDirectory.DataManagement
 {
     public class AgentNeuronData
     {

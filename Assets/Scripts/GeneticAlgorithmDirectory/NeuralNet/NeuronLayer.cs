@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
 using GeneticAlgGame.Agents;
-using StateMachine.Agents.Simulation;
 
-namespace NeuralNetworkDirectory.NeuralNet
+namespace GeneticAlgorithmDirectory.NeuralNet
 {
     public enum BrainType
     {

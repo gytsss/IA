@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using Pathfinder;
 using Utils;
+using Voronoi;
 
-namespace Pathfinder.Graph
+namespace GeneticAlgGame.Graph
 {
     public class Sim2Graph : SimGraph<SimNode<IVector>, SimCoordinate, IVector>
     {
