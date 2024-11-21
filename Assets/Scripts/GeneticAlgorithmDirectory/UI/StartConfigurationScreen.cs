@@ -1,8 +1,8 @@
-﻿using GeneticAlgorithmDirectory.FlappyGame.AI;
+﻿using GeneticAlgorithmDirectory.AI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GeneticAlgorithmDirectory.GeneticAlg.UI
+namespace GeneticAlgorithmDirectory.UI
 {
     public class StartConfigurationScreen : MonoBehaviour
     {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Tank
+namespace GeneticAlgorithmDirectory.Tank
 {
     public class Tank : TankBase
     {

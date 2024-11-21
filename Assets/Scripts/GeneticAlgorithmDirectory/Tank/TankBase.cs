@@ -3,7 +3,7 @@ using GeneticAlgorithmDirectory.GeneticAlg;
 using GeneticAlgorithmDirectory.NeuralNet;
 using UnityEngine;
 
-namespace Tank
+namespace GeneticAlgorithmDirectory.Tank
 {
     public class TankBase : MonoBehaviour
     {

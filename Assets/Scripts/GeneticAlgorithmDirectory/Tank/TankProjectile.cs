@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Tank
+namespace GeneticAlgorithmDirectory.Tank
 {
     public class TankProjectile : MonoBehaviour
     {
