@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using GeneticAlgGame.Agents;
+using StateMachine.Agents.Simulation;
 
 namespace NeuralNetworkDirectory.NeuralNet
 {
@@ -12,12 +13,12 @@ namespace NeuralNetworkDirectory.NeuralNet
         Escape,
         Flocking
     }
-
+    
     public class NeuronLayer
     {
         public BrainType BrainType;
         public SimAgentTypes AgentType;
-        public float Bias { get; set; } = 1;
+        public float Bias {  get; set; }= 1;
         private readonly float p = 0.5f;
         private Neuron[] neurons;
         private float[] outputs;
@@ -44,8 +45,8 @@ namespace NeuralNetworkDirectory.NeuralNet
 
             for (var i = 0; i < neurons.Length; i++)
             {
-                neurons[i] = new Neuron(InputsCount + 1, Bias, p);
-                totalWeights += InputsCount + 1;
+                neurons[i] = new Neuron(InputsCount, Bias, p);
+                totalWeights += InputsCount;
             }
 
             outputs = new float[neurons.Length];
@@ -77,9 +78,12 @@ namespace NeuralNetworkDirectory.NeuralNet
             return weights;
         }
 
-        public float[] Synapsis(float[] inputs)
+        public float[] Synapsis(float[] inputs, int i)
         {
-            Parallel.For(0, neurons.Length, j => { outputs[j] = neurons[j].Synapsis(inputs); });
+            Parallel.For(0, neurons.Length, j =>
+            {
+                outputs[j] = neurons[j].Synapsis(inputs, i);
+            });
             return outputs;
         }
     }

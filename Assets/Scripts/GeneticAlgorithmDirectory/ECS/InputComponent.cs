@@ -1,4 +1,6 @@
-﻿namespace GeneticAlgorithmDirectory.ECS
+﻿using ECS.Patron;
+
+namespace NeuralNetworkDirectory.ECS
 {
     public class InputComponent : ECSComponent
     {
