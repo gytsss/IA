@@ -226,7 +226,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1659154293}
-  - component: {fileID: 1659154292}
+  - component: {fileID: 1659154294}
   m_Layer: 0
   m_Name: PopulationManager
   m_TagString: Untagged
@@ -234,36 +234,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1659154292
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1659154291}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a112d98ecacf488a9c8d9a9c4c832381, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  carnivoreMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  carnivoreMat: {fileID: 2100000, guid: 04b67b1aa6af44245889bf0bfb8b412a, type: 2}
-  herbivoreMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-  herbivoreMat: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  scavengerMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
-  scavengerMat: {fileID: 2100000, guid: f053c779a3c9ee941a2859146417e7a0, type: 2}
-  carnivoreCount: 1
-  herbivoreCount: 0
-  scavengerCount: 1
-  eliteCount: 0
-  generationDuration: 3
-  mutationChance: 0.1
-  mutationRate: 0.01
-  Generation: 0
-  gridWidth: 50
-  gridHeight: 50
-  generationTurns: 100
-  speed: 1
 --- !u!4 &1659154293
 Transform:
   m_ObjectHideFlags: 0
@@ -279,6 +249,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1659154294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1659154291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1592e56415e15847ab8c31702b6f245, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  carnivoreMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  carnivoreMat: {fileID: 2100000, guid: 04b67b1aa6af44245889bf0bfb8b412a, type: 2}
+  herbivoreMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  herbivoreMat: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  scavengerMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+  scavengerMat: {fileID: 2100000, guid: f053c779a3c9ee941a2859146417e7a0, type: 2}
+  carnivoreCount: 5
+  herbivoreCount: 20
+  scavengerCount: 5
+  eliteCount: 0
+  generationDuration: 7
+  mutationChance: 0.1
+  mutationRate: 0.01
+  Generation: 0
+  gridWidth: 10
+  gridHeight: 10
+  generationTurns: 100
+  speed: 1
 --- !u!1 &1801325625
 GameObject:
   m_ObjectHideFlags: 0
