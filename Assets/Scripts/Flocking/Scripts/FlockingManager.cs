@@ -1,95 +1,62 @@
 using System.Collections.Generic;
-using Flocking.Scripts;
-using UnityEngine;
+using NeuralNetworkDirectory.ECS;
+using Utils;
 
-public class FlockingManager : MonoBehaviour
+namespace Flocking
 {
-    public Transform target;
-    public int boidCount = 50;
-    public Boid boidPrefab;
-    private List<Boid> boids = new List<Boid>();
+    using SimBoid = Boid<IVector, ITransform<IVector>>;
 
-    private void Start()
+    public class FlockingManager 
     {
-        for (int i = 0; i < boidCount; i++)
+        public IVector Alignment(SimBoid boid)
         {
-            GameObject boidGO = Instantiate(boidPrefab.gameObject,
-                new Vector2(Random.Range(-10, 10), Random.Range(-10, 10)), Quaternion.identity);
+            List<SimBoid> insideRadiusBoids = EcsPopulationManager.GetBoidsInsideRadius(boid);
+            if (insideRadiusBoids.Count == 0) return boid.transform.forward;
 
-            Boid boid = boidGO.GetComponent<Boid>();
-            boid.Init(Alignment, Cohesion, Separation, Direction);
-
-            boid.alignmentOffset = 1.0f;
-            boid.cohesionOffset = 1.5f;
-            boid.separationOffset = 2.0f;
-            boid.directionOffset = 2.0f;
-
-            boids.Add(boid);
-        }
-    }
-
-    public Vector2 Alignment(Boid boid)
-    {
-        List<Boid> insideRadiusBoids = GetBoidsInsideRadius(boid);
-        if (insideRadiusBoids.Count == 0) return boid.transform.up;
-
-        Vector2 avg = Vector2.zero;
-        foreach (Boid b in insideRadiusBoids)
-        {
-            avg += (Vector2)b.transform.up;
-        }
-
-        avg /= insideRadiusBoids.Count;
-        return avg.normalized;
-    }
-
-    public Vector2 Cohesion(Boid boid)
-    {
-        List<Boid> insideRadiusBoids = GetBoidsInsideRadius(boid);
-        if (insideRadiusBoids.Count == 0) return Vector2.zero;
-
-        Vector2 avg = Vector2.zero;
-        foreach (Boid b in insideRadiusBoids)
-        {
-            avg += (Vector2)b.transform.position;
-        }
-
-        avg /= insideRadiusBoids.Count;
-        return (avg - (Vector2)boid.transform.position).normalized;
-    }
-
-    public Vector2 Separation(Boid boid)
-    {
-        List<Boid> insideRadiusBoids = GetBoidsInsideRadius(boid);
-        if (insideRadiusBoids.Count == 0) return Vector2.zero;
-
-        Vector2 avg = Vector2.zero;
-        foreach (Boid b in insideRadiusBoids)
-        {
-            avg += (Vector2)(boid.transform.position - b.transform.position);
-        }
-
-        avg /= insideRadiusBoids.Count;
-        return avg.normalized;
-    }
-
-    public Vector2 Direction(Boid boid)
-    {
-        return (target.position - boid.transform.position).normalized;
-    }
-
-    public List<Boid> GetBoidsInsideRadius(Boid boid)
-    {
-        List<Boid> insideRadiusBoids = new List<Boid>();
-
-        foreach (Boid b in boids)
-        {
-            if (Vector2.Distance(boid.transform.position, b.transform.position) < boid.detectionRadious)
+            IVector avg = MyVector.zero();
+            foreach (SimBoid b in insideRadiusBoids)
             {
-                insideRadiusBoids.Add(b);
+                avg += (IVector)b.transform.forward;
             }
+
+            avg /= insideRadiusBoids.Count;
+            return avg.Normalized();
         }
 
-        return insideRadiusBoids;
+        public IVector Cohesion(SimBoid boid)
+        {
+            List<SimBoid> insideRadiusBoids = EcsPopulationManager.GetBoidsInsideRadius(boid);
+            if (insideRadiusBoids.Count == 0) return MyVector.zero();
+
+            IVector avg = MyVector.zero();
+            foreach (SimBoid b in insideRadiusBoids)
+            {
+                avg += (IVector)b.transform.position;
+            }
+
+            avg /= insideRadiusBoids.Count;
+            var average = avg - (IVector)boid.transform.position;
+            return (average).Normalized();
+        }
+
+        public IVector Separation(SimBoid boid)
+        {
+            List<SimBoid> insideRadiusBoids = EcsPopulationManager.GetBoidsInsideRadius(boid);
+            if (insideRadiusBoids.Count == 0) return MyVector.zero();
+
+            IVector avg = MyVector.zero();
+            foreach (SimBoid b in insideRadiusBoids)
+            {
+                avg += (boid.transform.position - b.transform.position);
+            }
+
+            avg /= insideRadiusBoids.Count;
+            return avg.Normalized();
+        }
+
+        public IVector Direction(SimBoid boid)
+        {
+            return (boid.target - boid.transform.position).Normalized();
+        }
     }
 }
