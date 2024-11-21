@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MinersGame.FSM.States;
 
-namespace StateMachine
+namespace FSM
 {
     public class FSM<EnumState, EnumFlag>
         where EnumState : Enum

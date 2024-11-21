@@ -1,13 +1,16 @@
 using ECS.Patron;
 
-public class VelocityComponent<TVector> : ECSComponent
+namespace ECS.Implementation
 {
-    public TVector direction;
-    public float velocity;
-
-    public VelocityComponent(float velocity, TVector direction)
+    public class VelocityComponent<TVector> : ECSComponent
     {
-        this.velocity = velocity;
-        this.direction = direction;
+        public TVector direction;
+        public float velocity;
+
+        public VelocityComponent(float velocity, TVector direction)
+        {
+            this.velocity = velocity;
+            this.direction = direction;
+        }
     }
 }

@@ -1,13 +1,18 @@
-﻿public class ACSComponent : ECSComponent
-{
-    public float speed;
-    public float turnSpeed;
-    public float detectionRadious;
+﻿using ECS.Patron;
 
-    public ACSComponent(float speed, float turnSpeed, float detectionRadious)
+namespace FlockingECS.Components
+{
+    public class ACSComponent : ECSComponent
     {
-        this.speed = speed;
-        this.turnSpeed = turnSpeed;
-        this.detectionRadious = detectionRadious;
+        public float speed;
+        public float turnSpeed;
+        public float detectionRadious;
+
+        public ACSComponent(float speed, float turnSpeed, float detectionRadious)
+        {
+            this.speed = speed;
+            this.turnSpeed = turnSpeed;
+            this.detectionRadious = detectionRadious;
+        }
     }
 }

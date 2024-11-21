@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using ECS.Implementation;
 using ECS.Patron;
-using FlockingECS.Component;
+using FlockingECS.Components;
+using Utils;
 
 namespace FlockingECS.Systems
 {
-    public class MoveSystem<TVector> : ECSSystem
+    public class SeparationSystem<TVector> : ECSSystem
     {
         private IDictionary<uint, FlockComponent<TVector>> flockComponents;
-        private OffsetComponent offsetComponent;
         private ParallelOptions parallelOptions;
         private IDictionary<uint, PositionComponent<TVector>> positionComponents;
         private IEnumerable<uint> queriedEntities;
@@ -16,7 +17,6 @@ namespace FlockingECS.Systems
         public override void Initialize()
         {
             parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 32 };
-            offsetComponent = new OffsetComponent(1, 1, 2, 1.5f);
         }
 
         protected override void PreExecute(float deltaTime)
@@ -29,25 +29,23 @@ namespace FlockingECS.Systems
 
         protected override void Execute(float deltaTime)
         {
-            Parallel.ForEach(queriedEntities, parallelOptions, i =>
+            Parallel.ForEach(queriedEntities, parallelOptions, entityId =>
             {
-                var alignment = Multiply(flockComponents[i].Alignment, offsetComponent.alignmentWeight);
-                var cohesion = Multiply(flockComponents[i].Cohesion, offsetComponent.cohesionWeight);
-                var separation = Multiply(flockComponents[i].Separation, offsetComponent.separationWeight);
-                var direction = Multiply(flockComponents[i].Direction, offsetComponent.directionWeight);
-                var ACS = VectorHelper<TVector>.AddVectors(alignment, cohesion, separation, direction);
+                var position = positionComponents[entityId];
+                var flock = flockComponents[entityId];
+                var insideRadiusBoids = VectorHelper<TVector>.GetBoidsInsideRadius(position, positionComponents);
+                if (insideRadiusBoids.Count == 0) return;
 
-                ACS = VectorHelper<TVector>.NormalizeVector(ACS);
+                TVector separation = default;
+                foreach (var b in insideRadiusBoids)
+                {
+                    var diff = VectorHelper<TVector>.SubtractVectors(position.Position, b.Position);
+                    separation = VectorHelper<TVector>.AddVectors(separation, diff);
+                }
 
-
-                positionComponents[i].Position = VectorHelper<TVector>.AddVectors(positionComponents[i].Position,
-                    Multiply(ACS, offsetComponent.speed * deltaTime));
+                separation = VectorHelper<TVector>.NormalizeVector(separation);
+                flock.Separation = separation;
             });
-        }
-
-        private TVector Multiply(TVector vector, float weight)
-        {
-            return VectorHelper<TVector>.MultiplyVector(vector, weight);
         }
 
         protected override void PostExecute(float deltaTime)

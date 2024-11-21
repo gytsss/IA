@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using ECS.Implementation;
 using ECS.Patron;
+using FlockingECS.Components;
 
 public sealed class NormalizeSystem : ECSSystem
 {

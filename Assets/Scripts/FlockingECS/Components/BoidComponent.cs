@@ -1,4 +1,4 @@
-﻿namespace FlockingECS.Component
+﻿namespace FlockingECS.Components
 {
     public class BoidComponent
     {

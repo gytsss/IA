@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace MinersGame.FSM.States
+namespace FSM
 {
     public struct BehaviourActions
     {
@@ -46,6 +46,5 @@ namespace MinersGame.FSM.States
         public abstract BehaviourActions GetTickBehaviour(params object[] parameters);
         public abstract BehaviourActions GetOnEnterBehaviour(params object[] parameters);
         public abstract BehaviourActions GetOnExitBehaviour(params object[] parameters);
-    }
     }
 }

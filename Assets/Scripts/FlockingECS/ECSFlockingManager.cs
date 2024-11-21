@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using ECS.Implementation;
 using ECS.Patron;
 using FlockingECS.Component;
-using FlockingECS.System;
+using FlockingECS.Components;
+using FlockingECS.Systems;
 using UnityEngine;
 using Vector3 = System.Numerics.Vector3;
 

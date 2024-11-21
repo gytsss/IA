@@ -1,11 +1,14 @@
 using ECS.Patron;
 
-public class PositionComponent<T> : ECSComponent
+namespace ECS.Implementation
 {
-    public T Position;
-
-    public PositionComponent(T position)
+    public class PositionComponent<T> : ECSComponent
     {
-        Position = position;
+        public T Position;
+
+        public PositionComponent(T position)
+        {
+            Position = position;
+        }
     }
 }

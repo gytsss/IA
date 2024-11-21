@@ -1,6 +1,6 @@
 ﻿using ECS.Patron;
 
-namespace FlockingECS.Component
+namespace FlockingECS.Components
 {
     public class FlockComponent<TVector> : ECSComponent
     {

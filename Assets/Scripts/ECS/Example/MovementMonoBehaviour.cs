@@ -1,13 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class MovementMonoBehaviour : MonoBehaviour
+namespace ECS.Example
 {
-    public float velocity;
-
-    void LateUpdate()
+    public class MovementMonoBehaviour : MonoBehaviour
     {
-        transform.position += Vector3.right * velocity * Time.deltaTime;
+        public float velocity;
+
+        void LateUpdate()
+        {
+            transform.position += Vector3.right * velocity * Time.deltaTime;
+        }
     }
 }

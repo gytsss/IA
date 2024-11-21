@@ -1,39 +1,40 @@
 ﻿using UnityEngine;
+using Utils;
 
-namespace GeneticAlgGame.Graph
+namespace Pathfinder.Graph
 {
-    public class Sim2Graph : Graph<SimNode<Vector2>, NodeVoronoi, Vector2>
+    public class Sim2Graph : SimGraph<SimNode<IVector>, SimCoordinate, IVector>
     {
+        public int MinX => 0;
+        public int MaxX => CoordNodes.GetLength(0);
+        public int MinY => 0;
+        public int MaxY => CoordNodes.GetLength(1);
         public Sim2Graph(int x, int y, float cellSize) : base(x, y, cellSize)
         {
         }
 
         public override void CreateGraph(int x, int y, float cellSize)
         {
-            CoordNodes = new NodeVoronoi[x, y];
+            CoordNodes = new SimCoordinate[x, y];
             for (var i = 0; i < x; i++)
             {
                 for (var j = 0; j < y; j++)
                 {
-                    var node = new NodeVoronoi();
+                    var node = new SimCoordinate();
                     node.SetCoordinate(i * cellSize, j * cellSize);
                     CoordNodes[i, j] = node;
 
-                    var nodeType = new SimNode<Vector2>();
-                    nodeType.SetCoordinate(new Vector2(i * cellSize, j * cellSize));
-                    NodesType.Add(nodeType);
+                    var nodeType = new SimNode<IVector>();
+                    nodeType.SetCoordinate(new MyVector(i * cellSize, j * cellSize));
+                    NodesType[i, j] = nodeType;
                 }
             }
         }
-
-        public override void GenerateGraph(int x, int y, float distance)
+        
+        public bool IsWithinGraphBorders(IVector position)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public override void GetNeighbors(float distance)
-        {
-            throw new System.NotImplementedException();
+            return position.X >= MinX && position.X <= MaxX &&
+                   position.Y >= MinY && position.Y <= MaxY;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FlappyIa.GeneticAlg;
+using FSM;
 using GeneticAlgGame.FSMStates;
 using NeuralNetworkDirectory.ECS;
 using NeuralNetworkDirectory.NeuralNet;

@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Linq;
 using GeneticAlgGame.FSMStates;
 using NeuralNetworkDirectory.ECS;
 using NeuralNetworkDirectory.NeuralNet;
 using Pathfinder;
+using StateMachine.Agents.Simulation;
 using StateMachine.States.SimStates;
 using Utils;
 
-namespace StateMachine.Agents.Simulation
+namespace GeneticAlgGame.Agents
 {
     public class Carnivore<TVector, TTransform> : SimAgent<TVector, TTransform>
         where TTransform : ITransform<IVector>, new()

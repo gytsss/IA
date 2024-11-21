@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
+using ECS.Implementation;
 using ECS.Patron;
-using FlockingECS.Component;
+using FlockingECS.Components;
 using Utils;
 
-namespace FlockingECS.System
+namespace FlockingECS.Systems
 {
     public class DirectionSystem<TVector> : ECSSystem
     {

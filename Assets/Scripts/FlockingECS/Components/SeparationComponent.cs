@@ -1,17 +1,22 @@
-﻿public class SeparationComponent : ECSComponent
+﻿using ECS.Patron;
+
+namespace FlockingECS.Components
 {
-    public float speed;
-    public float turnSpeed;
-    public float detectionRadious;
-    public float separationMultiplier;
-
-
-    public SeparationComponent(float speed, float turnSpeed, float detectionRadious,
-        float separationMultiplier)
+    public class SeparationComponent : ECSComponent
     {
-        this.speed = speed;
-        this.turnSpeed = turnSpeed;
-        this.detectionRadious = detectionRadious;
-        this.separationMultiplier = separationMultiplier;
+        public float speed;
+        public float turnSpeed;
+        public float detectionRadious;
+        public float separationMultiplier;
+
+
+        public SeparationComponent(float speed, float turnSpeed, float detectionRadious,
+            float separationMultiplier)
+        {
+            this.speed = speed;
+            this.turnSpeed = turnSpeed;
+            this.detectionRadious = detectionRadious;
+            this.separationMultiplier = separationMultiplier;
+        }
     }
 }

@@ -3,42 +3,45 @@ using System.Numerics;
 using System.Threading.Tasks;
 using ECS.Patron;
 
-public sealed class MovementSystem : ECSSystem
+namespace ECS.Implementation
 {
-    private ParallelOptions parallelOptions;
-
-    private IDictionary<uint, PositionComponent<Vector3>> positionComponents;
-    private IEnumerable<uint> queriedEntities;
-    private IDictionary<uint, VelocityComponent<Vector3>> velocityComponents;
-
-    public override void Initialize()
+    public sealed class MovementSystem : ECSSystem
     {
-        parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 32 };
-    }
+        private ParallelOptions parallelOptions;
 
-    protected override void PreExecute(float deltaTime)
-    {
-        positionComponents ??= ECSManager.GetComponents<PositionComponent<Vector3>>();
-        velocityComponents ??= ECSManager.GetComponents<VelocityComponent<Vector3>>();
-        queriedEntities ??=
-            ECSManager.GetEntitiesWithComponentTypes(typeof(PositionComponent<Vector3>),
-                typeof(VelocityComponent<Vector3>));
-    }
+        private IDictionary<uint, PositionComponent<Vector3>> positionComponents;
+        private IEnumerable<uint> queriedEntities;
+        private IDictionary<uint, VelocityComponent<Vector3>> velocityComponents;
 
-    protected override void Execute(float deltaTime)
-    {
-        Parallel.ForEach(queriedEntities, parallelOptions, i =>
+        public override void Initialize()
         {
-            positionComponents[i].Position.X +=
-                velocityComponents[i].direction.X * velocityComponents[i].velocity * deltaTime;
-            positionComponents[i].Position.Y +=
-                velocityComponents[i].direction.Y * velocityComponents[i].velocity * deltaTime;
-            positionComponents[i].Position.Z +=
-                velocityComponents[i].direction.Z * velocityComponents[i].velocity * deltaTime;
-        });
-    }
+            parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 32 };
+        }
 
-    protected override void PostExecute(float deltaTime)
-    {
+        protected override void PreExecute(float deltaTime)
+        {
+            positionComponents ??= ECSManager.GetComponents<PositionComponent<Vector3>>();
+            velocityComponents ??= ECSManager.GetComponents<VelocityComponent<Vector3>>();
+            queriedEntities ??=
+                ECSManager.GetEntitiesWithComponentTypes(typeof(PositionComponent<Vector3>),
+                    typeof(VelocityComponent<Vector3>));
+        }
+
+        protected override void Execute(float deltaTime)
+        {
+            Parallel.ForEach(queriedEntities, parallelOptions, i =>
+            {
+                positionComponents[i].Position.X +=
+                    velocityComponents[i].direction.X * velocityComponents[i].velocity * deltaTime;
+                positionComponents[i].Position.Y +=
+                    velocityComponents[i].direction.Y * velocityComponents[i].velocity * deltaTime;
+                positionComponents[i].Position.Z +=
+                    velocityComponents[i].direction.Z * velocityComponents[i].velocity * deltaTime;
+            });
+        }
+
+        protected override void PostExecute(float deltaTime)
+        {
+        }
     }
 }
