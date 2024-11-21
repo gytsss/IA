@@ -27,7 +27,7 @@ public class Miner : BaseAgent
 
         fsm.AddBehaviour<IdleState>(States.Idle, onTickParameters: () => { return new object[] {this,  GetStart() }; });
 
-        fsm.SetTransition(States.Idle, Flags.OnStart, States.MoveToMine);
+        fsm.SetTransition(States.Idle, BaseAgentsFlags.OnStart, States.MoveToMine);
         
         fsm.ForceState(States.Idle);
     }
@@ -96,22 +96,22 @@ public class Miner : BaseAgent
 
     public override void AddTransitions()
     {
-        fsm.SetTransition(States.MoveToMine, Flags.OnMineFind, States.MineGold);
-        fsm.SetTransition(States.MoveToMine, Flags.OnAlarmTrigger, States.Alarm);
-        fsm.SetTransition(States.MoveToMine, Flags.OnNoMoreMines, States.DepositGold);
-        fsm.SetTransition(States.MineGold, Flags.OnFoodNeed, States.EatFood);
-        fsm.SetTransition(States.MineGold, Flags.OnFullInventory, States.DepositGold);
-        fsm.SetTransition(States.MineGold, Flags.OnMineEmpty, States.MoveToMine);
-        fsm.SetTransition(States.MineGold, Flags.OnAlarmTrigger, States.Alarm);
-        fsm.SetTransition(States.EatFood, Flags.OnFoodEaten, States.MineGold);
-        fsm.SetTransition(States.DepositGold, Flags.OnNoMoreMines, States.Idle);
-        fsm.SetTransition(States.DepositGold, Flags.OnGoldDeposit, States.MoveToMine);
-        fsm.SetTransition(States.DepositGold, Flags.OnAlarmTrigger, States.Alarm);
-        fsm.SetTransition(States.EatFood, Flags.OnMineEmptyOfFood, States.WaitFood);
-        fsm.SetTransition(States.WaitFood, Flags.OnFoodAvailable, States.EatFood);
-        fsm.SetTransition(States.WaitFood, Flags.OnAlarmTrigger, States.Alarm);
-        fsm.SetTransition(States.Alarm, Flags.OnHome, States.Idle);
-        fsm.SetTransition(States.Alarm, Flags.OnBackToWork, States.MoveToMine);
+        fsm.SetTransition(States.MoveToMine, BaseAgentsFlags.OnMineFind, States.MineGold);
+        fsm.SetTransition(States.MoveToMine, BaseAgentsFlags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.MoveToMine, BaseAgentsFlags.OnNoMoreMines, States.DepositGold);
+        fsm.SetTransition(States.MineGold, BaseAgentsFlags.OnFoodNeed, States.EatFood);
+        fsm.SetTransition(States.MineGold, BaseAgentsFlags.OnFullInventory, States.DepositGold);
+        fsm.SetTransition(States.MineGold, BaseAgentsFlags.OnMineEmpty, States.MoveToMine);
+        fsm.SetTransition(States.MineGold, BaseAgentsFlags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.EatFood, BaseAgentsFlags.OnFoodEaten, States.MineGold);
+        fsm.SetTransition(States.DepositGold, BaseAgentsFlags.OnNoMoreMines, States.Idle);
+        fsm.SetTransition(States.DepositGold, BaseAgentsFlags.OnGoldDeposit, States.MoveToMine);
+        fsm.SetTransition(States.DepositGold, BaseAgentsFlags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.EatFood, BaseAgentsFlags.OnMineEmptyOfFood, States.WaitFood);
+        fsm.SetTransition(States.WaitFood, BaseAgentsFlags.OnFoodAvailable, States.EatFood);
+        fsm.SetTransition(States.WaitFood, BaseAgentsFlags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.Alarm, BaseAgentsFlags.OnHome, States.Idle);
+        fsm.SetTransition(States.Alarm, BaseAgentsFlags.OnBackToWork, States.MoveToMine);
     }
     
     

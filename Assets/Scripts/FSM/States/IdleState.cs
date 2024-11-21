@@ -18,7 +18,7 @@ namespace Game.FSM.States
             {
                 if (start && agent.gameManager.GetGoldMineManager().FindClosestGoldMine(agent.GetCurrentNode()) != null)
                 {
-                    OnFlag?.Invoke(Flags.OnStart);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnStart);
                 }
             });
 

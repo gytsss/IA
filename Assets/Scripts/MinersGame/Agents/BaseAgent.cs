@@ -19,7 +19,7 @@ public enum States
     ReturnHome
 }
 
-public enum Flags
+public enum BaseAgentsFlags
 {
     OnStart,
     OnMineFind,
@@ -45,7 +45,7 @@ public abstract class BaseAgent : MonoBehaviour
     protected AStarPathfinder<Node<Vector2>, Vector2, NodeVoronoi> Pathfinder;
     protected GoldMineNode<Vector2> currentMine;
 
-    protected FSM<States, Flags> fsm;
+   // protected FSM<States, BaseAgentsFlags> fsm;
     protected Node<Vector2> startNode;
     protected Node<Vector2> destinationNode;
 
@@ -59,7 +59,7 @@ public abstract class BaseAgent : MonoBehaviour
 
     protected virtual void Start()
     {
-        fsm = new FSM<States, Flags>();
+        //fsm = new FSM<States, BaseAgentsFlags>();
     }
 
     public void InitAgent()
@@ -218,6 +218,6 @@ public abstract class BaseAgent : MonoBehaviour
 
     private void Update()
     {
-        fsm.Tick();
+        //fsm.Tick();
     }
 }

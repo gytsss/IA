@@ -1,19 +1,24 @@
-﻿using NeuralNetworkDirectory.ECS;
-using UnityEngine;
+﻿using System;
+using System.Numerics;
+using NeuralNetworkDirectory.ECS;
+using Utils;
+using Vector3 = UnityEngine.Vector3;
 
-namespace GeneticAlgGame.Graph
+namespace Pathfinder.Graph
 {
-    public class GraphManager
+    public class GraphManager<TVector, TTransform>
+        where TTransform : ITransform<TVector> 
+        where TVector : IVector, IEquatable<TVector>
     {
         public int Width { get; private set; }
         public int Height { get; private set; }
-        private System.Random random;
+        private Random random;
 
         public GraphManager(int width, int height)
         {
             Width = width;
             Height = height;
-            random = new System.Random();
+            random = new Random();
         }
 
         public Vector2 GetRandomPositionInLowerQuarter()
@@ -30,15 +35,14 @@ namespace GeneticAlgGame.Graph
             return new Vector2(x, y);
         }
 
-        public SimNode<UnityEngine.Vector2> GetRandomPosition()
+        public INode<IVector> GetRandomPosition()
         {
             int x = random.Next(0, Width);
             int y = random.Next(0, Height);
-            var node = EcsPopulationManager.CoordinateToNode(EcsPopulationManager.graph.CoordNodes[x, y]);
-            return node;
+            return EcsPopulationManager.graph.NodesType[x, y];
         }
 
-        public NodeVoronoi GetNode(Vector3 position)
+        public SimCoordinate GetNode(Vector3 position)
         {
             int x = (int)position.x;
             int y = (int)position.z;

@@ -103,19 +103,19 @@ namespace Game.FSM.States
             {
                 if (miner.gameManager.GetAlarm())
                 {
-                    OnFlag?.Invoke(Flags.OnAlarmTrigger);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnAlarmTrigger);
                 }
                 else if (noMoreMines)
                 {
                     Debug.Log("No more gold mines to mine....");
                     noMoreMines = false;
                     miner.SetStart(false);
-                    OnFlag?.Invoke(Flags.OnNoMoreMines);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnNoMoreMines);
                 }
                 else if (alreadyDeposited && !noMoreMines)
                 {
                     alreadyDeposited = false;
-                    OnFlag?.Invoke(Flags.OnGoldDeposit);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnGoldDeposit);
                 }
             });
 

@@ -70,13 +70,13 @@ namespace Game.FSM.States
                 Debug.Log("No more mines! Back to urban center! From: " + miner.GetCurrentNode().GetCoordinate());
                 goldCount = 0;
                 noMoreMines = false;
-                OnFlag?.Invoke(Flags.OnFullInventory);
+                OnFlag?.Invoke(BaseAgentsFlags.OnFullInventory);
             }
             else if (miner.gameManager.GetAlarm())
             {
                 mine.SetBeingMined(false);
                 Debug.Log("Alarm when mining!");
-                OnFlag?.Invoke(Flags.OnAlarmTrigger);
+                OnFlag?.Invoke(BaseAgentsFlags.OnAlarmTrigger);
             }
             else if (miner.goldCollected >= maxGold)
             {
@@ -91,7 +91,7 @@ namespace Game.FSM.States
                 mine.SetBeingMined(false);
                 Debug.Log("Full inventory!");
                 goldCount = 0;
-                OnFlag?.Invoke(Flags.OnFullInventory);
+                OnFlag?.Invoke(BaseAgentsFlags.OnFullInventory);
             }
             else if (!mine.HasGold())
             {
@@ -100,12 +100,12 @@ namespace Game.FSM.States
                 miner.gameManager.voronoi.SetVoronoi(miner.gameManager.goldMineManager.goldMinesVoronois, miner.gameManager.GetNodeVoronoiMapSize());
                 mine.SetBeingMined(false);
                 Debug.Log("Mine empty!");
-                OnFlag?.Invoke(Flags.OnMineEmpty);
+                OnFlag?.Invoke(BaseAgentsFlags.OnMineEmpty);
             }
             else if (miner.GetEnergy() <= 0)
             {
                 Debug.Log("Food needed! Gold mined: " + goldCount);
-                OnFlag?.Invoke(Flags.OnFoodNeed);
+                OnFlag?.Invoke(BaseAgentsFlags.OnFoodNeed);
             }
         });
 

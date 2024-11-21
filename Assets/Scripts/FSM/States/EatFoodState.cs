@@ -42,12 +42,12 @@ namespace Game.FSM.States
                if (miner.GetEnergy() >= miner.GetMaxEnergy())
                {
                    Debug.Log("Back to work! Food left: " + mine.GetFoodAmount());
-                   OnFlag?.Invoke(Flags.OnFoodEaten);
+                   OnFlag?.Invoke(BaseAgentsFlags.OnFoodEaten);
                }
                else if (!mine.HasFood())
                {
                    Debug.Log("Mine empty of food!");
-                   OnFlag?.Invoke(Flags.OnMineEmptyOfFood);
+                   OnFlag?.Invoke(BaseAgentsFlags.OnMineEmptyOfFood);
                }
            });
    

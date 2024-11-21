@@ -50,12 +50,12 @@ namespace Game.FSM.States
             if (alreadyDeposited)
             {
                 alreadyDeposited = false;
-                OnFlag?.Invoke(Flags.OnFoodDeposit);
+                OnFlag?.Invoke(BaseAgentsFlags.OnFoodDeposit);
             }
             else if (mine == null && backToUrbanCenter)
             {
                 backToUrbanCenter = false;
-                OnFlag?.Invoke(Flags.OnNoMoreMines);
+                OnFlag?.Invoke(BaseAgentsFlags.OnNoMoreMines);
             }
         });
 

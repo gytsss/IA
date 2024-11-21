@@ -30,12 +30,12 @@ namespace Game.FSM.States
             {
                 if (gameManager.GetAlarm())
                 {
-                    OnFlag?.Invoke(Flags.OnAlarmTrigger);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnAlarmTrigger);
                 }
                 else if (mine != null)
                 {
                     Debug.Log("Mine is being mined!");
-                    OnFlag?.Invoke(Flags.OnMineFind);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnMineFind);
                 }
             });
 

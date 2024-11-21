@@ -1,14 +1,18 @@
-﻿using GeneticAlgGame.FSMStates;
-using GeneticAlgorithmDirectory.ECS;
+﻿using System;
+using System.Linq;
+using GeneticAlgGame.FSMStates;
 using NeuralNetworkDirectory.ECS;
 using NeuralNetworkDirectory.NeuralNet;
-using UnityEngine;
+using Pathfinder;
+using Utils;
 
-namespace GeneticAlgGame.Agents
+namespace StateMachine.Agents.Simulation
 {
-    public class Herbivore : SimAgent
+    public class Herbivore<TVector, TTransform> : SimAgent<TVector, TTransform>
+        where TTransform : ITransform<IVector>, new()
+        where TVector : IVector, IEquatable<TVector>
     {
-          public int Hp
+        public int Hp
         {
             get => hp;
             set
@@ -25,53 +29,106 @@ namespace GeneticAlgGame.Agents
         public override void Init()
         {
             base.Init();
-            agentType = SimAgentTypes.Herbivore;
             foodTarget = SimNodeType.Bush;
-            brainTypes = new[] {BrainType.Movement, BrainType.Escape, BrainType.Eat};
+            
+            CalculateInputs();
 
+            hp = InitialHp;
+        }
+        
+        public override void Reset()
+        {
+            base.Reset();
             hp = InitialHp;
         }
 
         protected override void ExtraInputs()
         {
-            int brain = (int)BrainType.Attack;
-            input[brain][0] = CurrentNode.GetCoordinate().x;
-            input[brain][1] = CurrentNode.GetCoordinate().y;
-            SimAgent target = EcsPopulationManager.GetNearestEntity(SimAgentTypes.Carnivorous, CurrentNode);
-            input[brain][2] = target.CurrentNode.GetCoordinate().x;
-            input[brain][3] = target.CurrentNode.GetCoordinate().y;
+            int brain = GetBrainTypeKeyByValue(BrainType.Escape);
+            var inputCount = GetInputCount(BrainType.Escape);
+            
+            input[brain] = new float[inputCount];
+            input[brain][0] = CurrentNode.GetCoordinate().X;
+            input[brain][1] = CurrentNode.GetCoordinate().Y;
+            var target = EcsPopulationManager.GetNearestEntity(SimAgentTypes.Carnivore, Transform.position);
+            if (target == null)
+            {
+                input[brain][2] = NoTarget;
+                input[brain][3] = NoTarget;
+            }
+            else
+            {
+                input[brain][2] = target.CurrentNode.GetCoordinate().X;
+                input[brain][3] = target.CurrentNode.GetCoordinate().Y;
+            }
         }
-        
+
         protected override void MovementInputs()
         {
-            int brain = (int)BrainType.Movement;
+            int brain = GetBrainTypeKeyByValue(BrainType.Movement);
+            var inputCount = GetInputCount(BrainType.Movement);
             
-            input[brain][0] = CurrentNode.GetCoordinate().x;
-            input[brain][1] = CurrentNode.GetCoordinate().y;
-            SimAgent target = EcsPopulationManager.GetNearestEntity(SimAgentTypes.Carnivorous, CurrentNode);
-            input[brain][2] = target.CurrentNode.GetCoordinate().x;
-            input[brain][3] = target.CurrentNode.GetCoordinate().y;
-            SimNode<Vector2> nodeTarget = GetTarget(foodTarget);
-            input[brain][4] = nodeTarget.GetCoordinate().x;
-            input[brain][5] = nodeTarget.GetCoordinate().y;
+            input[brain] = new float[inputCount];
+            input[brain][0] = CurrentNode.GetCoordinate().X;
+            input[brain][1] = CurrentNode.GetCoordinate().Y;
+
+            var target = EcsPopulationManager.GetNearestEntity(SimAgentTypes.Carnivore, Transform.position);
+            if (target == null)
+            {
+                input[brain][2] = NoTarget;
+                input[brain][3] = NoTarget;
+            }
+            else
+            {
+                input[brain][2] = target.CurrentNode.GetCoordinate().X;
+                input[brain][3] = target.CurrentNode.GetCoordinate().Y;
+            }
+
+            var nodeTarget = GetTarget(foodTarget);
+            if (nodeTarget == null)
+            {
+                input[brain][4] = NoTarget;
+                input[brain][5] = NoTarget;
+            }
+            else
+            {
+                input[brain][4] = nodeTarget.GetCoordinate().X;
+                input[brain][5] = nodeTarget.GetCoordinate().Y;
+            }
+
             input[brain][6] = Food;
             input[brain][7] = Hp;
-
         }
 
         private void Die()
         {
-            var node = EcsPopulationManager.CoordinateToNode(CurrentNode);
+            var node = CurrentNode;
             node.NodeType = SimNodeType.Corpse;
-            node.food = FoodDropped;
+            node.Food = FoodDropped;
+            EcsPopulationManager.RemoveEntity(this as SimAgent<IVector, ITransform<IVector>>);
+        }
+
+        protected override void EatTransitions()
+        {
+            Fsm.SetTransition(Behaviours.Eat, Flags.OnEat, Behaviours.Eat);
+            Fsm.SetTransition(Behaviours.Eat, Flags.OnSearchFood, Behaviours.Walk);
+            Fsm.SetTransition(Behaviours.Eat, Flags.OnEscape, Behaviours.Walk);
+        }
+
+        protected override void WalkTransitions()
+        {
+            Fsm.SetTransition(Behaviours.Walk, Flags.OnEat, Behaviours.Eat);
+            Fsm.SetTransition(Behaviours.Walk, Flags.OnEscape, Behaviours.Walk);
+        }
+
+        protected override void ExtraTransitions()
+        {
         }
 
         protected override void ExtraBehaviours()
         {
-            Fsm.AddBehaviour<SimulationEatHerbState>(Behaviours.Eat, EatTickParameters);
-
-            Fsm.AddBehaviour<SimulationWalkHerbState>(Behaviours.Escape, WalkTickParameters);
+            Fsm.AddBehaviour<SimEatHerbState>(Behaviours.Eat, EatTickParameters);
+            Fsm.AddBehaviour<SimWalkHerbState>(Behaviours.Walk, WalkTickParameters);
         }
     }
-    
 }

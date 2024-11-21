@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Pathfinder;
+using Pathfinder.Graph;
 using UnityEditor;
 using UnityEngine;
 using Voronoi;

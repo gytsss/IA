@@ -81,13 +81,13 @@ namespace Game.FSM.States
                 if (agent.gameManager.GetAlarm())
                 {
                     Debug.Log("Alarm when moving to mine!");
-                    OnFlag?.Invoke(Flags.OnAlarmTrigger);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnAlarmTrigger);
                 }
                 else if (noDestination)
                 {
                     agent.SetStartNode(agent.GetCurrentNode());
                     noDestination = false;
-                    OnFlag?.Invoke(Flags.OnNoMoreMines);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnNoMoreMines);
                 }
                 else if (agent.IsAtMine(destinationNode))
                 {
@@ -95,8 +95,8 @@ namespace Game.FSM.States
                     agent.SetStartNode(destinationNode);
                     Debug.Log("Start mining! x: " + destinationNode.GetCoordinate().x + " y: " +
                               destinationNode.GetCoordinate().y);
-                    OnFlag?.Invoke(Flags.OnMineFind);
-                    OnFlag?.Invoke(Flags.OnFoodDeposit);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnMineFind);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnFoodDeposit);
                 }
                
             });

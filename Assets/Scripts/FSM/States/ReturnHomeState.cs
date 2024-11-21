@@ -87,13 +87,13 @@ namespace Game.FSM.States
             {
                 if (baseAgent.gameManager.GetAlarm())
                 {
-                    OnFlag?.Invoke(Flags.OnAlarmTrigger);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnAlarmTrigger);
                 }
                 else if (baseAgent.IsAtUrbanCenter())
                 {
                     baseAgent.SetStartNode(urbanCenter);
                     pathToUrbanCenter = null;
-                    OnFlag?.Invoke(Flags.OnHome);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnHome);
                 }
             });
 

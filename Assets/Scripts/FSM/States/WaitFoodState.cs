@@ -19,11 +19,11 @@ namespace Game.FSM.States
             {
                 if (miner.gameManager.GetAlarm())
                 {
-                    OnFlag?.Invoke(Flags.OnAlarmTrigger);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnAlarmTrigger);
                 }
                 else if (miner.GetCurrentMine().HasFood())
                 {
-                    OnFlag?.Invoke(Flags.OnFoodAvailable);
+                    OnFlag?.Invoke(BaseAgentsFlags.OnFoodAvailable);
                 }
                 else
                 {

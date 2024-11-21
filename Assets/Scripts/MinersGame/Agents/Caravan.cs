@@ -21,7 +21,7 @@ public class Caravan : BaseAgent
         
         fsm.AddBehaviour<IdleState>(States.Idle, onTickParameters: () => { return new object[] { this, GetStart() }; });
 
-        fsm.SetTransition(States.Idle, Flags.OnStart, States.WaitMine);
+        fsm.SetTransition(States.Idle, BaseAgentsFlags.OnStart, States.WaitMine);
 
         fsm.ForceState(States.Idle);
     }
@@ -69,16 +69,16 @@ public class Caravan : BaseAgent
 
     public override void AddTransitions()
     {
-        fsm.SetTransition(States.WaitMine, Flags.OnMineFind, States.MoveToMine);
-        fsm.SetTransition(States.WaitMine, Flags.OnAlarmTrigger, States.Alarm);
-        fsm.SetTransition(States.MoveToMine, Flags.OnFoodDeposit, States.DepositFood);
-        fsm.SetTransition(States.MoveToMine, Flags.OnAlarmTrigger, States.Alarm);
-        fsm.SetTransition(States.DepositFood, Flags.OnFoodDeposit, States.ReturnHome);
-        fsm.SetTransition(States.DepositFood, Flags.OnNoMoreMines, States.ReturnHome);
-        fsm.SetTransition(States.ReturnHome, Flags.OnHome, States.WaitMine);
-        fsm.SetTransition(States.ReturnHome, Flags.OnAlarmTrigger, States.Alarm);
-        fsm.SetTransition(States.Alarm, Flags.OnHome, States.Idle);
-        fsm.SetTransition(States.Alarm, Flags.OnBackToWork, States.WaitMine);
+        fsm.SetTransition(States.WaitMine, BaseAgentsFlags.OnMineFind, States.MoveToMine);
+        fsm.SetTransition(States.WaitMine, BaseAgentsFlags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.MoveToMine, BaseAgentsFlags.OnFoodDeposit, States.DepositFood);
+        fsm.SetTransition(States.MoveToMine, BaseAgentsFlags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.DepositFood, BaseAgentsFlags.OnFoodDeposit, States.ReturnHome);
+        fsm.SetTransition(States.DepositFood, BaseAgentsFlags.OnNoMoreMines, States.ReturnHome);
+        fsm.SetTransition(States.ReturnHome, BaseAgentsFlags.OnHome, States.WaitMine);
+        fsm.SetTransition(States.ReturnHome, BaseAgentsFlags.OnAlarmTrigger, States.Alarm);
+        fsm.SetTransition(States.Alarm, BaseAgentsFlags.OnHome, States.Idle);
+        fsm.SetTransition(States.Alarm, BaseAgentsFlags.OnBackToWork, States.WaitMine);
     }
     
     public int GetFood()

@@ -79,7 +79,7 @@ namespace Game.FSM.States
             {
                 Debug.Log("Alarm disable!");
                 agent.SetStartNode(agent.GetCurrentNode());
-                OnFlag?.Invoke(Flags.OnBackToWork);
+                OnFlag?.Invoke(BaseAgentsFlags.OnBackToWork);
             }
 
             if (agent.IsAtUrbanCenter())
@@ -88,7 +88,7 @@ namespace Game.FSM.States
                 pathToUrbanCenter = null;
                 agent.SetStart(false);
                 Debug.Log("Alarm state finished. Agent is now at the urban center.");
-                OnFlag?.Invoke(Flags.OnHome);
+                OnFlag?.Invoke(BaseAgentsFlags.OnHome);
             }
         });
 
