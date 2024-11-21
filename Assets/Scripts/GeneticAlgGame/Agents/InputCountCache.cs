@@ -2,6 +2,8 @@
 using System.Linq;
 using GeneticAlgorithmDirectory.ECS;
 using GeneticAlgorithmDirectory.NeuralNet;
+using NeuralNetworkDirectory.NeuralNet;
+using StateMachine.Agents.Simulation;
 
 namespace GeneticAlgGame.Agents
 {

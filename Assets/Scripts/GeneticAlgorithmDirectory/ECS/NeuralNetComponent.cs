@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ECS.Patron;
 using GeneticAlgorithmDirectory.NeuralNet;
+using NeuralNetworkDirectory.NeuralNet;
 
 namespace GeneticAlgorithmDirectory.ECS
 {

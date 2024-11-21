@@ -2,11 +2,9 @@
 using System.Threading.Tasks;
 using ECS.Implementation;
 using ECS.Patron;
-using FlockingECS.Component;
 using FlockingECS.Components;
 using FlockingECS.Systems;
 using UnityEngine;
-using Vector3 = System.Numerics.Vector3;
 
 namespace FlockingECS
 {
@@ -20,8 +18,12 @@ namespace FlockingECS
         private List<uint> entities;
         private Material prefabMaterial;
         private Mesh prefabMesh;
-        private UnityEngine.Vector3 prefabScale;
-        private PositionComponent<Vector3> targetPositionComponent;
+        private Vector3 prefabScale;
+        private PositionComponent<System.Numerics.Vector3> targetPositionComponent;
+        private ParallelOptions parallelOptions = new()
+        {
+            MaxDegreeOfParallelism = 32
+        };
 
         private void Start()
         {
@@ -32,13 +34,13 @@ namespace FlockingECS
             for (var i = 0; i < entityCount; i++)
             {
                 var entityID = ECSManager.CreateEntity();
-                ECSManager.AddComponent(entityID, new PositionComponent<Vector3>(new Vector3(0, -i, 0)));
+                ECSManager.AddComponent(entityID, new PositionComponent<System.Numerics.Vector3>(new System.Numerics.Vector3(0, -i, 0)));
                 ECSManager.AddComponent(entityID,
-                    new FlockComponent<Vector3>(Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero));
+                    new FlockComponent<System.Numerics.Vector3>(System.Numerics.Vector3.Zero, System.Numerics.Vector3.Zero, System.Numerics.Vector3.Zero, System.Numerics.Vector3.Zero));
                 entities.Add(entityID);
             }
 
-            targetPositionComponent = new PositionComponent<Vector3>(new Vector3(target.transform.position.x,
+            targetPositionComponent = new PositionComponent<System.Numerics.Vector3>(new System.Numerics.Vector3(target.transform.position.x,
                 target.transform.position.y, target.transform.position.z));
 
             prefabMesh = prefab.GetComponent<MeshFilter>().sharedMesh;
@@ -62,17 +64,17 @@ namespace FlockingECS
                 meshes -= MAX_OBJS_PER_DRAWCALL;
             }
 
-            Parallel.For(0, entities.Count, i =>
+            Parallel.For(0, entities.Count, parallelOptions, i =>
             {
-                var position = ECSManager.GetComponent<PositionComponent<Vector3>>(entities[i]);
+                var position = ECSManager.GetComponent<PositionComponent<System.Numerics.Vector3>>(entities[i]);
                 var pos =
-                    new UnityEngine.Vector3(position.Position.X, position.Position.Y, position.Position.Z);
+                    new Vector3(position.Position.X, position.Position.Y, position.Position.Z);
 
                 if (float.IsNaN(pos.x) || float.IsNaN(pos.y) || float.IsNaN(pos.z) ||
                     float.IsInfinity(pos.x) || float.IsInfinity(pos.y) || float.IsInfinity(pos.z))
                 {
                     Debug.LogWarning($"Invalid position for entity {entities[i]}: {pos}");
-                    pos = UnityEngine.Vector3.zero;
+                    pos = Vector3.zero;
                 }
 
                 drawMatrix[i / MAX_OBJS_PER_DRAWCALL][i % MAX_OBJS_PER_DRAWCALL]
@@ -83,18 +85,18 @@ namespace FlockingECS
 
         private void InitializeSystems()
         {
-            ECSManager.AddSystem(new AlignmentSystem<Vector3>());
-            ECSManager.AddSystem(new CohesionSystem<Vector3>());
-            ECSManager.AddSystem(new DirectionSystem<Vector3>());
-            ECSManager.AddSystem(new SeparationSystem<Vector3>());
-            ECSManager.AddSystem(new MoveSystem<Vector3>());
+            ECSManager.AddSystem(new AlignmentSystem<System.Numerics.Vector3>());
+            ECSManager.AddSystem(new CohesionSystem<System.Numerics.Vector3>());
+            ECSManager.AddSystem(new DirectionSystem<System.Numerics.Vector3>());
+            ECSManager.AddSystem(new SeparationSystem<System.Numerics.Vector3>());
+            ECSManager.AddSystem(new MoveSystem<System.Numerics.Vector3>());
             ECSManager.InitSystems();
         }
 
         private void InitComponents()
         {
-            ECSManager.AddComponentList(typeof(PositionComponent<Vector3>));
-            ECSManager.AddComponentList(typeof(FlockComponent<Vector3>));
+            ECSManager.AddComponentList(typeof(PositionComponent<System.Numerics.Vector3>));
+            ECSManager.AddComponentList(typeof(FlockComponent<System.Numerics.Vector3>));
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FSM;
 
-namespace FSM
+namespace StateMachine
 {
     public class FSM<EnumState, EnumFlag>
         where EnumState : Enum
@@ -175,7 +176,7 @@ namespace FSM
             if (behaviourActions.MultiThreadablesBehaviour == null) return;
             if (!behaviourActions.MultiThreadablesBehaviour.ContainsKey(executionOrder)) return;
 
-            Parallel.ForEach(behaviourActions.MultiThreadablesBehaviour, behaviour =>
+            Parallel.ForEach(behaviourActions.MultiThreadablesBehaviour, parallelOptions, behaviour =>
             {
                 foreach (Action action in behaviour.Value)
                 {

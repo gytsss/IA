@@ -2,8 +2,8 @@
 using GeneticAlgGame.FSMStates;
 using GeneticAlgGame.Graph;
 using GeneticAlgorithmDirectory.ECS;
-using GeneticAlgorithmDirectory.NeuralNet;
-using Pathfinder;
+using NeuralNetworkDirectory.NeuralNet;
+using StateMachine.Agents.Simulation;
 using Utils;
 
 namespace GeneticAlgGame.Agents
@@ -27,6 +27,12 @@ namespace GeneticAlgGame.Agents
 
             CalculateInputs();
             OnAttack += Attack;
+        }
+
+        public override void Uninit()
+        {
+            base.Uninit();
+            OnAttack -= Attack;
         }
 
         public override void Reset()
@@ -107,8 +113,14 @@ namespace GeneticAlgGame.Agents
 
         private object[] AttackEnterParameters()
         {
+            int extraBrain = GetBrainTypeKeyByValue(BrainType.Attack);
             object[] objects =
             {
+                CurrentNode, 
+                foodTarget, 
+                OnMove, 
+                output[GetBrainTypeKeyByValue(BrainType.Eat)],
+                output[extraBrain],
                 OnAttack, 
                 output[GetBrainTypeKeyByValue(BrainType.Eat)],
                 output[GetBrainTypeKeyByValue(BrainType.Attack)], 
@@ -134,9 +146,26 @@ namespace GeneticAlgGame.Agents
             }
         }
 
+        protected override void Eat()
+        {
+            if (CurrentNode.Food <= 0) return;
+            Food++;
+            CurrentNode.Food--;
+            
+            if (CurrentNode.Food > 0) return;
+            
+            CurrentNode.NodeType = SimNodeType.Carrion;
+            CurrentNode.Food = 30;
+        }
+        
         private bool Approximatly(IVector coord1, IVector coord2, float tolerance)
         {
             return Math.Abs(coord1.X - coord2.X) <= tolerance && Math.Abs(coord1.Y - coord2.Y) <= tolerance;
+        }
+
+        protected override void FsmBehaviours()
+        {
+            ExtraBehaviours();
         }
 
         protected override void EatTransitions()
@@ -150,6 +179,7 @@ namespace GeneticAlgGame.Agents
         {
             Fsm.SetTransition(Behaviours.Walk, Flags.OnEat, Behaviours.Eat);
             Fsm.SetTransition(Behaviours.Walk, Flags.OnAttack, Behaviours.Attack);
+            Fsm.SetTransition(Behaviours.Walk, Flags.OnSearchFood, Behaviours.Walk);
         }
 
         protected override void ExtraTransitions()

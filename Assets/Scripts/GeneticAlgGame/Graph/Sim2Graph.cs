@@ -1,4 +1,4 @@
-﻿using Pathfinder;
+﻿using System.Threading.Tasks;
 using Utils;
 using Voronoi;
 
@@ -6,6 +6,11 @@ namespace GeneticAlgGame.Graph
 {
     public class Sim2Graph : SimGraph<SimNode<IVector>, SimCoordinate, IVector>
     {
+        private readonly ParallelOptions parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = 32
+        };
+
         public int MinX => 0;
         public int MaxX => CoordNodes.GetLength(0);
         public int MinY => 0;
@@ -17,7 +22,8 @@ namespace GeneticAlgGame.Graph
         public override void CreateGraph(int x, int y, float cellSize)
         {
             CoordNodes = new SimCoordinate[x, y];
-            for (var i = 0; i < x; i++)
+            
+            Parallel.For(0, x, parallelOptions, i =>
             {
                 for (var j = 0; j < y; j++)
                 {
@@ -29,7 +35,7 @@ namespace GeneticAlgGame.Graph
                     nodeType.SetCoordinate(new MyVector(i * cellSize, j * cellSize));
                     NodesType[i, j] = nodeType;
                 }
-            }
+            });
         }
         
         public bool IsWithinGraphBorders(IVector position)

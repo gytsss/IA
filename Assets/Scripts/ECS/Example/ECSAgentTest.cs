@@ -1,65 +1,75 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using ECS.Implementation;
-using ECS.Patron;
-using UnityEngine;
+using GeneticAlgGame.Graph;
+using Voronoi;
 
 namespace ECS.Example
 {
-    public class ECSAgentTest : MonoBehaviour
+    public abstract class SimGraph<TNodeType, TCoordinateNode, TCoordinateType>
+        where TNodeType : INode<TCoordinateType>
+        where TCoordinateNode : ICoordinate<TCoordinateType>, new()
+        where TCoordinateType : IEquatable<TCoordinateType>
     {
-        private const int MAX_OBJS_PER_DRAWCALL = 1000;
-        public int entityCount = 100;
-        public float velocity = 0.1f;
-        public GameObject prefab;
-
-        private List<uint> entities;
-        private Material prefabMaterial;
-        private Mesh prefabMesh;
-        private Vector3 prefabScale;
-
-        private void Start()
+        public static TCoordinateNode MapDimensions;
+        public static TCoordinateNode OriginPosition;
+        public static float CellSize;
+        public TCoordinateNode[,] CoordNodes;
+        public readonly TNodeType[,] NodesType;
+        private ParallelOptions parallelOptions = new()
         {
-            ECSManager.Init();
-            entities = new List<uint>();
+            MaxDegreeOfParallelism = 32
+        };
+        public SimGraph(int x, int y, float cellSize)
+        {
+            MapDimensions = new TCoordinateNode();
+            MapDimensions.SetCoordinate(x, y);
+            CellSize = cellSize;
 
-            for (var i = 0; i < entityCount; i++)
-            {
-                var entityID = ECSManager.CreateEntity();
-                ECSManager.AddComponent(entityID, new PositionComponent<Vector3>(new Vector3(0, 0, 0)));
-                ECSManager.AddComponent(entityID, new VelocityComponent<Vector3>(velocity, Vector3.right));
-                entities.Add(entityID);
-            }
+            CoordNodes = new TCoordinateNode[x, y];
+            NodesType = new TNodeType[x, y];
 
-            prefabMesh = prefab.GetComponent<MeshFilter>().sharedMesh;
-            prefabMaterial = prefab.GetComponent<MeshRenderer>().sharedMaterial;
-            prefabScale = prefab.transform.localScale;
+            CreateGraph(x, y, cellSize);
+
+            //AddNeighbors(cellSize);
         }
 
-        private void Update()
-        {
-            ECSManager.Tick(Time.deltaTime);
-        }
+        public abstract void CreateGraph(int x, int y, float cellSize);
 
-        private void LateUpdate()
+        private void AddNeighbors(float cellSize)
         {
-            var drawMatrix = new List<Matrix4x4[]>();
-            var meshes = entities.Count;
-            for (var i = 0; i < entities.Count; i += MAX_OBJS_PER_DRAWCALL)
-            {
-                drawMatrix.Add(new Matrix4x4[meshes > MAX_OBJS_PER_DRAWCALL ? MAX_OBJS_PER_DRAWCALL : meshes]);
-                meshes -= MAX_OBJS_PER_DRAWCALL;
-            }
+            var neighbors = new List<INode<TCoordinateType>>();
 
-            Parallel.For(0, entities.Count, i =>
+            Parallel.For(0, CoordNodes.GetLength(0), parallelOptions, i =>
             {
-                var position = ECSManager.GetComponent<PositionComponent<Vector3>>(entities[i]);
-                var rotation = ECSManager.GetComponent<RotationComponent>(entities[i]);
-                drawMatrix[i / MAX_OBJS_PER_DRAWCALL][i % MAX_OBJS_PER_DRAWCALL]
-                    .SetTRS(new Vector3(position.Position.x, position.Position.y, position.Position.z),
-                        Quaternion.Euler(rotation.X, rotation.Y, rotation.Z), prefabScale);
+                for (var j = 0; j < CoordNodes.GetLength(1); j++)
+                {
+                    neighbors.Clear();
+                    for (var k = 0; k < CoordNodes.GetLength(0); k++)
+                    {
+                        for (var l = 0; l < CoordNodes.GetLength(1); l++)
+                        {
+                            if (i == k && j == l) continue;
+
+                            var isNeighbor =
+                                (Approximately(CoordNodes[i, j].GetX(), CoordNodes[k, l].GetX()) &&
+                                 Approximately(Math.Abs(CoordNodes[i, j].GetY() - CoordNodes[k, l].GetY()),
+                                     cellSize)) ||
+                                (Approximately(CoordNodes[i, j].GetY(), CoordNodes[k, l].GetY()) &&
+                                 Approximately(Math.Abs(CoordNodes[i, j].GetX() - CoordNodes[k, l].GetX()), cellSize));
+
+                            if (isNeighbor) neighbors.Add(NodesType[k, l]);
+                        }
+                    }
+
+                    NodesType[i, j].SetNeighbors(new List<INode<TCoordinateType>>(neighbors));
+                }
             });
-            foreach (var matrix in drawMatrix) Graphics.DrawMeshInstanced(prefabMesh, 0, prefabMaterial, matrix);
+        }
+
+        public bool Approximately(float a, float b)
+        {
+            return Math.Abs(a - b) < 1e-6f;
         }
     }
 }

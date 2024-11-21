@@ -2,8 +2,8 @@
 using GeneticAlgGame.FSMStates;
 using GeneticAlgGame.Graph;
 using GeneticAlgorithmDirectory.ECS;
-using GeneticAlgorithmDirectory.NeuralNet;
-using Pathfinder;
+using NeuralNetworkDirectory.NeuralNet;
+using StateMachine.Agents.Simulation;
 using Utils;
 
 namespace GeneticAlgGame.Agents
@@ -123,6 +123,12 @@ namespace GeneticAlgGame.Agents
 
         protected override void ExtraTransitions()
         {
+            
+        }
+
+        protected override void FsmBehaviours()
+        {
+            ExtraBehaviours();
         }
 
         protected override void ExtraBehaviours()

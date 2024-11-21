@@ -2,6 +2,8 @@
 using ECS.Patron;
 using GeneticAlgGame.Agents;
 using GeneticAlgorithmDirectory.NeuralNet;
+using NeuralNetworkDirectory.NeuralNet;
+using StateMachine.Agents.Simulation;
 
 namespace GeneticAlgorithmDirectory.ECS
 {

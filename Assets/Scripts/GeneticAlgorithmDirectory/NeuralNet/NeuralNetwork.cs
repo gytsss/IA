@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NeuralNetworkDirectory.NeuralNet;
 using UnityEngine;
 
 namespace GeneticAlgorithmDirectory.NeuralNet

@@ -1,10 +1,8 @@
 ﻿using System;
 using FSM;
-using GeneticAlgGame.Agents;
 using GeneticAlgGame.Graph;
-using Pathfinder;
+using StateMachine.Agents.Simulation;
 using Utils;
-
 
 namespace GeneticAlgGame.FSMStates
 {
@@ -13,7 +11,7 @@ namespace GeneticAlgGame.FSMStates
         public override BehaviourActions GetTickBehaviour(params object[] parameters)
         {
             var behaviours = new BehaviourActions();
-            var currentNode = parameters[0] as Graph.SimNode<IVector>;
+            var currentNode = parameters[0] as SimNode<IVector>;
             var foodTarget = (SimNodeType)parameters[1];
             var onEat = parameters[2] as Action;
             var outputBrain1 = (float[])parameters[3];
@@ -21,6 +19,7 @@ namespace GeneticAlgGame.FSMStates
 
             behaviours.AddMultiThreadableBehaviours(0, () =>
             {
+                if(foodTarget == null) return;
                 if (currentNode is not { Food: > 0 } || foodTarget != currentNode.NodeType) return;
 
                 onEat?.Invoke();
@@ -59,17 +58,27 @@ namespace GeneticAlgGame.FSMStates
     {
         public override BehaviourActions GetTickBehaviour(params object[] parameters)
         {
+            if (parameters == null || parameters.Length < 3)
+            {
+                return default;
+            }
             var behaviours = new BehaviourActions();
             var currentPos = parameters[0] as IVector;
-            var foodNode = parameters[1] as Graph.SimNode<IVector>;
+            var foodNode = parameters[1] as SimNode<IVector>;
             var onEat = parameters[2] as Action;
             var outputBrain1 = (float[])parameters[3];
-
+            
+           
+            
             IVector distanceToFood = new MyVector();
             IVector maxDistance = new MyVector(4, 4);
 
             behaviours.AddMultiThreadableBehaviours(0, () =>
             {
+                if (currentPos == null || foodNode == null || onEat == null || outputBrain1 == null)
+                {
+                    return;
+                }
                 distanceToFood = new MyVector(foodNode.GetCoordinate().X - currentPos.X,
                     foodNode.GetCoordinate().Y - currentPos.Y);
 

@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
-using GeneticAlgGame.Agents;
+using GeneticAlgorithmDirectory.NeuralNet;
+using StateMachine.Agents.Simulation;
 
-namespace GeneticAlgorithmDirectory.NeuralNet
+namespace NeuralNetworkDirectory.NeuralNet
 {
     public enum BrainType
     {
@@ -22,6 +23,10 @@ namespace GeneticAlgorithmDirectory.NeuralNet
         private Neuron[] neurons;
         private float[] outputs;
         private int totalWeights;
+        private ParallelOptions parallelOptions = new()
+        {
+            MaxDegreeOfParallelism = 32
+        };
 
         public NeuronLayer(int inputsCount, int neuronsCount, float bias, float p)
         {
@@ -79,7 +84,7 @@ namespace GeneticAlgorithmDirectory.NeuralNet
 
         public float[] Synapsis(float[] inputs, int i)
         {
-            Parallel.For(0, neurons.Length, j =>
+            Parallel.For(0, neurons.Length, parallelOptions, j =>
             {
                 outputs[j] = neurons[j].Synapsis(inputs, i);
             });

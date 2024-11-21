@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using FSM;
+using GeneticAlgGame.Agents;
 using GeneticAlgGame.FSMStates;
 using GeneticAlgGame.Graph;
 using GeneticAlgorithmDirectory.ECS;
 using GeneticAlgorithmDirectory.GeneticAlg;
-using GeneticAlgorithmDirectory.NeuralNet;
-using Pathfinder;
+using NeuralNetworkDirectory.NeuralNet;
 using Utils;
 
-namespace GeneticAlgGame.Agents
+namespace StateMachine.Agents.Simulation
 {
     public enum SimAgentTypes
     {
@@ -42,17 +41,31 @@ namespace GeneticAlgGame.Agents
         public virtual TTransform Transform
         {
             get => transform;
-            set => transform = value;
+            set
+            {
+                transform ??= new TTransform();
+                transform.position ??= new MyVector(0, 0);
+
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value), "Transform value cannot be null");
+                }
+
+                if (transform.position == null || value.position == null)
+                {
+                    throw new InvalidOperationException("Transform positions cannot be null");
+                }
+
+                transform.forward = (transform.position - value.position).Normalized();
+                transform = value;
+            }
         }
 
-        public virtual INode<IVector> CurrentNode
-        {
-            get { return EcsPopulationManager.graph.NodesType[(int)Transform.position.X, (int)Transform.position.Y]; }
-            private set { }
-        }
+        public virtual INode<IVector> CurrentNode =>
+            EcsPopulationManager.graph.NodesType[(int)Transform.position.X, (int)Transform.position.Y];
 
         protected TTransform transform = new TTransform();
-        public bool CanReproduce() => Food >= FoodLimit;
+        public bool CanReproduce => Food >= FoodLimit;
         public SimAgentTypes agentType { get; set; }
         public FSM<Behaviours, Flags> Fsm;
 
@@ -65,13 +78,13 @@ namespace GeneticAlgGame.Agents
         protected float dt;
         protected const int NoTarget = -1;
 
-        protected Graph.SimNode<TVector> TargetNode
+        protected SimNode<TVector> TargetNode
         {
             get => targetNode;
             set => targetNode = value;
         }
 
-        private Graph.SimNode<TVector> targetNode;
+        private SimNode<TVector> targetNode;
         Genome[] genomes;
         public float[][] output;
         public float[][] input;
@@ -104,7 +117,6 @@ namespace GeneticAlgGame.Agents
 
             FsmTransitions();
             Fsm.ForceTransition(Behaviours.Walk);
-            //UpdateInputs();
         }
 
         public virtual void Reset()
@@ -238,24 +250,45 @@ namespace GeneticAlgGame.Agents
             return objects;
         }
 
-        private void Eat()
+        protected virtual void Eat()
         {
             if (CurrentNode.Food <= 0) return;
             Food++;
             CurrentNode.Food--;
-            if(CurrentNode.Food <= 0) CurrentNode.NodeType = SimNodeType.Empty;
+            if (CurrentNode.Food <= 0) CurrentNode.NodeType = SimNodeType.Empty;
         }
 
         protected virtual void Move()
         {
             int brain = GetBrainTypeKeyByValue(BrainType.Movement);
 
-            IVector targetPos = new MyVector(CurrentNode.GetCoordinate().X, CurrentNode.GetCoordinate().Y);
-            targetPos = CalculateNewPosition(targetPos, output[brain]);
+            IVector currentPos = new MyVector(CurrentNode.GetCoordinate().X, CurrentNode.GetCoordinate().Y);
+            currentPos = CalculateNewPosition(currentPos, output[brain]);
 
-            if (!EcsPopulationManager.graph.IsWithinGraphBorders(targetPos)) return;
+            if (!EcsPopulationManager.graph.IsWithinGraphBorders(currentPos))
+            {
+                if (currentPos.X < EcsPopulationManager.graph.MinX)
+                {
+                    currentPos.X = EcsPopulationManager.graph.MaxX-1;
+                }
 
-            var newPos = EcsPopulationManager.CoordinateToNode(targetPos);
+                if (currentPos.X > EcsPopulationManager.graph.MaxX)
+                {
+                    currentPos.X = EcsPopulationManager.graph.MinX;
+                }
+
+                if (currentPos.Y < EcsPopulationManager.graph.MinY)
+                {
+                    currentPos.Y = EcsPopulationManager.graph.MaxY-1;
+                }
+
+                if (currentPos.Y > EcsPopulationManager.graph.MaxY)
+                {
+                    currentPos.Y = EcsPopulationManager.graph.MinY;
+                }
+            }
+
+            var newPos = EcsPopulationManager.CoordinateToNode(currentPos);
             if (newPos != null) SetPosition(newPos.GetCoordinate());
         }
 
@@ -269,35 +302,35 @@ namespace GeneticAlgGame.Agents
 
         private IVector CalculateNewPosition(IVector targetPos, float[] brainOutput)
         {
-            float speed = CalculateSpeed(Math.Abs(brainOutput[^1]));
+            if (brainOutput.Length < 2) return default;
             
-            if (brainOutput[0] > 0.5)
+            float horizontalMovement = brainOutput[0];
+            float verticalMovement = brainOutput[1];
+
+            // Calculate horizontal movement
+            if (horizontalMovement > 0.5f)
             {
-                if (brainOutput[^1] > 0.5) // Right
-                {
-                    targetPos.X += speed;
-                }
-                else //if (brainOutput[^1] < -0.1) // Left
-                {
-                    targetPos.X -= speed;
-                }
+                targetPos.X += movement * (horizontalMovement - 0.5f) * 2;
             }
             else
             {
-                if (brainOutput[^1] > 0.5) // Up
-                {
-                    targetPos.Y += speed;
-                }
-                else// if (brainOutput[^1] < -0.1) // Down
-                {
-                    targetPos.Y -= speed;
-                }
+                targetPos.X -= movement * (0.5f - horizontalMovement) * 2;
+            }
+
+            // Calculate vertical movement
+            if (verticalMovement > 0.5f)
+            {
+                targetPos.Y += movement * (verticalMovement - 0.5f) * 2;
+            }
+            else
+            {
+                targetPos.Y -= movement * (0.5f - verticalMovement) * 2;
             }
 
             return targetPos;
         }
 
-        protected virtual INode<IVector> GetTarget(SimNodeType nodeType = SimNodeType.Empty)
+        public virtual INode<IVector> GetTarget(SimNodeType nodeType = SimNodeType.Empty)
         {
             return EcsPopulationManager.GetNearestNode(nodeType, transform.position);
         }
@@ -310,7 +343,7 @@ namespace GeneticAlgGame.Agents
         public virtual void SetPosition(IVector position)
         {
             if (!EcsPopulationManager.graph.IsWithinGraphBorders(position)) return;
-            Transform.position = position;
+            Transform = (TTransform)new ITransform<IVector>(position);
         }
 
         public int GetBrainTypeKeyByValue(BrainType value)

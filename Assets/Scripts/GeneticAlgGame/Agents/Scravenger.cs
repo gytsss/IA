@@ -3,8 +3,8 @@ using Flocking;
 using GeneticAlgGame.FSMStates;
 using GeneticAlgGame.Graph;
 using GeneticAlgorithmDirectory.ECS;
-using GeneticAlgorithmDirectory.NeuralNet;
-using Pathfinder;
+using NeuralNetworkDirectory.NeuralNet;
+using StateMachine.Agents.Simulation;
 using Utils;
 
 namespace GeneticAlgGame.Agents
@@ -24,6 +24,12 @@ namespace GeneticAlgGame.Agents
             get => transform;
             set
             {
+                transform ??= new TTransform();
+                transform.position ??= new MyVector(0, 0);
+                value ??= new TTransform();
+                value.position ??= new MyVector(0, 0);
+                
+                transform.forward = (transform.position - value.position).Normalized();
                 transform = value;
                 boid.transform.position = value.position;
                 boid.transform.forward = (targetPosition - value.position).Normalized();
@@ -236,6 +242,16 @@ namespace GeneticAlgGame.Agents
             return targetNode.GetCoordinate();
         }
 
+        protected override void Eat()
+        {
+            var node = EcsPopulationManager.graph.NodesType[(int)targetPosition.X, (int)targetPosition.Y];
+            if (node.Food <= 0) return;
+            Food++;
+            node.Food--;
+            if (node.Food <= 0) node.NodeType = SimNodeType.Empty;
+
+        }
+
         protected override void Move()
         {
             int index = GetBrainTypeKeyByValue(BrainType.ScavengerMovement);
@@ -285,12 +301,10 @@ namespace GeneticAlgGame.Agents
 
         public override void SetPosition(IVector position)
         {
-            base.SetPosition(position);
-            boid.transform.position = position;
-            boid.transform.forward = (targetPosition - position).Normalized();
+            Transform = (TTransform)new ITransform<IVector>(position);
         }
 
-        protected override INode<IVector> GetTarget(SimNodeType nodeType = SimNodeType.Empty)
+        public override INode<IVector> GetTarget(SimNodeType nodeType = SimNodeType.Empty)
         {
             INode<IVector> target = EcsPopulationManager.GetNearestNode(nodeType, Transform.position);
 
@@ -352,7 +366,7 @@ namespace GeneticAlgGame.Agents
         protected override void WalkTransitions()
         {
             Fsm.SetTransition(Behaviours.Walk, Flags.OnEat, Behaviours.Eat);
-            //Fsm.SetTransition(Behaviours.Walk, Flags.OnSearchFood, Behaviours.Walk);
+            Fsm.SetTransition(Behaviours.Walk, Flags.OnSearchFood, Behaviours.Walk);
         }
     }
 }
