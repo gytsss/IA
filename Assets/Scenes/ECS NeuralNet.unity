@@ -275,8 +275,8 @@ MonoBehaviour:
   mutationChance: 0.1
   mutationRate: 0.01
   Generation: 0
-  gridWidth: 10
-  gridHeight: 10
+  gridWidth: 50
+  gridHeight: 50
   generationTurns: 100
   speed: 1
 --- !u!1 &1801325625
