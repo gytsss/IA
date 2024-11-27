@@ -275,14 +275,14 @@ MonoBehaviour:
   eliteCount: 3
   Generation: 0
   Bias: 0.5
-  generationsPerSave: 20
+  generationsPerSave: 5
   generationDuration: 20
   activateSave: 1
   activateLoad: 1
-  generationToLoad: 1
+  generationToLoad: 0
+  speed: 150
   gridWidth: 50
   gridHeight: 50
-  speed: 150
 --- !u!1 &1801325625
 GameObject:
   m_ObjectHideFlags: 0
