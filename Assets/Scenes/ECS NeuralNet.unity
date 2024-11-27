@@ -258,27 +258,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 1659154291}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1592e56415e15847ab8c31702b6f245, type: 3}
+  m_Script: {fileID: 11500000, guid: 65416020f45b7b347a7d9679c4aaa030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   carnivoreMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  carnivoreMat: {fileID: 2100000, guid: 04b67b1aa6af44245889bf0bfb8b412a, type: 2}
+  carnivoreMat: {fileID: 2100000, guid: 377cb5fc32802be4786b1728e82ebd9c, type: 2}
   herbivoreMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-  herbivoreMat: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  herbivoreMat: {fileID: 2100000, guid: 531012902606f684c8ba9888a40ecfd7, type: 2}
   scavengerMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
-  scavengerMat: {fileID: 2100000, guid: f053c779a3c9ee941a2859146417e7a0, type: 2}
-  carnivoreCount: 5
-  herbivoreCount: 20
-  scavengerCount: 5
-  eliteCount: 0
-  generationDuration: 7
-  mutationChance: 0.1
-  mutationRate: 0.01
+  scavengerMat: {fileID: 2100000, guid: 6c7afd758887e574b9b44cdd56022a20, type: 2}
+  carnivoreCount: 10
+  herbivoreCount: 15
+  scavengerCount: 10
+  mutationRate: 0.09
+  mutationChance: 0.12
+  eliteCount: 3
   Generation: 0
+  Bias: 0.5
+  generationsPerSave: 20
+  generationDuration: 20
+  activateSave: 1
+  activateLoad: 1
+  generationToLoad: 1
   gridWidth: 50
   gridHeight: 50
-  generationTurns: 100
-  speed: 1
+  speed: 150
 --- !u!1 &1801325625
 GameObject:
   m_ObjectHideFlags: 0
