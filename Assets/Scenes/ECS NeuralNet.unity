@@ -267,19 +267,19 @@ MonoBehaviour:
   herbivoreMat: {fileID: 2100000, guid: 531012902606f684c8ba9888a40ecfd7, type: 2}
   scavengerMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   scavengerMat: {fileID: 2100000, guid: 6c7afd758887e574b9b44cdd56022a20, type: 2}
-  carnivoreCount: 10
-  herbivoreCount: 15
+  carnivoreCount: 13
+  herbivoreCount: 30
   scavengerCount: 10
-  mutationRate: 0.09
+  mutationRate: 0.08
   mutationChance: 0.12
-  eliteCount: 3
-  Generation: 0
+  eliteCount: 2
+  Generation: 1030
   Bias: 0.5
   generationsPerSave: 5
-  generationDuration: 20
+  generationDuration: 30
   activateSave: 1
   activateLoad: 1
-  generationToLoad: 0
+  generationToLoad: 1030
   speed: 150
   gridWidth: 50
   gridHeight: 50

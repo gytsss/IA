@@ -561,7 +561,7 @@ namespace NeuralNetworkDirectory
             foreach (KeyValuePair<uint, SimAgentType> agent in DataContainer.Agents)
             {
                 SimAgentTypes agentType = agent.Value.agentType;
-
+                
                 switch (agentType)
                 {
                     case SimAgentTypes.Carnivore:
@@ -909,7 +909,7 @@ namespace NeuralNetworkDirectory
 
             foreach (KeyValuePair<uint, SimAgentType> agentEntry in DataContainer.Agents)
             {
-                if (agentEntry.Value.agentType != SimAgentTypes.Herbivore) continue;
+                //if (agentEntry.Value.agentType != SimAgentTypes.Herbivore) continue;
                 SimAgentType agent = agentEntry.Value;
                 if (agent.agentType == SimAgentTypes.Herbivore)
                 {
