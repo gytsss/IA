@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/ECS NeuralNet.unity
+    guid: 619a527c9325f5044a98b4339abb4555
   m_configObjects: {}
