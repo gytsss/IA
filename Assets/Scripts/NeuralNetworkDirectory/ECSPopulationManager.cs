@@ -11,7 +11,6 @@ using NeuralNetworkLib.NeuralNetDirectory.ECS;
 using NeuralNetworkLib.NeuralNetDirectory.ECS.Patron;
 using NeuralNetworkLib.NeuralNetDirectory.NeuralNet;
 using NeuralNetworkLib.Utils;
-using Pathfinder.Graph;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -66,7 +65,6 @@ namespace NeuralNetworkDirectory
         private float accumTime;
         private const string DirectoryPath = "NeuronData";
         private GeneticAlgorithm genAlg;
-        private GraphManager<IVector, ITransform<IVector>> gridManager;
         private FitnessManager<IVector, ITransform<IVector>> fitnessManager;
         private static Dictionary<uint, Dictionary<BrainType, List<Genome>>> _population = new();
         private static readonly int BrainsAmount = Enum.GetValues(typeof(BrainType)).Length;
@@ -84,7 +82,6 @@ namespace NeuralNetworkDirectory
             NeuronDataSystem.OnSpecificLoaded += SpecificLoaded;
             Herbivore<IVector, ITransform<IVector>>.OnDeath += RemoveEntity;
             ECSManager.Init();
-            gridManager = new GraphManager<IVector, ITransform<IVector>>(gridWidth, gridHeight);
             DataContainer.graph = new Sim2Graph(gridWidth, gridHeight, CellSize);
             StartSimulation();
             plantCount = DataContainer.Agents.Values.Count(agent => agent.agentType == SimAgentTypes.Herbivore) * 2;
@@ -444,9 +441,9 @@ namespace NeuralNetworkDirectory
         {
             INode<IVector> randomNode = agentType switch
             {
-                SimAgentTypes.Carnivore => gridManager.GetRandomPositionInUpperQuarter(),
-                SimAgentTypes.Herbivore => gridManager.GetRandomPositionInLowerQuarter(),
-                SimAgentTypes.Scavenger => gridManager.GetRandomPosition(),
+                SimAgentTypes.Carnivore => DataContainer.GetRandomPositionInUpperQuarter(),
+                SimAgentTypes.Herbivore => DataContainer.GetRandomPositionInLowerQuarter(),
+                SimAgentTypes.Scavenger => DataContainer.GetRandomPosition(),
                 _ => throw new ArgumentOutOfRangeException(nameof(agentType), agentType, null)
             };
 
@@ -609,8 +606,8 @@ namespace NeuralNetworkDirectory
                     genomes[agentType][brain].Remove(genomes[agentType][brain][index]);
 
                     agent.Value.Transform = new ITransform<IVector>(new MyVector(
-                        gridManager.GetRandomPosition().GetCoordinate().X,
-                        gridManager.GetRandomPosition().GetCoordinate().Y));
+                        DataContainer.GetRandomPosition().GetCoordinate().X,
+                        DataContainer.GetRandomPosition().GetCoordinate().Y));
                     agent.Value.Reset();
                 }
             }
@@ -673,7 +670,7 @@ namespace NeuralNetworkDirectory
         {
             for (int i = 0; i < plantCount; i++)
             {
-                INode<IVector> plantPosition = gridManager.GetRandomPosition();
+                INode<IVector> plantPosition = DataContainer.GetRandomPosition();
                 plantPosition.NodeType = SimNodeType.Bush;
                 plantPosition.Food = 5;
             }
